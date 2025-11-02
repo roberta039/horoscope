@@ -355,58 +355,103 @@ def render_interpretation_tab():
         st.warning("⚠️ Please calculate a chart first.")
         return
     
-    # Generate interpretation
-    interpretation = st.session_state.calculator.generate_full_interpretation(
+    # Two types of interpretation like original app
+    tab_natal, tab_sexy = st.tabs(["🌌 Natal Interpretation", "💖 Romantic Profile"])
+    
+    with tab_natal:
+        render_natal_interpretation()
+    
+    with tab_sexy:
+        render_sexy_interpretation()
+
+def render_natal_interpretation():
+    st.subheader("🌌 Natal Personality Analysis")
+    
+    # Generate natal interpretation
+    natal_interpretation = st.session_state.calculator.generate_natal_interpretation(
         st.session_state.planetary_data,
         st.session_state.houses_data,
         st.session_state.birth_info
     )
     
-    # Display interpretation in a nice container
-    st.subheader("🌠 Your Personal Horoscope")
-    
+    # Display in styled container
     with st.container():
         st.markdown("""
         <div style='
             background: rgba(255,255,255,0.1); 
-            border: 1px solid #f1c40f; 
+            border: 2px solid #3498db; 
             border-radius: 10px; 
             padding: 20px; 
             margin: 10px 0;
+            font-family: Georgia, serif;
         '>
         """, unsafe_allow_html=True)
         
-        lines = interpretation.split('\n')
+        lines = natal_interpretation.split('\n')
         for line in lines:
-            if line.startswith('🌟') or line.startswith('🪐') or line.startswith('🏠') or line.startswith('🌌'):
+            if line.startswith('🌌') or line.startswith('🌟') or line.startswith('🪐'):
                 st.markdown(f"**{line}**")
             elif '=' in line:
                 st.markdown(f"`{line}`")
+            elif line.strip() and not line.startswith('-'):
+                st.write(line)
             else:
                 st.write(line)
         
         st.markdown("</div>", unsafe_allow_html=True)
     
-    # Additional planetary interpretations
-    st.subheader("🪐 Planetary Insights")
-    
-    planetary_data = st.session_state.planetary_data
-    for planet in ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars']:
-        if planet in planetary_data:
-            data = planetary_data[planet]
-            interpretation = st.session_state.calculator.get_planet_interpretation(planet, data['sign'])
-            
-            with st.container():
-                st.markdown(f"**{planet} in {data['sign']}**")
-                st.write(interpretation)
-    
-    # Download interpretation
+    # Download button
     st.download_button(
-        label="📥 Download Full Interpretation",
-        data=interpretation,
-        file_name="horoscope_interpretation.txt",
+        label="📥 Download Natal Report",
+        data=natal_interpretation,
+        file_name="natal_interpretation.txt",
         mime="text/plain",
-        key="interpretation_download"
+        key="natal_download"
+    )
+
+def render_sexy_interpretation():
+    st.subheader("💖 Romantic & Sexual Profile")
+    
+    # Generate sexy interpretation
+    sexy_interpretation = st.session_state.calculator.generate_sexy_interpretation(
+        st.session_state.planetary_data,
+        st.session_state.houses_data,
+        st.session_state.birth_info
+    )
+    
+    # Display in styled container
+    with st.container():
+        st.markdown("""
+        <div style='
+            background: rgba(255,255,255,0.1); 
+            border: 2px solid #e74c3c; 
+            border-radius: 10px; 
+            padding: 20px; 
+            margin: 10px 0;
+            font-family: Georgia, serif;
+        '>
+        """, unsafe_allow_html=True)
+        
+        lines = sexy_interpretation.split('\n')
+        for line in lines:
+            if line.startswith('💖') or line.startswith('💘') or line.startswith('🔥'):
+                st.markdown(f"**{line}**")
+            elif '=' in line:
+                st.markdown(f"`{line}`")
+            elif line.strip() and not line.startswith('-'):
+                st.write(line)
+            else:
+                st.write(line)
+        
+        st.markdown("</div>", unsafe_allow_html=True)
+    
+    # Download button
+    st.download_button(
+        label="📥 Download Romantic Profile",
+        data=sexy_interpretation,
+        file_name="romantic_profile.txt",
+        mime="text/plain",
+        key="sexy_download"
     )
 
 def render_settings_tab():
