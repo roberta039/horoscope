@@ -9,7 +9,7 @@ This is a complete web-based reconstruction of the original Palm OS 1.Chart Horo
 **Original Application:** 1.Chart Horoscope v2.42  
 **Original Developers:** Danko Josic & Nenad Zezlina  
 **Web Reconstruction:** Assisted by DeepSeek AI  
-**Reconstruction Year:** 2024
+**Reconstruction Year:** 2025
 
 ## 🚀 Features
 
