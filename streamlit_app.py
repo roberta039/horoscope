@@ -33,6 +33,52 @@ def main():
     
     with tab3:
         render_aspects_tab()
+        def render_interpretation_tab():
+    st.header("📖 Horoscope Interpretation")
+    
+    if 'planetary_data' not in st.session_state:
+        st.warning("⚠️ Please calculate a chart first.")
+        return
+    
+    # Generate interpretation
+    interpretation = st.session_state.calculator.generate_full_interpretation(
+        st.session_state.planetary_data,
+        st.session_state.houses_data,
+        st.session_state.birth_info
+    )
+    
+    # Display interpretation in a nice container
+    st.subheader("🌠 Your Personal Horoscope")
+    
+    with st.container():
+        st.markdown("""
+        <div style='
+            background: rgba(255,255,255,0.1); 
+            border: 1px solid #f1c40f; 
+            border-radius: 10px; 
+            padding: 20px; 
+            margin: 10px 0;
+        '>
+        """, unsafe_allow_html=True)
+        
+        lines = interpretation.split('\n')
+        for line in lines:
+            if line.startswith('🌟') or line.startswith('🪐') or line.startswith('🏠'):
+                st.markdown(f"**{line}**")
+            elif '=' in line:
+                st.markdown(f"`{line}`")
+            else:
+                st.write(line)
+        
+        st.markdown("</div>", unsafe_allow_html=True)
+    
+    # Download interpretation
+    st.download_button(
+        label="📥 Download Interpretation",
+        data=interpretation,
+        file_name="horoscope_interpretation.txt",
+        mime="text/plain"
+    )
     
     with tab4:
         render_settings_tab()
