@@ -36,7 +36,44 @@ def main():
     
     with tab4:
         render_settings_tab()
-# Continuă cu următoarele funcții...
+
+def render_birth_data_tab():
+    st.header("📊 Enter Birth Information")
+    
+    with st.container():
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            # Manual date input
+            st.markdown("**📅 Enter Your Birth Date**")
+            col_date1, col_date2, col_date3 = st.columns(3)
+            
+            with col_date1:
+                day = st.number_input("Day", min_value=1, max_value=31, value=15, key="birth_day")
+            with col_date2:
+                month = st.number_input("Month", min_value=1, max_value=12, value=6, key="birth_month")
+            with col_date3:
+                year = st.number_input("Year", min_value=1900, max_value=2024, value=1980, key="birth_year")
+            
+            # Create date object
+            try:
+                birth_date = datetime(year, month, day).date()
+                st.success(f"**Selected Birth Date:** {birth_date.strftime('%B %d, %Y')}")
+            except ValueError as e:
+                st.error("❌ Invalid date! Please check day, month, and year combination.")
+                return
+            
+            birth_time = st.time_input("⏰ Time of Birth", datetime.now().time(), key="birth_time")
+            birth_place = st.text_input("🌍 Place of Birth", "Zagreb, Croatia", key="birth_place")
+        
+        with col2:
+            latitude = st.number_input("📍 Latitude", value=45.8150, format="%.4f", key="latitude")
+            longitude = st.number_input("📍 Longitude", value=15.9819, format="%.4f", key="longitude")
+            house_system = st.selectbox("🏠 House System", ["Placidus", "Koch", "Equal", "Whole Sign"], key="house_system")
+    
+    if st.button("🧮 Calculate Chart", type="primary", use_container_width=True, key="calculate_btn"):
+        calculate_chart(birth_date, birth_time, birth_place, latitude, longitude, house_system)
+
 def calculate_chart(birth_date, birth_time, birth_place, latitude, longitude, house_system):
     with st.spinner("🔮 Calculating planetary positions..."):
         # Combine date and time
@@ -173,6 +210,10 @@ def render_export_options():
             show_share_options()
 
 def export_pdf_report():
+    if 'planetary_data' not in st.session_state:
+        st.warning("Please calculate a chart first.")
+        return
+        
     # PDF export functionality
     pdf_data = st.session_state.export_manager.generate_pdf(
         st.session_state.planetary_data,
@@ -186,6 +227,54 @@ def export_pdf_report():
         file_name="horoscope_report.pdf",
         mime="application/pdf"
     )
+
+def export_text_report():
+    if 'planetary_data' not in st.session_state:
+        st.warning("Please calculate a chart first.")
+        return
+        
+    text_report = st.session_state.export_manager.generate_text_report(
+        st.session_state.planetary_data,
+        st.session_state.houses_data,
+        st.session_state.birth_info
+    )
+    
+    st.download_button(
+        label="⬇️ Download Text",
+        data=text_report,
+        file_name="horoscope_report.txt",
+        mime="text/plain"
+    )
+
+def export_csv_data():
+    if 'planetary_data' not in st.session_state:
+        st.warning("Please calculate a chart first.")
+        return
+        
+    planets_csv, houses_csv = st.session_state.export_manager.generate_csv_data(
+        st.session_state.planetary_data,
+        st.session_state.houses_data,
+        st.session_state.birth_info
+    )
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.download_button(
+            label="⬇️ Planets CSV",
+            data=planets_csv,
+            file_name="planetary_data.csv",
+            mime="text/csv"
+        )
+    
+    with col2:
+        st.download_button(
+            label="⬇️ Houses CSV",
+            data=houses_csv,
+            file_name="houses_data.csv",
+            mime="text/csv"
+        )
+
 def render_aspects_tab():
     st.header("⭐ Astrological Aspects")
     
@@ -198,6 +287,10 @@ def render_aspects_tab():
     
     # Display aspects
     st.subheader("🔍 Detected Aspects")
+    
+    if not aspects:
+        st.info("No major aspects found within the orb limits.")
+        return
     
     for aspect in aspects:
         with st.container():
