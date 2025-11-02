@@ -67,7 +67,7 @@ class HoroscopeCalculator:
             'Venus': {
                 'Aries': '💘 IMPULSIVE ATTRACTION. You fall in love quickly and passionately. Need excitement and chase in romance.',
                 'Taurus': '🌹 SENSUAL PLEASURE. You value physical touch and romantic comforts. Very loyal and devoted in love.',
-                'Gemini': '💌 MENTAL CONNECTION. You're attracted to intelligence and wit. Need variety and mental stimulation.',
+                'Gemini': '💌 MENTAL CONNECTION. You are attracted to intelligence and wit. Need variety and mental stimulation.',
                 'Cancer': '🏡 EMOTIONAL BONDING. You seek security and nurturing in relationships. Very protective and caring.',
                 'Leo': '🎭 DRAMATIC ROMANCE. You love being adored and admired. Generous with grand romantic gestures.',
                 'Virgo': '📝 PRACTICAL LOVE. You show affection through service and attention. Very loyal and helpful partner.',
