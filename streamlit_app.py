@@ -23,7 +23,7 @@ def main():
     st.markdown("### *Cosmic Vintage Reconstruction*")
     
     # Navigation tabs
-    tab1, tab2, tab3, tab4 = st.tabs(["📊 Birth Data", "🪐 Chart", "⭐ Aspects", "⚙️ Settings"])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["📊 Birth Data", "🪐 Chart", "⭐ Aspects", "📖 Interpretation", "⚙️ Settings"])
     
     with tab1:
         render_birth_data_tab()
@@ -33,54 +33,11 @@ def main():
     
     with tab3:
         render_aspects_tab()
-        def render_interpretation_tab():
-    st.header("📖 Horoscope Interpretation")
-    
-    if 'planetary_data' not in st.session_state:
-        st.warning("⚠️ Please calculate a chart first.")
-        return
-    
-    # Generate interpretation
-    interpretation = st.session_state.calculator.generate_full_interpretation(
-        st.session_state.planetary_data,
-        st.session_state.houses_data,
-        st.session_state.birth_info
-    )
-    
-    # Display interpretation in a nice container
-    st.subheader("🌠 Your Personal Horoscope")
-    
-    with st.container():
-        st.markdown("""
-        <div style='
-            background: rgba(255,255,255,0.1); 
-            border: 1px solid #f1c40f; 
-            border-radius: 10px; 
-            padding: 20px; 
-            margin: 10px 0;
-        '>
-        """, unsafe_allow_html=True)
-        
-        lines = interpretation.split('\n')
-        for line in lines:
-            if line.startswith('🌟') or line.startswith('🪐') or line.startswith('🏠'):
-                st.markdown(f"**{line}**")
-            elif '=' in line:
-                st.markdown(f"`{line}`")
-            else:
-                st.write(line)
-        
-        st.markdown("</div>", unsafe_allow_html=True)
-    
-    # Download interpretation
-    st.download_button(
-        label="📥 Download Interpretation",
-        data=interpretation,
-        file_name="horoscope_interpretation.txt",
-        mime="text/plain"
-    )
     
     with tab4:
+        render_interpretation_tab()
+    
+    with tab5:
         render_settings_tab()
 
 def render_birth_data_tab():
@@ -122,35 +79,44 @@ def render_birth_data_tab():
 
 def calculate_chart(birth_date, birth_time, birth_place, latitude, longitude, house_system):
     with st.spinner("🔮 Calculating planetary positions..."):
-        # Combine date and time
-        birth_datetime = datetime.combine(birth_date, birth_time)
-        
-        # Calculate planetary positions
-        planetary_data = st.session_state.calculator.calculate_planetary_positions(
-            birth_datetime, latitude, longitude, house_system
-        )
-        
-        # Calculate houses
-        houses_data = st.session_state.calculator.calculate_houses(
-            birth_datetime, latitude, longitude, house_system
-        )
-        
-        # Store in session state
-        st.session_state.planetary_data = planetary_data
-        st.session_state.houses_data = houses_data
-        st.session_state.birth_info = {
-            'date': birth_date,
-            'time': birth_time,
-            'place': birth_place,
-            'latitude': latitude,
-            'longitude': longitude
-        }
-        
-        st.success("🎉 Chart calculated successfully!")
-        
-        # Display quick results
-        st.subheader("📋 Quick Results")
-        display_quick_results(planetary_data)
+        try:
+            # Combine date and time
+            birth_datetime = datetime.combine(birth_date, birth_time)
+            
+            # Calculate planetary positions
+            planetary_data = st.session_state.calculator.calculate_planetary_positions(
+                birth_datetime, latitude, longitude, house_system
+            )
+            
+            # Calculate houses
+            houses_data = st.session_state.calculator.calculate_houses(
+                birth_datetime, latitude, longitude, house_system
+            )
+            
+            # Calculate aspects
+            aspects_data = st.session_state.calculator.calculate_aspects(planetary_data)
+            
+            # Store in session state
+            st.session_state.planetary_data = planetary_data
+            st.session_state.houses_data = houses_data
+            st.session_state.aspects_data = aspects_data
+            st.session_state.birth_info = {
+                'date': birth_date,
+                'time': birth_time,
+                'place': birth_place,
+                'latitude': latitude,
+                'longitude': longitude,
+                'house_system': house_system
+            }
+            
+            st.success("🎉 Chart calculated successfully!")
+            
+            # Display quick results
+            st.subheader("📋 Quick Results")
+            display_quick_results(planetary_data)
+            
+        except Exception as e:
+            st.error(f"❌ Error calculating chart: {str(e)}")
 
 def display_quick_results(planetary_data):
     cols = st.columns(3)
@@ -206,10 +172,30 @@ def render_zodiac_wheel():
             showlegend=False
         ))
     
+    # Add planets to the wheel
+    if 'planetary_data' in st.session_state:
+        planetary_data = st.session_state.planetary_data
+        
+        for planet, data in planetary_data.items():
+            # Convert position to angle on wheel
+            angle = data['longitude']
+            x = 0.8 * np.cos(np.radians(angle))  # 0.8 to place inside circle
+            y = 0.8 * np.sin(np.radians(angle))
+            
+            fig.add_trace(go.Scatter(
+                x=[x], y=[y],
+                mode='markers+text',
+                marker=dict(size=15, color='gold'),
+                text=[planet[0]],  # First letter of planet
+                textfont=dict(size=8, color='black'),
+                name=planet,
+                showlegend=False
+            ))
+    
     # Style the chart
     fig.update_layout(
-        width=400,
-        height=400,
+        width=500,
+        height=500,
         showlegend=False,
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
@@ -240,19 +226,19 @@ def render_export_options():
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        if st.button("📄 PDF Report"):
+        if st.button("📄 PDF Report", key="pdf_btn"):
             export_pdf_report()
     
     with col2:
-        if st.button("📝 Text File"):
+        if st.button("📝 Text File", key="text_btn"):
             export_text_report()
     
     with col3:
-        if st.button("📊 CSV Data"):
+        if st.button("📊 CSV Data", key="csv_btn"):
             export_csv_data()
     
     with col4:
-        if st.button("🔗 Share"):
+        if st.button("🔗 Share", key="share_btn"):
             show_share_options()
 
 def export_pdf_report():
@@ -260,76 +246,88 @@ def export_pdf_report():
         st.warning("Please calculate a chart first.")
         return
         
-    # PDF export functionality
-    pdf_data = st.session_state.export_manager.generate_pdf(
-        st.session_state.planetary_data,
-        st.session_state.houses_data,
-        st.session_state.birth_info
-    )
-    
-    st.download_button(
-        label="⬇️ Download PDF",
-        data=pdf_data,
-        file_name="horoscope_report.pdf",
-        mime="application/pdf"
-    )
+    try:
+        # PDF export functionality
+        pdf_data = st.session_state.export_manager.generate_pdf(
+            st.session_state.planetary_data,
+            st.session_state.houses_data,
+            st.session_state.birth_info
+        )
+        
+        st.download_button(
+            label="⬇️ Download PDF",
+            data=pdf_data,
+            file_name="horoscope_report.pdf",
+            mime="application/pdf",
+            key="pdf_download"
+        )
+    except Exception as e:
+        st.error(f"Error generating PDF: {str(e)}")
 
 def export_text_report():
     if 'planetary_data' not in st.session_state:
         st.warning("Please calculate a chart first.")
         return
         
-    text_report = st.session_state.export_manager.generate_text_report(
-        st.session_state.planetary_data,
-        st.session_state.houses_data,
-        st.session_state.birth_info
-    )
-    
-    st.download_button(
-        label="⬇️ Download Text",
-        data=text_report,
-        file_name="horoscope_report.txt",
-        mime="text/plain"
-    )
+    try:
+        text_report = st.session_state.export_manager.generate_text_report(
+            st.session_state.planetary_data,
+            st.session_state.houses_data,
+            st.session_state.birth_info
+        )
+        
+        st.download_button(
+            label="⬇️ Download Text",
+            data=text_report,
+            file_name="horoscope_report.txt",
+            mime="text/plain",
+            key="text_download"
+        )
+    except Exception as e:
+        st.error(f"Error generating text report: {str(e)}")
 
 def export_csv_data():
     if 'planetary_data' not in st.session_state:
         st.warning("Please calculate a chart first.")
         return
         
-    planets_csv, houses_csv = st.session_state.export_manager.generate_csv_data(
-        st.session_state.planetary_data,
-        st.session_state.houses_data,
-        st.session_state.birth_info
-    )
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.download_button(
-            label="⬇️ Planets CSV",
-            data=planets_csv,
-            file_name="planetary_data.csv",
-            mime="text/csv"
+    try:
+        planets_csv, houses_csv = st.session_state.export_manager.generate_csv_data(
+            st.session_state.planetary_data,
+            st.session_state.houses_data,
+            st.session_state.birth_info
         )
-    
-    with col2:
-        st.download_button(
-            label="⬇️ Houses CSV",
-            data=houses_csv,
-            file_name="houses_data.csv",
-            mime="text/csv"
-        )
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.download_button(
+                label="⬇️ Planets CSV",
+                data=planets_csv,
+                file_name="planetary_data.csv",
+                mime="text/csv",
+                key="planets_csv"
+            )
+        
+        with col2:
+            st.download_button(
+                label="⬇️ Houses CSV",
+                data=houses_csv,
+                file_name="houses_data.csv",
+                mime="text/csv",
+                key="houses_csv"
+            )
+    except Exception as e:
+        st.error(f"Error generating CSV: {str(e)}")
 
 def render_aspects_tab():
     st.header("⭐ Astrological Aspects")
     
-    if 'planetary_data' not in st.session_state:
+    if 'aspects_data' not in st.session_state:
         st.warning("⚠️ Please calculate a chart first.")
         return
     
-    # Calculate aspects
-    aspects = st.session_state.calculator.calculate_aspects(st.session_state.planetary_data)
+    aspects = st.session_state.aspects_data
     
     # Display aspects
     st.subheader("🔍 Detected Aspects")
@@ -339,15 +337,77 @@ def render_aspects_tab():
         return
     
     for aspect in aspects:
-        with st.container():
-            col1, col2, col3 = st.columns([3, 2, 1])
+        with st.expander(f"{aspect['symbol']} {aspect['planet1']} {aspect['aspect']} {aspect['planet2']} ({aspect['orb']}° orb)"):
+            col1, col2 = st.columns([1, 3])
+            
             with col1:
-                st.write(f"**{aspect['planet1']}** {aspect['aspect']} **{aspect['planet2']}**")
+                st.metric("Strength", aspect['strength'])
+                st.metric("Orb", f"{aspect['orb']}°")
+            
             with col2:
-                orb_color = "🟢" if aspect['orb'] <= 1 else "🟡" if aspect['orb'] <= 3 else "🔴"
-                st.write(f"{orb_color} {aspect['orb']:.2f}° orb")
-            with col3:
-                st.write(f"*{aspect['strength']}*")
+                st.write("**Interpretation:**")
+                st.info(aspect['interpretation'])
+
+def render_interpretation_tab():
+    st.header("📖 Horoscope Interpretation")
+    
+    if 'planetary_data' not in st.session_state:
+        st.warning("⚠️ Please calculate a chart first.")
+        return
+    
+    # Generate interpretation
+    interpretation = st.session_state.calculator.generate_full_interpretation(
+        st.session_state.planetary_data,
+        st.session_state.houses_data,
+        st.session_state.birth_info
+    )
+    
+    # Display interpretation in a nice container
+    st.subheader("🌠 Your Personal Horoscope")
+    
+    with st.container():
+        st.markdown("""
+        <div style='
+            background: rgba(255,255,255,0.1); 
+            border: 1px solid #f1c40f; 
+            border-radius: 10px; 
+            padding: 20px; 
+            margin: 10px 0;
+        '>
+        """, unsafe_allow_html=True)
+        
+        lines = interpretation.split('\n')
+        for line in lines:
+            if line.startswith('🌟') or line.startswith('🪐') or line.startswith('🏠') or line.startswith('🌌'):
+                st.markdown(f"**{line}**")
+            elif '=' in line:
+                st.markdown(f"`{line}`")
+            else:
+                st.write(line)
+        
+        st.markdown("</div>", unsafe_allow_html=True)
+    
+    # Additional planetary interpretations
+    st.subheader("🪐 Planetary Insights")
+    
+    planetary_data = st.session_state.planetary_data
+    for planet in ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars']:
+        if planet in planetary_data:
+            data = planetary_data[planet]
+            interpretation = st.session_state.calculator.get_planet_interpretation(planet, data['sign'])
+            
+            with st.container():
+                st.markdown(f"**{planet} in {data['sign']}**")
+                st.write(interpretation)
+    
+    # Download interpretation
+    st.download_button(
+        label="📥 Download Full Interpretation",
+        data=interpretation,
+        file_name="horoscope_interpretation.txt",
+        mime="text/plain",
+        key="interpretation_download"
+    )
 
 def render_settings_tab():
     st.header("⚙️ Settings & Configuration")
@@ -360,6 +420,10 @@ def render_settings_tab():
     orb_tight = st.number_input("Tight Orb", value=1.0, step=0.5)
     orb_medium = st.number_input("Medium Orb", value=3.0, step=0.5)
     orb_wide = st.number_input("Wide Orb", value=6.0, step=0.5)
+    
+    st.subheader("🔧 Advanced Options")
+    show_minor_aspects = st.checkbox("Show Minor Aspects", value=False)
+    include_asteroids = st.checkbox("Include Asteroids", value=False)
     
     if st.button("💾 Save Settings", type="primary"):
         st.success("Settings saved successfully!")
@@ -383,11 +447,11 @@ def show_share_options():
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        st.button("📧 Email")
+        st.button("📧 Email", key="email_btn")
     with col2:
-        st.button("🐦 Twitter")
+        st.button("🐦 Twitter", key="twitter_btn")
     with col3:
-        st.button("💬 WhatsApp")
+        st.button("💬 WhatsApp", key="whatsapp_btn")
 
 if __name__ == "__main__":
     main()
