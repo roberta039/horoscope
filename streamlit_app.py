@@ -36,26 +36,6 @@ def main():
     
     with tab4:
         render_settings_tab()
-
-def render_birth_data_tab():
-    st.header("📊 Enter Birth Information")
-    
-    with st.container():
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            birth_date = st.date_input("📅 Date of Birth", datetime.now())
-            birth_time = st.time_input("⏰ Time of Birth", datetime.now().time())
-            birth_place = st.text_input("🌍 Place of Birth", "Zagreb, Croatia")
-        
-        with col2:
-            latitude = st.number_input("📍 Latitude", value=45.8150, format="%.4f")
-            longitude = st.number_input("📍 Longitude", value=15.9819, format="%.4f")
-            house_system = st.selectbox("🏠 House System", ["Placidus", "Koch", "Equal", "Whole Sign"])
-    
-    if st.button("🧮 Calculate Chart", type="primary", use_container_width=True):
-        calculate_chart(birth_date, birth_time, birth_place, latitude, longitude, house_system)
-
 # Continuă cu următoarele funcții...
 def calculate_chart(birth_date, birth_time, birth_place, latitude, longitude, house_system):
     with st.spinner("🔮 Calculating planetary positions..."):
