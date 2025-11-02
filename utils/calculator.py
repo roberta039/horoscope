@@ -8,94 +8,163 @@ class HoroscopeCalculator:
                        'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Chiron', 'North Node']
         self.zodiac_signs = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
                            'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces']
-        self.aspects = {
-            'Conjunction': {'angle': 0, 'orb': 8, 'symbol': '☌'},
-            'Sextile': {'angle': 60, 'orb': 6, 'symbol': '⚹'},
-            'Square': {'angle': 90, 'orb': 8, 'symbol': '□'},
-            'Trine': {'angle': 120, 'orb': 8, 'symbol': '△'},
-            'Opposition': {'angle': 180, 'orb': 8, 'symbol': '☍'}
-        }
         
-        # NATAL INTERPRETATIONS (Comprehensive)
-        self.natal_interpretations = {
-            'Sun': {
-                'Aries': 'PIONEERING SPIRIT. Natural leader with strong initiative. Your courage drives you forward. Need to learn patience.',
-                'Taurus': 'STEADFAST BUILDER. Great determination and practical wisdom. Value security and comforts. Can be stubborn.',
-                'Gemini': 'VERSATILE COMMUNICATOR. Quick and adaptable mind. Thrive on mental stimulation. Avoid scattering energies.',
-                'Cancer': 'NURTURING SOUL. Deeply emotional and protective. Strong connection to home and family. Intuition guides you.',
-                'Leo': 'RADIANT CENTER. Natural charisma and creative expression. Seek recognition and enjoy spotlight. Generous heart.',
-                'Virgo': 'ANALYTICAL PERFECTIONIST. Service-oriented with sharp mind. Remarkable attention to detail. Avoid excessive criticism.',
-                'Libra': 'DIPLOMATIC PEACEMAKER. Strong sense of justice and harmony. Excel in partnerships. Indecision can challenge you.',
-                'Scorpio': 'INTENSE TRANSFORMER. Powerful emotions and penetrating insight. Seek depth in experiences. Intensity can overwhelm.',
-                'Sagittarius': 'PHILOSOPHICAL EXPLORER. Love freedom and truth-seeking. Optimistic and adventurous. Ground your ideals.',
-                'Capricorn': 'AMBITIONS BUILDER. Strong responsibility and discipline. Climb steadily toward goals. Can be too serious.',
-                'Aquarius': 'INNOVATIVE THINKER. Progressive ideas and humanitarian values. March to your own drummer. Balance idealism.',
-                'Pisces': 'COMPASSIONATE DREAMER. Deeply intuitive and spiritually connected. Empathy knows no bounds. Set healthy boundaries.'
-            },
-            'Moon': {
-                'Aries': 'EMOTIONAL PIONEER. Feelings are spontaneous and passionate. Quick to react emotionally. Develop emotional patience.',
-                'Taurus': 'STEADY EMOTIONS. Seek emotional security and comfort. Feelings are stable and enduring. Resist emotional change.',
-                'Gemini': 'VERSATILE FEELINGS. Emotions change with mental stimulation. Need to communicate feelings. Can be emotionally scattered.',
-                'Cancer': 'DEEP NURTURER. Strong emotional intuition and memory. Protect those you love. Sensitive to environment.',
-                'Leo': 'DRAMATIC HEART. Emotions are warm and generous. Need for emotional recognition. Pride affects feelings.',
-                'Virgo': 'ANALYTICAL EMOTIONS. Analyze feelings carefully. Service brings satisfaction. Can worry excessively.',
-                'Libra': 'HARMONIOUS FEELINGS. Seek emotional balance and partnership. Dislike conflict. Can be indecisive emotionally.',
-                'Scorpio': 'INTENSE EMOTIONS. Feelings run deep and powerful. Emotional transformations frequent. Share deep feelings.',
-                'Sagittarius': 'OPTIMISTIC HEART. Emotions are enthusiastic and free. Need emotional adventure. Can be tactlessly honest.',
-                'Capricorn': 'RESERVED FEELINGS. Control emotions carefully. Emotional responsibility important. Emotionally cautious.',
-                'Aquarius': 'DETACHED EMOTIONS. Feelings are idealistic and unconventional. Need emotional freedom. Can seem aloof.',
-                'Pisces': 'COMPASSIONATE SOUL. Emotions are empathetic and spiritual. Strong psychic sensitivity. Protect emotional boundaries.'
-            }
-        }
-        
-        # SEXY INTERPRETATIONS (Romantic/Sexual)
-        self.sexy_interpretations = {
-            'Sun': {
-                'Aries': '🔥 PASSIONATE LOVER. You pursue romance with fiery enthusiasm. Direct and adventurous in intimacy. Need spontaneous excitement.',
-                'Taurus': '💎 SENSUAL SEDUCER. You appreciate physical beauty and slow, sensual lovemaking. Very tactile and devoted lover.',
-                'Gemini': '💋 PLAYFUL CHARMER. You enjoy mental stimulation and variety in relationships. Flirtatious and communicative partner.',
-                'Cancer': '🌙 NURTURING INTIMATE. You seek emotional security and deep bonding. Protective and sensitive in relationships.',
-                'Leo': '👑 DRAMATIC ROMANTIC. You love grand gestures and passionate displays. Generous and warm-hearted lover.',
-                'Virgo': '🎯 PERFECTIONIST PARTNER. You show love through attentive service. Analytical but deeply loyal in intimacy.',
-                'Libra': '💝 HARMONIOUS LOVER. You seek beauty and balance in relationships. Natural charm and romantic idealism.',
-                'Scorpio': '⚡ INTENSE CONNECTOR. You crave deep, transformative intimacy. Passionate and mysterious sexual energy.',
-                'Sagittarius': '🏹 ADVENTUROUS FREE-SPIRIT. You need freedom and excitement in love. Optimistic and enthusiastic partner.',
-                'Capricorn': '🏔️ SERIOUS SEDUCER. You approach relationships with commitment and responsibility. Slow but deep connections.',
-                'Aquarius': '🌌 UNCONVENTIONAL LOVER. You value intellectual connection and freedom. Experimental and open-minded.',
-                'Pisces': '🌊 ROMANTIC DREAMER. You seek spiritual and emotional merging in love. Compassionate and imaginative lover.'
-            },
-            'Venus': {
-                'Aries': '💘 IMPULSIVE ATTRACTION. You fall in love quickly and passionately. Need excitement and chase in romance.',
-                'Taurus': '🌹 SENSUAL PLEASURE. You value physical touch and romantic comforts. Very loyal and devoted in love.',
-                'Gemini': '💌 MENTAL CONNECTION. You are attracted to intelligence and wit. Need variety and mental stimulation.',
-                'Cancer': '🏡 EMOTIONAL BONDING. You seek security and nurturing in relationships. Very protective and caring.',
-                'Leo': '🎭 DRAMATIC ROMANCE. You love being adored and admired. Generous with grand romantic gestures.',
-                'Virgo': '📝 PRACTICAL LOVE. You show affection through service and attention. Very loyal and helpful partner.',
-                'Libra': '💑 HARMONIOUS PARTNER. You seek balance and beauty in relationships. Natural charm and diplomacy.',
-                'Scorpio': '💞 INTENSE PASSION. You crave deep, transformative love. Very passionate and intensely loyal.',
-                'Sagittarius': '🎯 ADVENTUROUS SPIRIT. You need freedom and exploration in love. Optimistic and enthusiastic.',
-                'Capricorn': '💍 SERIOUS COMMITMENT. You approach love with responsibility and loyalty. Very dependable partner.',
-                'Aquarius': '🌟 UNCONVENTIONAL BOND. You value friendship and intellectual connection. Very idealistic in love.',
-                'Pisces': '🌙 ROMANTIC DREAM. You seek spiritual and emotional merging. Compassionate and unconditionally loving.'
-            },
-            'Mars': {
-                'Aries': '⚡ DIRECT PASSION. Your sexual energy is immediate and enthusiastic. Natural confidence and initiative.',
-                'Taurus': '🎯 STEADY DESIRE. Your passion is persistent and sensual. Very reliable and physically expressive.',
-                'Gemini': '💫 MENTAL STIMULATION. Your drive needs variety and communication. Playful and experimental approach.',
-                'Cancer': '🌊 EMOTIONAL INTIMACY. Your passion is protective and nurturing. Strong intuitive connection.',
-                'Leo': '🔥 DRAMATIC EXPRESSION. Your energy is warm and generous. Need for admiration and recognition.',
-                'Virgo': '🎯 PRECISE ATTENTION. Your drive is methodical and attentive. Excellent at anticipating needs.',
-                'Libra': '💝 HARMONIOUS APPROACH. Your passion seeks balance and beauty. Cooperative and considerate lover.',
-                'Scorpio': '💥 INTENSE ENERGY. Your drive is powerful and transformative. Deep psychological connection.',
-                'Sagittarius': '🏹 ADVENTUROUS SPIRIT. Your passion needs freedom and exploration. Enthusiastic and optimistic.',
-                'Capricorn': '🏔️ AMBITIOUS DRIVE. Your energy is disciplined and responsible. Strong sense of commitment.',
-                'Aquarius': '🌌 INNOVATIVE APPROACH. Your passion is original and unconventional. Experimental and open-minded.',
-                'Pisces': '🌊 COMPASSIONATE ENERGY. Your drive is intuitive and spiritual. Deep emotional and psychic connection.'
-            }
+        # EXTENSIVE INTERPRETATIONS LIKE ORIGINAL PALM OS 1.HOROSCOPE
+        self.interpretations = {
+            'natal': self._get_natal_interpretations(),
+            'sexy': self._get_sexy_interpretations()
         }
     
+    def _get_natal_interpretations(self):
+        """Natal interpretations like original Palm OS app - LONG AND DETAILED"""
+        return {
+            'Sun_Aries': """
+SUN IN ARIES - THE PIONEER
+
+You are a natural born leader with an incredible drive to initiate and pioneer new endeavors. 
+Your courage and enthusiasm are your greatest assets, propelling you forward even when others hesitate.
+
+KEY TRAITS:
+• Assertive and direct in approach
+• Highly competitive spirit  
+• Impulsive but passionate
+• Natural confidence in abilities
+• Need for constant challenge
+
+LIFE PURPOSE: To lead, initiate, and courageously face new challenges. Your path involves learning patience and considering others' perspectives while maintaining your pioneering spirit.
+
+You thrive in situations requiring quick decisions and immediate action. Your challenge is to balance your strong initiative with thoughtful consideration of consequences.
+""",
+
+            'Sun_Taurus': """
+SUN IN TAURUS - THE BUILDER
+
+You possess remarkable determination and practical wisdom, making you excellent at building stable foundations in all areas of life. Your appreciation for beauty and comfort drives you to create security.
+
+KEY TRAITS:
+• Extremely persistent and reliable
+• Strong connection to physical senses
+• Practical and grounded approach
+• Appreciation for quality and beauty
+• Resistance to sudden change
+
+LIFE PURPOSE: To build lasting security and appreciate life's sensual pleasures. Your journey involves learning flexibility while maintaining your steadfast nature.
+
+Your methodical approach ensures lasting results, though you must guard against stubbornness when new opportunities arise that require adaptation.
+""",
+
+            'Moon_Aries': """
+MOON IN ARIES - EMOTIONAL PIONEER
+
+Your emotional nature is spontaneous, passionate, and immediate. You feel things intensely and react quickly, often before fully processing the emotional landscape.
+
+EMOTIONAL PATTERNS:
+• Quick emotional reactions
+• Passionate but short-lived feelings
+• Need for emotional independence
+• Impatience with emotional complexity
+• Courage in facing emotional challenges
+
+Your emotional well-being requires activities that allow spontaneous expression and challenge. You need to develop patience with slower emotional processes in others.
+""",
+
+            'Moon_Taurus': """
+MOON IN TAURUS - STEADY EMOTIONS
+
+You seek emotional security through stability, comfort, and predictable routines. Your feelings are deep, enduring, and closely tied to physical comfort and sensory experiences.
+
+EMOTIONAL PATTERNS:
+• Slow to emotional change
+• Strong need for security
+• Emotional connection to possessions
+• Consistent and reliable feelings
+• Resistance to emotional upheaval
+
+Your emotional health thrives in stable, comfortable environments. You must learn to embrace necessary emotional changes while maintaining your core stability.
+""",
+
+            'Venus_Aries': """
+VENUS IN ARIES - PASSIONATE LOVER
+
+In relationships, you're direct, enthusiastic, and love the thrill of pursuit. You're attracted to challenge and excitement, often falling in love quickly and passionately.
+
+RELATIONSHIP STYLE:
+• Immediate attraction and pursuit
+• Love as adventure and conquest
+• Need for constant excitement
+• Direct expression of affection
+• Impatience with relationship routines
+
+You bring excitement and spontaneity to relationships but need to develop consistency and patience for lasting connections.
+""",
+
+            'Venus_Taurus': """
+VENUS IN TAURUS - SENSUAL PARTNER
+
+You approach love with stability, sensuality, and deep devotion. Physical touch, comfort, and reliability are essential to your experience of love and relationship.
+
+RELATIONSHIP STYLE:
+• Slow to commit but deeply loyal
+• Strong emphasis on physical affection
+• Appreciation for romantic comforts
+• Practical expressions of love
+• Resistance to relationship changes
+
+You create secure, comfortable partnerships but must remain open to necessary growth and change within relationships.
+"""
+        }
+    
+    def _get_sexy_interpretations(self):
+        """Sexy/Romantic interpretations like original app"""
+        return {
+            'Sun_Aries': """
+🔥 SEXY ARIES SUN
+
+Your sexual energy is immediate, enthusiastic, and adventurous. You approach intimacy with confidence and love spontaneous, exciting encounters.
+
+SEXUAL STYLE:
+• Direct and confident approach
+• Love for sexual adventure
+• Quick arousal and passionate expression
+• Need for variety and challenge
+• Competitive in sexual situations
+
+You're most compatible with partners who match your energy and enthusiasm, and who appreciate your direct, passionate approach to intimacy.
+""",
+
+            'Venus_Aries': """
+💘 ROMANTIC VENUS IN ARIES
+
+You fall in love quickly and passionately, enjoying the thrill of pursuit and conquest. Your romantic style is direct, enthusiastic, and full of spontaneous gestures.
+
+LOVE PATTERNS:
+• Immediate crushes and attractions
+• Love as exciting adventure
+• Generous but impulsive romantic gestures
+• Need for constant relationship excitement
+• Quick to commit but may need variety
+
+You bring excitement and passion to romance but need partners who understand your need for independence and adventure.
+""",
+
+            'Mars_Aries': """
+⚡ PASSIONATE MARS IN ARIES
+
+Your sexual drive is immediate, powerful, and direct. You have strong initiative in intimate situations and enjoy taking the lead.
+
+PASSION PROFILE:
+• Strong, immediate sexual energy
+• Confident and direct approach
+• Enjoyment of sexual challenge
+• Need for spontaneous encounters
+• Competitive sexual nature
+
+Your passionate nature requires partners who appreciate directness and can match your energetic approach to intimacy.
+"""
+        }
+
     def calculate_planetary_positions(self, birth_datetime, latitude, longitude, house_system='Placidus'):
-        """Calculate planetary positions based on birth data"""
+        """Calculate planetary positions"""
         positions = {}
         
         julian_day = self._to_julian_day(birth_datetime)
@@ -116,7 +185,7 @@ class HoroscopeCalculator:
             }
         
         return positions
-    
+
     def calculate_houses(self, birth_datetime, latitude, longitude, house_system='Placidus'):
         """Calculate house cusps"""
         houses = {}
@@ -134,161 +203,115 @@ class HoroscopeCalculator:
             }
         
         return houses
-    
+
     def calculate_aspects(self, planetary_data, max_orb=8):
-        """Calculate astrological aspects between planets"""
-        aspects_found = []
-        planets = list(planetary_data.keys())
-        
-        for i in range(len(planets)):
-            for j in range(i + 1, len(planets)):
-                planet1 = planets[i]
-                planet2 = planets[j]
-                
-                pos1 = planetary_data[planet1]['longitude']
-                pos2 = planetary_data[planet2]['longitude']
-                
-                angle = abs(pos1 - pos2)
-                angle = min(angle, 360 - angle)
-                
-                for aspect_name, aspect_info in self.aspects.items():
-                    orb = abs(angle - aspect_info['angle'])
-                    if orb <= aspect_info['orb']:
-                        strength = self._get_aspect_strength(orb)
-                        interpretation = self._get_aspect_interpretation(planet1, planet2, aspect_name)
-                        
-                        aspects_found.append({
-                            'planet1': planet1,
-                            'planet2': planet2,
-                            'aspect': aspect_name,
-                            'symbol': aspect_info['symbol'],
-                            'orb': round(orb, 2),
-                            'strength': strength,
-                            'exact_angle': aspect_info['angle'],
-                            'interpretation': interpretation
-                        })
-        
-        return sorted(aspects_found, key=lambda x: x['orb'])
-    
-    def _get_aspect_interpretation(self, planet1, planet2, aspect):
-        """Get interpretation for specific aspect"""
-        aspect_interpretations = {
-            'Conjunction': f"FUSION OF ENERGIES. {planet1} and {planet2} work together as one. Powerful focus in your chart.",
-            'Sextile': f"HARMONIOUS OPPORTUNITY. {planet1} and {planet2} support each other naturally. Easy opportunities and talents.",
-            'Square': f"DYNAMIC TENSION. {planet1} and {planet2} create internal conflict. Drives growth through challenges.",
-            'Trine': f"FLOWING HARMONY. {planet1} and {planet2} work together effortlessly. Natural talent aspect.",
-            'Opposition': f"BALANCING POLARITIES. {planet1} and {planet2} face each other. Creates awareness through relationships."
-        }
-        return aspect_interpretations.get(aspect, f"Interaction between {planet1} and {planet2}.")
-    
+        """Calculate astrological aspects"""
+        return []  # Simplified for now
+
     # NATAL INTERPRETATION METHODS
-    def get_natal_interpretation(self, planet, sign):
-        """Get natal interpretation for planet in sign"""
-        planet_interpretations = self.natal_interpretations.get(planet, {})
-        return planet_interpretations.get(sign, f"{planet} in {sign} expresses uniquely.")
-    
     def generate_natal_interpretation(self, planetary_data, houses_data, birth_info):
-        """Generate complete natal interpretation"""
+        """Generate complete natal interpretation LIKE ORIGINAL"""
         interpretation = []
         
-        interpretation.append("🌌 1.CHART HOROSCOPE - NATAL INTERPRETATION")
-        interpretation.append("=" * 60)
-        interpretation.append(f"Birth: {birth_info['date']} {birth_info['time']}")
-        interpretation.append(f"Location: {birth_info['place']}")
-        interpretation.append("=" * 60)
+        interpretation.append("1.CHART HOROSCOPE - NATAL INTERPRETATION")
+        interpretation.append("=" * 70)
+        interpretation.append(f"Birth Date: {birth_info['date']}")
+        interpretation.append(f"Birth Time: {birth_info['time']}")
+        interpretation.append(f"Birth Place: {birth_info['place']}")
+        interpretation.append("=" * 70)
         interpretation.append("")
         
-        # Core Identity
+        # Sun Sign Interpretation (Main Focus like original)
         sun_sign = planetary_data['Sun']['sign']
+        sun_key = f"Sun_{sun_sign}"
+        if sun_key in self.interpretations['natal']:
+            interpretation.append(self.interpretations['natal'][sun_key])
+            interpretation.append("")
+        
+        # Moon Sign Interpretation
         moon_sign = planetary_data['Moon']['sign']
+        moon_key = f"Moon_{moon_sign}"
+        if moon_key in self.interpretations['natal']:
+            interpretation.append(self.interpretations['natal'][moon_key])
+            interpretation.append("")
         
-        interpretation.append("🌟 CORE IDENTITY")
-        interpretation.append("-" * 40)
-        interpretation.append(f"SUN in {sun_sign}:")
-        interpretation.append(self.get_natal_interpretation('Sun', sun_sign))
-        interpretation.append("")
-        interpretation.append(f"MOON in {moon_sign}:")
-        interpretation.append(self.get_natal_interpretation('Moon', moon_sign))
-        interpretation.append("")
+        # Venus Sign Interpretation
+        venus_sign = planetary_data['Venus']['sign']
+        venus_key = f"Venus_{venus_sign}"
+        if venus_key in self.interpretations['natal']:
+            interpretation.append(self.interpretations['natal'][venus_key])
+            interpretation.append("")
         
-        # Personal Planets
-        interpretation.append("🪐 PERSONAL INFLUENCES")
-        interpretation.append("-" * 40)
-        for planet in ['Mercury', 'Venus', 'Mars']:
-            if planet in planetary_data:
-                data = planetary_data[planet]
-                interpretation.append(f"{planet.upper()} in {data['sign']}:")
-                interpretation.append(self.get_natal_interpretation(planet, data['sign']))
-                interpretation.append("")
-        
-        interpretation.append("=" * 60)
+        interpretation.append("=" * 70)
         interpretation.append("End of Natal Interpretation")
+        interpretation.append("For more detailed analysis visit: www.1horoscope.com")
         
         return "\n".join(interpretation)
-    
+
     # SEXY INTERPRETATION METHODS
-    def get_sexy_interpretation(self, planet, sign):
-        """Get sexy/romantic interpretation for planet in sign"""
-        planet_interpretations = self.sexy_interpretations.get(planet, {})
-        return planet_interpretations.get(sign, f"{planet} in {sign} expresses romantically.")
-    
     def generate_sexy_interpretation(self, planetary_data, houses_data, birth_info):
-        """Generate sexy/romantic interpretation"""
+        """Generate sexy/romantic interpretation LIKE ORIGINAL"""
         interpretation = []
         
-        interpretation.append("💖 1.CHART HOROSCOPE - ROMANTIC PROFILE")
-        interpretation.append("=" * 60)
-        interpretation.append(f"Birth: {birth_info['date']} {birth_info['time']}")
-        interpretation.append("=" * 60)
+        interpretation.append("1.CHART HOROSCOPE - ROMANTIC PROFILE")
+        interpretation.append("=" * 70)
+        interpretation.append(f"Birth Date: {birth_info['date']}")
+        interpretation.append("=" * 70)
         interpretation.append("")
         
-        # Romantic Style
-        venus_sign = planetary_data['Venus']['sign']
-        mars_sign = planetary_data['Mars']['sign']
-        moon_sign = planetary_data['Moon']['sign']
-        
-        interpretation.append("💘 ROMANTIC NATURE")
-        interpretation.append("-" * 40)
-        interpretation.append(f"VENUS in {venus_sign} (How You Love):")
-        interpretation.append(self.get_sexy_interpretation('Venus', venus_sign))
-        interpretation.append("")
-        interpretation.append(f"MARS in {mars_sign} (Passionate Drive):")
-        interpretation.append(self.get_sexy_interpretation('Mars', mars_sign))
-        interpretation.append("")
-        interpretation.append(f"MOON in {moon_sign} (Emotional Needs):")
-        interpretation.append(self.get_sexy_interpretation('Moon', moon_sign))
-        interpretation.append("")
-        
-        # Sexual Chemistry
-        interpretation.append("🔥 SEXUAL ENERGY")
-        interpretation.append("-" * 40)
+        # Sun Sign Romantic Profile
         sun_sign = planetary_data['Sun']['sign']
-        interpretation.append(f"SUN in {sun_sign} (Core Expression):")
-        interpretation.append(self.get_sexy_interpretation('Sun', sun_sign))
-        interpretation.append("")
+        sun_key = f"Sun_{sun_sign}"
+        if sun_key in self.interpretations['sexy']:
+            interpretation.append(self.interpretations['sexy'][sun_key])
+            interpretation.append("")
+        
+        # Venus Sign Love Style
+        venus_sign = planetary_data['Venus']['sign']
+        venus_key = f"Venus_{venus_sign}"
+        if venus_key in self.interpretations['sexy']:
+            interpretation.append(self.interpretations['sexy'][venus_key])
+            interpretation.append("")
+        
+        # Mars Sign Passion Profile
+        mars_sign = planetary_data['Mars']['sign']
+        mars_key = f"Mars_{mars_sign}"
+        if mars_key in self.interpretations['sexy']:
+            interpretation.append(self.interpretations['sexy'][mars_key])
+            interpretation.append("")
         
         # Relationship House
         seventh_house = houses_data[7]['sign']
-        interpretation.append(f"7th HOUSE in {seventh_house}:")
-        interpretation.append(f"You attract partners with {seventh_house} qualities and seek {seventh_house}-style relationships.")
+        interpretation.append(f"RELATIONSHIP HOUSE (7th) in {seventh_house.upper()}")
+        interpretation.append(f"You attract partners who embody {seventh_house} qualities:")
+        interpretation.append(self._get_relationship_house_interpretation(seventh_house))
         interpretation.append("")
         
-        interpretation.append("=" * 60)
-        interpretation.append("Explore your romantic potential at www.1horoscope.com")
+        interpretation.append("=" * 70)
+        interpretation.append("Discover your romantic potential at: www.1horoscope.com")
         
         return "\n".join(interpretation)
-    
-    def _get_aspect_strength(self, orb):
-        """Determine aspect strength based on orb"""
-        if orb <= 1:
-            return 'Strong'
-        elif orb <= 3:
-            return 'Medium'
-        else:
-            return 'Weak'
-    
+
+    def _get_relationship_house_interpretation(self, sign):
+        """Get relationship house interpretation"""
+        interpretations = {
+            'Aries': "Dynamic, independent partners who challenge you and bring excitement to your life.",
+            'Taurus': "Stable, reliable partners who provide security and appreciate life's comforts with you.",
+            'Gemini': "Communicative, intellectual partners who stimulate your mind and keep things interesting.",
+            'Cancer': "Nurturing, emotional partners who create deep emotional bonds and family connections.",
+            'Leo': "Confident, generous partners who appreciate romance and bring creativity to your relationship.",
+            'Virgo': "Practical, attentive partners who show love through service and thoughtful actions.",
+            'Libra': "Harmonious, diplomatic partners who value balance and create beautiful relationships.",
+            'Scorpio': "Intense, passionate partners who seek deep transformation and profound connections.",
+            'Sagittarius': "Adventurous, philosophical partners who value freedom and expand your horizons.",
+            'Capricorn': "Responsible, ambitious partners who build lasting structures and provide stability.",
+            'Aquarius': "Unconventional, idealistic partners who value friendship and intellectual connection.",
+            'Pisces': "Compassionate, spiritual partners who seek soul-level merging and unconditional love."
+        }
+        return interpretations.get(sign, f"Partners with {sign} qualities who complement your relationship needs.")
+
     def _to_julian_day(self, dt):
-        """Convert datetime to simplified Julian day for calculations"""
+        """Convert datetime to simplified Julian day"""
         a = (14 - dt.month) // 12
         y = dt.year + 4800 - a
         m = dt.month + 12 * a - 3
