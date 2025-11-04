@@ -1,65 +1,134 @@
 import streamlit as st
 import datetime
 from datetime import datetime
-import flatlib
-from flatlib import const
-from flatlib.chart import Chart
-from flatlib.datetime import Datetime
-from flatlib.geopos import GeoPos
+import swisseph as swe
+import math
 import pandas as pd
+
+# Inițializare Swiss Ephemeris
+swe.set_ephe_path('/usr/share/swisseph:/var/lib/swisseph')
 
 def main():
     st.set_page_config(page_title="1.Horoscope", layout="wide", page_icon="♈")
     
     # Inițializare session state
-    if 'chart' not in st.session_state:
-        st.session_state.chart = None
+    if 'chart_data' not in st.session_state:
+        st.session_state.chart_data = None
     if 'birth_data' not in st.session_state:
         st.session_state.birth_data = {}
     
-    # Sidebar cu meniul principal
+    # Sidebar meniu
     with st.sidebar:
         st.title("♈ 1.Horoscope")
         st.markdown("---")
-        
-        menu_option = st.radio(
-            "Main Menu",
-            ["Data Input", "Chart", "Aspects", "Positions", "Interpretation", "About"]
-        )
+        menu_option = st.radio("Main Menu", ["Data Input", "Chart", "Positions", "Aspects", "Interpretation", "About"])
     
     if menu_option == "Data Input":
         data_input_form()
     elif menu_option == "Chart":
         display_chart()
-    elif menu_option == "Aspects":
-        display_aspects()
     elif menu_option == "Positions":
         display_positions()
+    elif menu_option == "Aspects":
+        display_aspects()
     elif menu_option == "Interpretation":
         display_interpretation()
     elif menu_option == "About":
         display_about()
 
 def calculate_chart(birth_data):
-    """Calculează harta astrologică folosind flatlib"""
+    """Calculează harta astrologică folosind Swiss Ephemeris"""
     try:
-        # Convertire date pentru flatlib
-        date_str = birth_data['date'].strftime('%Y/%m/%d')
-        time_str = birth_data['time'].strftime('%H:%M:%S')
-        datetime_str = f"{date_str} {time_str}"
+        # Convertire date
+        birth_datetime = datetime.combine(birth_data['date'], birth_data['time'])
+        julian_day = swe.julday(
+            birth_datetime.year, 
+            birth_datetime.month, 
+            birth_datetime.day,
+            birth_datetime.hour + birth_datetime.minute/60.0
+        )
         
-        # Creare obiecte flatlib
-        dt = Datetime(datetime_str, birth_data['time_zone'].replace('GMT', ''))
-        pos = GeoPos(birth_data['lat_deg'], birth_data['lon_deg'])
+        # Calcul poziții planetare
+        planets = {
+            'Sun': swe.SUN,
+            'Moon': swe.MOON, 
+            'Mercury': swe.MERCURY,
+            'Venus': swe.VENUS,
+            'Mars': swe.MARS,
+            'Jupiter': swe.JUPITER,
+            'Saturn': swe.SATURN,
+            'Uranus': swe.URANUS,
+            'Neptune': swe.NEPTUNE,
+            'Pluto': swe.PLUTO
+        }
         
-        # Calculare chart cu sistemul de case Placidus
-        chart = Chart(dt, pos, hsys=const.HOUSES_PLACIDUS)
+        positions = {}
+        for name, planet_id in planets.items():
+            # Calcul poziție
+            result = swe.calc_ut(julian_day, planet_id)
+            longitude = math.degrees(result[0])
+            
+            # Convertire în semn zodiacal
+            sign_num = int(longitude / 30)
+            sign_pos = longitude % 30
+            degrees = int(sign_pos)
+            minutes = int((sign_pos - degrees) * 60)
+            
+            signs = ['ARI', 'TAU', 'GEM', 'CAN', 'LEO', 'VIR', 
+                    'LIB', 'SCO', 'SAG', 'CAP', 'AQU', 'PIS']
+            
+            positions[name] = {
+                'longitude': longitude,
+                'sign': signs[sign_num],
+                'degrees': degrees,
+                'minutes': minutes,
+                'position_str': f"{degrees:02d}°{minutes:02d}' {signs[sign_num]}"
+            }
         
-        return chart
+        # Calcul case (simplificat)
+        houses = calculate_houses(julian_day, birth_data['lat_deg'], birth_data['lon_deg'])
+        
+        return {
+            'planets': positions,
+            'houses': houses,
+            'julian_day': julian_day
+        }
         
     except Exception as e:
-        st.error(f"Eroare la calcularea chart-ului: {e}")
+        st.error(f"Error calculating chart: {e}")
         return None
+
+def calculate_houses(julian_day, lat, lon):
+    """Calcul case astrologice (simplificat)"""
+    try:
+        # Calcul ascendent și case
+        result = swe.houses(julian_day, lat, lon, b'P')
+        ascendant = math.degrees(result[0][0])
+        
+        houses = {}
+        signs = ['ARI', 'TAU', 'GEM', 'CAN', 'LEO', 'VIR', 
+                'LIB', 'SCO', 'SAG', 'CAP', 'AQU', 'PIS']
+        
+        for i in range(12):
+            house_longitude = math.degrees(result[0][i])
+            sign_num = int(house_longitude / 30)
+            sign_pos = house_longitude % 30
+            degrees = int(sign_pos)
+            minutes = int((sign_pos - degrees) * 60)
+            
+            houses[i+1] = {
+                'longitude': house_longitude,
+                'sign': signs[sign_num],
+                'degrees': degrees, 
+                'minutes': minutes,
+                'position_str': f"{degrees:02d}°{minutes:02d}' {signs[sign_num]}"
+            }
+        
+        return houses
+        
+    except Exception as e:
+        st.error(f"Error calculating houses: {e}")
+        return {}
 
 def data_input_form():
     st.header("📅 Birth Data Input")
@@ -70,16 +139,13 @@ def data_input_form():
         st.subheader("Personal Data")
         name = st.text_input("Name", "Danko")
         
-        # Data și ora nașterii
         col1a, col1b = st.columns(2)
         with col1a:
             birth_date = st.date_input("Birth Date", datetime(1956, 4, 25).date())
         with col1b:
             birth_time = st.time_input("Birth Time", datetime(1956, 4, 25, 21, 0).time())
         
-        # Fus orar
-        time_zones = [f"GMT{i:+d}" for i in range(-12, 13)]
-        time_zone = st.selectbox("Time Zone", time_zones, index=12)  # GMT-1
+        time_zone = st.selectbox("Time Zone", [f"GMT{i:+d}" for i in range(-12, 13)], index=12)
         
     with col2:
         st.subheader("Birth Place Coordinates")
@@ -93,16 +159,14 @@ def data_input_form():
             latitude_min = st.number_input("Latitude (')", min_value=0.0, max_value=59.9, value=51.0, step=0.1)
             latitude_dir = st.selectbox("Latitude Direction", ["North", "South"], index=0)
         
-        # Convertire coordonate pentru calcul
         lon = longitude_deg if longitude_dir == "East" else -longitude_deg
         lat = latitude_deg + (latitude_min / 60.0)
         lat = lat if latitude_dir == "North" else -lat
         
-        st.write(f"**Coordinates:** {lat:.2f}° {lon:.2f}°")
+        st.write(f"**Coordinates:** {lat:.2f}°N, {lon:.2f}°E")
     
     st.markdown("---")
     
-    # Buton de calcul
     if st.button("♈ Calculate Astrological Chart", type="primary", use_container_width=True):
         with st.spinner("Calculation starts - Please wait ..."):
             birth_data = {
@@ -116,47 +180,24 @@ def data_input_form():
                 'lon_display': f"{longitude_deg}°{longitude_dir}"
             }
             
-            # Calculare chart
-            chart = calculate_chart(birth_data)
+            chart_data = calculate_chart(birth_data)
             
-            if chart:
-                st.session_state.chart = chart
+            if chart_data:
+                st.session_state.chart_data = chart_data
                 st.session_state.birth_data = birth_data
                 st.success("Chart calculated successfully!")
-                
-                # Auto-navigare la chart
-                st.session_state.current_page = "Chart"
-    
-    # Butoanele de navigare
-    st.markdown("---")
-    col_buttons = st.columns(5)
-    with col_buttons[0]:
-        if st.button("📊 Chart", use_container_width=True):
-            st.session_state.current_page = "Chart"
-    with col_buttons[1]:
-        if st.button("🔄 Aspects", use_container_width=True):
-            st.session_state.current_page = "Aspects"
-    with col_buttons[2]:
-        if st.button("📍 Positions", use_container_width=True):
-            st.session_state.current_page = "Positions"
-    with col_buttons[3]:
-        if st.button("📖 Interpretation", use_container_width=True):
-            st.session_state.current_page = "Interpretation"
-    with col_buttons[4]:
-        if st.button("✏️ Data", use_container_width=True):
-            st.session_state.current_page = "Data Input"
 
 def display_chart():
     st.header("♈ Astrological Chart")
     
-    if st.session_state.chart is None:
+    if st.session_state.chart_data is None:
         st.warning("Please enter birth data and calculate chart first!")
         return
     
-    chart = st.session_state.chart
+    chart_data = st.session_state.chart_data
     birth_data = st.session_state.birth_data
     
-    # Afișare date de bază
+    # Afișare info
     col_info = st.columns(3)
     with col_info[0]:
         st.write(f"**Name:** {birth_data['name']}")
@@ -171,154 +212,47 @@ def display_chart():
     
     with col1:
         st.subheader("🌍 Planetary Positions")
-        
-        # Lista planetelor principale
-        planets = [
-            const.SUN, const.MOON, const.MERCURY, const.VENUS, const.MARS,
-            const.JUPITER, const.SATURN, const.URANUS, const.NEPTUNE, const.PLUTO
-        ]
-        
-        planet_names = {
-            const.SUN: "Sun", const.MOON: "Moon", const.MERCURY: "Mercury",
-            const.VENUS: "Venus", const.MARS: "Mars", const.JUPITER: "Jupiter",
-            const.SATURN: "Saturn", const.URANUS: "Uranus", 
-            const.NEPTUNE: "Neptune", const.PLUTO: "Pluto"
-        }
-        
-        planet_data = []
-        for planet_id in planets:
-            planet = chart.get(planet_id)
-            sign = planet.sign()
-            house = planet.house()
-            retrograde = "R" if planet.retrograde() else ""
-            
-            # Formatare poziție
-            deg = int(planet.signPos)
-            min = int((planet.signPos - deg) * 60)
-            position_str = f"{deg:02d}°{min:02d}' {sign}({house}){retrograde}"
-            
-            planet_data.append({
-                "Planet": planet_names[planet_id],
-                "Position": position_str
-            })
-        
-        # Afișare planet
-        for planet in planet_data:
-            st.write(f"**{planet['Planet']}** {planet['Position']}")
+        for planet_name, planet_data in chart_data['planets'].items():
+            st.write(f"**{planet_name}** {planet_data['position_str']}")
     
     with col2:
         st.subheader("🏠 Houses (Placidus)")
-        
-        houses_data = []
-        for i in range(1, 13):
-            house = chart.houses.get(i)
-            sign = house.sign()
-            
-            # Formatare poziție
-            deg = int(house.signPos)
-            min = int((house.signPos - deg) * 60)
-            position_str = f"{deg:02d}°{min:02d}' {sign}"
-            
-            houses_data.append({
-                "House": i,
-                "Position": position_str
-            })
-        
-        # Afișare case
-        for house in houses_data:
-            st.write(f"**{house['House']}** {house['Position']}")
-    
-    st.markdown("---")
-    st.info("🎯 Tap on any planet or house number to see detailed information")
+        for house_num, house_data in chart_data['houses'].items():
+            st.write(f"**{house_num}** {house_data['position_str']}")
 
 def display_positions():
-    st.header("📍 Detailed Planetary Positions")
+    st.header("📍 Planetary Positions")
     
-    if st.session_state.chart is None:
+    if st.session_state.chart_data is None:
         st.warning("Please calculate chart first!")
         return
     
-    chart = st.session_state.chart
+    chart_data = st.session_state.chart_data
     
-    # Tabel detaliat cu toate pozițiile
     positions_data = []
+    for planet_name, planet_data in chart_data['planets'].items():
+        positions_data.append({
+            'Planet': planet_name,
+            'Position': planet_data['position_str'],
+            'Longitude': f"{planet_data['longitude']:.2f}°"
+        })
     
-    # Obiecte astrologice
-    objects = [
-        (const.SUN, "Sun"), (const.MOON, "Moon"), (const.MERCURY, "Mercury"),
-        (const.VENUS, "Venus"), (const.MARS, "Mars"), (const.JUPITER, "Jupiter"),
-        (const.SATURN, "Saturn"), (const.URANUS, "Uranus"), (const.NEPTUNE, "Neptune"),
-        (const.PLUTO, "Pluto"), (const.NORTH_NODE, "North Node"), (const.CHIRON, "Chiron")
-    ]
-    
-    for obj_id, obj_name in objects:
-        try:
-            obj = chart.get(obj_id)
-            sign = obj.sign()
-            house = obj.house()
-            retrograde = "R" if obj.retrograde() else ""
-            
-            # Calcul grade, minute
-            deg = int(obj.signPos)
-            min = int((obj.signPos - deg) * 60)
-            
-            positions_data.append({
-                "Object": obj_name,
-                "Sign": sign,
-                "Degrees": deg,
-                "Minutes": min,
-                "House": house,
-                "Retrograde": retrograde,
-                "Full Position": f"{deg}°{min:02d}' {sign}({house}){retrograde}"
-            })
-        except:
-            continue
-    
-    # Afișare tabel
     df = pd.DataFrame(positions_data)
-    st.dataframe(
-        df[["Object", "Full Position"]],
-        use_container_width=True,
-        hide_index=True
-    )
+    st.dataframe(df, use_container_width=True, hide_index=True)
 
 def display_aspects():
     st.header("🔄 Astrological Aspects")
-    
-    if st.session_state.chart is None:
-        st.warning("Please calculate chart first!")
-        return
-    
-    chart = st.session_state.chart
-    
-    # Obține aspectele
-    aspects = chart.aspects()
-    
-    aspect_data = []
-    for aspect in aspects:
-        if aspect.active:
-            aspect_data.append({
-                "Planet 1": aspect.id1,
-                "Planet 2": aspect.id2,
-                "Aspect": aspect.type,
-                "Orb": f"{aspect.orb:.2f}°",
-                "Exact": "Yes" if aspect.exact else "No"
-            })
-    
-    if aspect_data:
-        df = pd.DataFrame(aspect_data)
-        st.dataframe(df, use_container_width=True, hide_index=True)
-    else:
-        st.info("No major aspects found")
+    st.info("Aspect calculation feature coming soon...")
+    # Implementare aspecte poate fi adăugată aici
 
 def display_interpretation():
-    st.header("📖 Interpretation Center")
+    st.header("📖 Interpretation")
     
-    if st.session_state.chart is None:
+    if st.session_state.chart_data is None:
         st.warning("Please calculate chart first!")
         return
     
-    chart = st.session_state.chart
+    chart_data = st.session_state.chart_data
     birth_data = st.session_state.birth_data
     
     col1, col2 = st.columns(2)
@@ -327,82 +261,45 @@ def display_interpretation():
         st.subheader("Birth Data")
         st.write(f"**Name:** {birth_data['name']}")
         st.write(f"**Date:** {birth_data['date']}")
-        st.write(f"**Time:** {birth_data['time']}")
         st.write(f"**Position:** {birth_data['lon_display']} {birth_data['lat_display']}")
     
     with col2:
-        st.subheader("Planetary Highlights")
-        sun = chart.get(const.SUN)
-        moon = chart.get(const.MOON)
-        asc = chart.get(const.ASC)
+        st.subheader("Sun Sign Analysis")
+        sun_data = chart_data['planets']['Sun']
+        sun_sign = sun_data['sign']
         
-        st.write(f"**Sun:** {sun.sign()} in house {sun.house()}")
-        st.write(f"**Moon:** {moon.sign()} in house {moon.house()}")
-        st.write(f"**Ascendant:** {asc.sign()}")
-    
-    st.markdown("---")
-    
-    # Interpretare bazată pe poziții
-    interpretation_type = st.selectbox(
-        "Interpretation Focus",
-        ["Natal Profile", "Personality", "Relationships", "Career", "Spiritual"]
-    )
-    
-    st.subheader(f"Interpretation: {interpretation_type}")
-    
-    # Interpretări simple bazate pe poziția Soarelui
-    sun = chart.get(const.SUN)
-    sun_sign = sun.sign()
-    
-    interpretations = {
-        "ARIES": "Energetic, pioneering, courageous. Natural leader with strong initiative.",
-        "TAURUS": "Practical, reliable, patient. Values security and comfort.",
-        "GEMINI": "Communicative, versatile, intellectual. Curious and adaptable.",
-        "CANCER": "Nurturing, emotional, protective. Strong connection to home and family.",
-        "LEO": "Confident, creative, generous. Natural performer and leader.",
-        "VIRGO": "Analytical, practical, helpful. Attention to detail and service-oriented.",
-        "LIBRA": "Diplomatic, social, harmonious. Seeks balance and partnership.",
-        "SCORPIO": "Intense, passionate, transformative. Deep emotional understanding.",
-        "SAGITTARIUS": "Adventurous, philosophical, optimistic. Seeks truth and expansion.",
-        "CAPRICORN": "Ambitious, disciplined, responsible. Builds lasting structures.",
-        "AQUARIUS": "Innovative, independent, humanitarian. Forward-thinking and original.",
-        "PISCES": "Compassionate, intuitive, artistic. Connected to spiritual realms."
-    }
-    
-    if sun_sign in interpretations:
-        st.write(f"**Sun in {sun_sign}**")
-        st.write(interpretations[sun_sign])
+        interpretations = {
+            'ARI': "Energetic, pioneering, courageous. Natural leader with strong initiative.",
+            'TAU': "Practical, reliable, patient. Values security and comfort.",
+            'GEM': "Communicative, versatile, intellectual. Curious and adaptable.",
+            'CAN': "Nurturing, emotional, protective. Strong connection to home and family.",
+            'LEO': "Confident, creative, generous. Natural performer and leader.",
+            'VIR': "Analytical, practical, helpful. Attention to detail and service-oriented.",
+            'LIB': "Diplomatic, social, harmonious. Seeks balance and partnership.",
+            'SCO': "Intense, passionate, transformative. Deep emotional understanding.",
+            'SAG': "Adventurous, philosophical, optimistic. Seeks truth and expansion.",
+            'CAP': "Ambitious, disciplined, responsible. Builds lasting structures.",
+            'AQU': "Innovative, independent, humanitarian. Forward-thinking and original.",
+            'PIS': "Compassionate, intuitive, artistic. Connected to spiritual realms."
+        }
+        
+        if sun_sign in interpretations:
+            st.write(f"**Sun in {sun_sign}**")
+            st.write(interpretations[sun_sign])
 
 def display_about():
     st.header("ℹ️ About 1.Horoscope")
-    
     st.markdown("""
     ### 1.Horoscope ver. 2.42 (Streamlit Edition)
     
     **Copyright © 1998-2001**  
     Danko Josic & Nenad Zezlina  
-    All rights reserved
     
-    ---
-    
-    **Streamlit Conversion**  
-    Modern web interface with original Palm OS functionality
-    
-    **Astrological Engine**  
-    Powered by Flatlib with Swiss Ephemeris
+    **Modern Conversion**  
+    Streamlit web interface with Swiss Ephemeris engine
     
     **Original Concept**  
-    Palm OS application for astrological calculations
-    """)
-    
-    st.info("""
-    This is unlicensed version.  
-    1.Chart is shareware. Please help us support it.
-    
-    For information on how to register check:
-    www.j-sistem.hr/online
-    or
-    www.1horoscope.com
+    Palm OS astrological application
     """)
 
 if __name__ == "__main__":
