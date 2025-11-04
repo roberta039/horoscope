@@ -47,7 +47,7 @@ def calculate_chart(birth_data):
             st.error(f"Anul {birth_datetime.year} este în afara intervalului valid (1800-2100)")
             return None
             
-        # Calcul Julian Day - CORECTAT
+        # Calcul Julian Day
         hour_decimal = birth_datetime.hour + birth_datetime.minute/60.0 + birth_datetime.second/3600.0
         julian_day = swe.julday(birth_datetime.year, birth_datetime.month, birth_datetime.day, hour_decimal)
         
@@ -80,20 +80,22 @@ def calculate_chart(birth_data):
             signs = ['ARI', 'TAU', 'GEM', 'CAN', 'LEO', 'VIR', 
                     'LIB', 'SCO', 'SAG', 'CAP', 'AQU', 'PIS']
             
-            # Calcul house simplificat (1-12)
-            house = (sign_num % 12) + 1
-            
             positions[name] = {
                 'longitude': longitude,
                 'sign': signs[sign_num],
                 'degrees': degrees,
                 'minutes': minutes,
-                'house': house,
-                'position_str': f"{degrees:02d}°{minutes:02d}' {signs[sign_num]}({house})"
+                'position_str': f"{degrees:02d}°{minutes:02d}' {signs[sign_num]}"
             }
         
-        # Calcul case (simplificat)
-        houses = calculate_houses_simple(julian_day, birth_data['lat_deg'], birth_data['lon_deg'])
+        # CALCUL CASE AVANSAT CU PLACIDUS
+        houses = calculate_houses_placidus(julian_day, birth_data['lat_deg'], birth_data['lon_deg'])
+        
+        # Calcul case pentru planete
+        for name, planet_data in positions.items():
+            planet_longitude = planet_data['longitude']
+            planet_data['house'] = get_house_for_longitude(planet_longitude, houses)
+            planet_data['position_str'] = f"{degrees:02d}°{minutes:02d}' {signs[sign_num]}({planet_data['house']})"
         
         return {
             'planets': positions,
@@ -105,16 +107,18 @@ def calculate_chart(birth_data):
         st.error(f"Eroare la calcularea chart-ului: {str(e)}")
         return None
 
-def calculate_houses_simple(julian_day, lat, lon):
-    """Calcul case astrologice simplificat"""
+def calculate_houses_placidus(julian_day, lat, lon):
+    """Calcul case astrologice folosind sistemul Placidus"""
     try:
+        # Calcul case cu Swiss Ephemeris
+        houses_result = swe.houses(julian_day, lat, lon, b'P')  # 'P' = Placidus
+        
         houses = {}
         signs = ['ARI', 'TAU', 'GEM', 'CAN', 'LEO', 'VIR', 
                 'LIB', 'SCO', 'SAG', 'CAP', 'AQU', 'PIS']
         
-        # Calcul simplificat - case egale
         for i in range(12):
-            house_longitude = (i * 30) % 360
+            house_longitude = math.degrees(houses_result[0][i]) % 360
             sign_num = int(house_longitude / 30)
             sign_pos = house_longitude % 30
             degrees = int(sign_pos)
@@ -131,8 +135,70 @@ def calculate_houses_simple(julian_day, lat, lon):
         return houses
         
     except Exception as e:
-        st.error(f"Eroare la calcularea caselor: {e}")
+        st.error(f"Eroare la calcularea caselor Placidus: {e}")
+        # Fallback la case egale
+        return calculate_houses_equal(julian_day, lat, lon)
+
+def calculate_houses_equal(julian_day, lat, lon):
+    """Calcul case egale ca fallback"""
+    try:
+        houses = {}
+        signs = ['ARI', 'TAU', 'GEM', 'CAN', 'LEO', 'VIR', 
+                'LIB', 'SCO', 'SAG', 'CAP', 'AQU', 'PIS']
+        
+        # Calcul ascendent pentru case egale
+        houses_result = swe.houses(julian_day, lat, lon, b'P')
+        asc_longitude = math.degrees(houses_result[0][0]) % 360
+        
+        for i in range(12):
+            house_longitude = (asc_longitude + (i * 30)) % 360
+            sign_num = int(house_longitude / 30)
+            sign_pos = house_longitude % 30
+            degrees = int(sign_pos)
+            minutes = int((sign_pos - degrees) * 60)
+            
+            houses[i+1] = {
+                'longitude': house_longitude,
+                'sign': signs[sign_num],
+                'degrees': degrees,
+                'minutes': minutes,
+                'position_str': f"{degrees:02d}°{minutes:02d}' {signs[sign_num]}"
+            }
+        
+        return houses
+        
+    except Exception as e:
+        st.error(f"Eroare la calcularea caselor egale: {e}")
         return {}
+
+def get_house_for_longitude(longitude, houses):
+    """Determină casa pentru o longitudine dată"""
+    try:
+        longitude = longitude % 360
+        
+        # Găsește casa corespunzătoare
+        house_numbers = list(houses.keys())
+        for i in range(len(house_numbers)):
+            current_house = house_numbers[i]
+            next_house = house_numbers[(i + 1) % 12]
+            
+            current_long = houses[current_house]['longitude']
+            next_long = houses[next_house]['longitude']
+            
+            # Ajustare pentru trecerea prin 0 grade
+            if next_long < current_long:
+                next_long += 360
+                adj_longitude = longitude if longitude >= current_long else longitude + 360
+            else:
+                adj_longitude = longitude
+            
+            if current_long <= adj_longitude < next_long:
+                return current_house
+        
+        return 1  # Fallback la casa 1
+        
+    except Exception as e:
+        return 1
 
 def calculate_aspects(chart_data):
     """Calculează aspectele astrologice dintre planete"""
@@ -183,7 +249,7 @@ def calculate_aspects(chart_data):
                     
                     if abs(diff - aspect_angle) <= orb:
                         exact_orb = abs(diff - aspect_angle)
-                        is_exact = exact_orb <= 1.0  # Considerat exact dacă orb <= 1°
+                        is_exact = exact_orb <= 1.0
                         strength = 'Strong' if aspect in major_aspects else 'Weak'
                         
                         aspects.append({
@@ -213,7 +279,6 @@ def data_input_form():
         
         col1a, col1b = st.columns(2)
         with col1a:
-            # Setează anul corect 1956
             birth_date = st.date_input("Birth Date", 
                                      datetime(1956, 4, 25).date(),
                                      min_value=datetime(1800, 1, 1).date(),
@@ -294,7 +359,7 @@ def display_chart():
             st.write(f"**{planet_name}** {planet_data['position_str']}")
     
     with col2:
-        st.subheader("🏠 Houses (Equal)")
+        st.subheader("🏠 Houses (Placidus)")
         for house_num, house_data in chart_data['houses'].items():
             st.write(f"**{house_num}** {house_data['position_str']}")
     
@@ -303,7 +368,7 @@ def display_chart():
     col_buttons = st.columns(5)
     with col_buttons[0]:
         if st.button("📊 Chart", use_container_width=True):
-            pass  # Already here
+            pass
     with col_buttons[1]:
         if st.button("🔄 Aspects", use_container_width=True):
             pass
@@ -399,148 +464,109 @@ def display_interpretation():
     col1, col2 = st.columns(2)
     
     with col1:
-        st.subheader("Birth Data")
+        st.subheader("Data")
         st.write(f"**Name:** {birth_data['name']}")
         st.write(f"**Date:** {birth_data['date']}")
         st.write(f"**Time:** {birth_data['time']}")
         st.write(f"**Position:** {birth_data['lon_display']} {birth_data['lat_display']}")
     
     with col2:
-        st.subheader("Planetary Highlights")
-        sun_data = chart_data['planets']['Sun']
-        moon_data = chart_data['planets']['Moon']
-        asc_data = chart_data['houses'][1]  # Ascendent = casa 1
+        st.subheader("Planets")
+        planets_display = [
+            f"Sun {chart_data['planets']['Sun']['position_str']}",
+            f"Moon {chart_data['planets']['Moon']['position_str']}",
+            f"Mer {chart_data['planets']['Mercury']['position_str']}",
+            f"Ven {chart_data['planets']['Venus']['position_str']}",
+            f"Mar {chart_data['planets']['Mars']['position_str']}",
+            f"Jup {chart_data['planets']['Jupiter']['position_str']}",
+            f"Sat {chart_data['planets']['Saturn']['position_str']}"
+        ]
         
-        st.write(f"**Sun:** {sun_data['sign']} in house {sun_data['house']}")
-        st.write(f"**Moon:** {moon_data['sign']} in house {moon_data['house']}")
-        st.write(f"**Ascendant:** {asc_data['sign']}")
+        for planet in planets_display:
+            st.write(planet)
     
     st.markdown("---")
     
-    # Interpretare bazată pe poziții - ACUM CU CONTENT DIFERIT
+    # Selector tip interpretare
     interpretation_type = st.selectbox(
-        "Interpretation Focus",
-        ["Natal Profile", "Personality", "Relationships", "Career", "Spiritual"]
+        "Type of interpretation",
+        ["Natal", "Sexual", "Career", "Relationships", "Spiritual"]
     )
     
+    st.markdown("---")
     st.subheader(f"Interpretation: {interpretation_type}")
     
-    sun_data = chart_data['planets']['Sun']
-    moon_data = chart_data['planets']['Moon']
-    sun_sign = sun_data['sign']
-    moon_sign = moon_data['sign']
+    # INTERPRETĂRI SPECIFICE PENTRU FIECARE PLANETĂ
+    display_planet_interpretations(chart_data, interpretation_type)
+
+def display_planet_interpretations(chart_data, interpretation_type):
+    """Afișează interpretări specifice pentru fiecare planetă"""
     
-    # INTERPRETĂRI SPECIFICE PENTRU FIECARE OPȚIUNE
-    if interpretation_type == "Natal Profile":
-        st.write("**🌞 Sun Sign Analysis**")
-        sun_interpretations = {
-            'ARI': "**Aries Sun:** You are a natural leader with pioneering spirit. Your energy and courage help you initiate new projects and take risks that others might avoid.",
-            'TAU': "**Taurus Sun:** You value stability and security above all. Practical and reliable, you build lasting foundations in all areas of life.",
-            'GEM': "**Gemini Sun:** Your curious mind and excellent communication skills make you adaptable and versatile. You thrive on mental stimulation.",
-            'CAN': "**Cancer Sun:** Family and emotional security are your priorities. You have strong nurturing instincts and deep emotional intelligence.",
-            'LEO': "**Leo Sun:** Creative and confident, you naturally attract attention. Your generosity and leadership qualities shine in social situations.",
-            'VIR': "**Virgo Sun:** Analytical and practical, you excel at organization and service. Your attention to detail is remarkable.",
-            'LIB': "**Libra Sun:** Harmony and balance drive your decisions. You're diplomatic, social, and seek meaningful partnerships.",
-            'SCO': "**Scorpio Sun:** Intense and transformative, you understand life's deeper mysteries. Your passion and determination are powerful.",
-            'SAG': "**Sagittarius Sun:** Philosophical and adventurous, you seek truth and expansion. Your optimism is infectious.",
-            'CAP': "**Capricorn Sun:** Ambitious and disciplined, you build lasting structures. Your sense of responsibility is strong.",
-            'AQU': "**Aquarius Sun:** Innovative and independent, you think outside the box. Your humanitarian ideals guide you.",
-            'PIS': "**Pisces Sun:** Compassionate and intuitive, you're connected to spiritual realms. Your artistic sensitivity is pronounced."
+    natal_interpretations = {
+        "Sun": {
+            "GEM": "Clever, bright, quickwitted, communicative, able to do many different things at once, eager to learn new subjects. Openminded, adaptable, curious, restless, confident, seldom settling down.",
+            "ARI": "Energetic, pioneering, courageous. Natural leader with strong initiative.",
+            "TAU": "Practical, reliable, patient. Values security and comfort.",
+            "CAN": "Nurturing, emotional, protective. Strong connection to home and family.",
+            "LEO": "Confident, creative, generous. Natural performer and leader.",
+            "VIR": "Analytical, practical, helpful. Attention to detail and service-oriented.",
+            "LIB": "Friendly, cordial, artistic, kind, considerate, loyal, alert, sociable, moderate, balanced in views, open-minded.",
+            "SCO": "Intense, passionate, transformative. Deep emotional understanding.",
+            "SAG": "Adventurous, philosophical, optimistic. Seeks truth and expansion.",
+            "CAP": "Ambitious, disciplined, responsible. Builds lasting structures.",
+            "AQU": "Innovative, independent, humanitarian. Forward-thinking and original.",
+            "PIS": "Compassionate, intuitive, artistic. Connected to spiritual realms."
+        },
+        "Moon": {
+            "ARI": "Energetic, ambitious, strongwilled, self-centred, impulsive, dominant & obstinate.",
+            "TAU": "Steady, patient, determined. Values comfort and security.",
+            "GEM": "Changeable, adaptable, curious. Needs mental stimulation.",
+            "CAN": "Nurturing, sensitive, protective. Strong emotional connections.",
+            "LEO": "Proud, dramatic, generous. Needs recognition and appreciation.",
+            "VIR": "Practical, analytical, helpful. Attention to emotional details.",
+            "LIB": "Harmonious, diplomatic, social. Seeks emotional balance.",
+            "SCO": "Intense, passionate, secretive. Deep emotional currents.",
+            "SAG": "Adventurous, optimistic, freedom-loving. Needs emotional expansion.",
+            "CAP": "Responsible, disciplined, reserved. Controls emotions carefully.",
+            "AQU": "Independent, unconventional, detached. Unique emotional expression.",
+            "PIS": "Compassionate, intuitive, dreamy. Sensitive emotional nature."
         }
-        
-        if sun_sign in sun_interpretations:
-            st.write(sun_interpretations[sun_sign])
-        
-        st.write("**🌙 Moon Sign Influence**")
-        st.write(f"With Moon in {moon_sign}, your emotional nature is influenced by this sign's characteristics, affecting how you process feelings and seek security.")
+    }
     
-    elif interpretation_type == "Personality":
-        st.write("**🎭 Personality Dynamics**")
-        personality_interpretations = {
-            'ARI': "**Dynamic Personality:** Your Aries energy makes you direct, enthusiastic, and competitive. You prefer taking action over waiting.",
-            'TAU': "**Steady Personality:** Your Taurus nature gives you patience and determination. You're methodical and appreciate life's comforts.",
-            'GEM': "**Versatile Personality:** Your Gemini influence makes you quick-witted and adaptable. You enjoy variety and mental challenges.",
-            'CAN': "**Nurturing Personality:** Your Cancer side makes you protective and empathetic. You're deeply connected to home and family.",
-            'LEO': "**Charismatic Personality:** Your Leo energy brings creativity and confidence. You naturally take center stage.",
-            'VIR': "**Analytical Personality:** Your Virgo influence makes you precise and helpful. You notice details others miss.",
-            'LIB': "**Diplomatic Personality:** Your Libra nature seeks harmony and fairness. You're skilled at seeing multiple perspectives.",
-            'SCO': "**Intense Personality:** Your Scorpio energy brings depth and passion. You're drawn to transformation and truth.",
-            'SAG': "**Adventurous Personality:** Your Sagittarius side loves freedom and exploration. You're philosophical and optimistic.",
-            'CAP': "**Ambitious Personality:** Your Capricorn influence makes you responsible and goal-oriented. You value achievement.",
-            'AQU': "**Innovative Personality:** Your Aquarius energy makes you original and forward-thinking. You value individuality.",
-            'PIS': "**Compassionate Personality:** Your Pisces nature brings sensitivity and intuition. You're artistic and empathetic."
+    sexual_interpretations = {
+        "Sun": {
+            "GEM": "Active, likes variety. Can try out any new technique, but gets bored easily. Sex is more fun & communication than hot passion. Sex is more mental than physical. Good at fantasy games, manual and oral techniques. Can be a good swinger.",
+            "ARI": "Quick response, instant turn-on or turn-off. Won't pull punch. Can reach peaks quickly. Capable of multiple orgasms, but impatient with long foreplay.",
+            "LIB": "Seeks change in sex, not for variety but for its own sake. Will rarely beat around the bush; insists partner deliver the goods. Can play all sides of a menage-a-trois well."
+        },
+        "Venus": {
+            "GEM": "Wants a delicate, varied touch from sensitive lover. Tickling, stroking beats hard and heavy. Appreciates artful loving for its own sake more than getting swept away in flash orgasm. Likes a verbal partner, lots of talk during sex."
+        },
+        "Mars": {
+            "VIR": "Highly specific lover, refines technique to the hilt, but may get hung up on only one or two. Skillful at using surroundings to fit in with sex. Best in known territory, however complex less of an improvisor."
         }
-        
-        if sun_sign in personality_interpretations:
-            st.write(personality_interpretations[sun_sign])
-        
-        st.write("**Key Traits:** Your personality combines solar initiative with lunar emotional responses, creating a unique blend of conscious expression and subconscious needs.")
+    }
     
-    elif interpretation_type == "Relationships":
-        st.write("**💖 Relationship Patterns**")
-        relationship_interpretations = {
-            'ARI': "**Relationship Style:** Direct and passionate. You appreciate partners who match your energy and independence.",
-            'TAU': "**Relationship Style:** Loyal and sensual. You seek stability and physical connection in partnerships.",
-            'GEM': "**Relationship Style:** Communicative and curious. Mental connection is as important as emotional bond.",
-            'CAN': "**Relationship Style:** Nurturing and protective. You create deep emotional bonds and value family life.",
-            'LEO': "**Relationship Style:** Generous and dramatic. You enjoy romance and appreciation in relationships.",
-            'VIR': "**Relationship Style:** Helpful and analytical. You show love through practical service and attention.",
-            'LIB': "**Relationship Style:** Harmonious and partnership-oriented. Balance and fairness are crucial.",
-            'SCO': "**Relationship Style:** Intense and transformative. You seek deep, soul-level connections.",
-            'SAG': "**Relationship Style:** Adventurous and freedom-loving. You need space and intellectual stimulation.",
-            'CAP': "**Relationship Style:** Responsible and committed. You build relationships that stand the test of time.",
-            'AQU': "**Relationship Style:** Independent and unconventional. You value friendship and mental connection.",
-            'PIS': "**Relationship Style:** Compassionate and spiritual. You seek soulful, empathetic connections."
-        }
-        
-        if sun_sign in relationship_interpretations:
-            st.write(relationship_interpretations[sun_sign])
-        
-        st.write("**Venus Influence:** Your approach to love and relationships is further colored by Venus's position, affecting what you find attractive and how you express affection.")
+    # Selectează setul de interpretări corespunzător
+    if interpretation_type == "Natal":
+        interpretations = natal_interpretations
+    elif interpretation_type == "Sexual":
+        interpretations = sexual_interpretations
+    else:
+        interpretations = natal_interpretations  # Fallback
     
-    elif interpretation_type == "Career":
-        st.write("**💼 Career Directions**")
-        career_interpretations = {
-            'ARI': "**Career Strengths:** Leadership, entrepreneurship, competitive fields. You excel in roles requiring initiative.",
-            'TAU': "**Career Strengths:** Finance, agriculture, arts. You thrive in stable, tangible results-oriented work.",
-            'GEM': "**Career Strengths:** Communication, teaching, media. Your adaptability serves you in dynamic environments.",
-            'CAN': "**Career Strengths:** Caregiving, real estate, hospitality. Your nurturing nature shines in service roles.",
-            'LEO': "**Career Strengths:** Management, entertainment, creative arts. You excel in visible, recognition-based work.",
-            'VIR': "**Career Strengths:** Healthcare, analysis, organization. Your precision is valuable in detailed work.",
-            'LIB': "**Career Strengths:** Law, diplomacy, arts. Your sense of balance serves mediation and aesthetics.",
-            'SCO': "**Career Strengths:** Psychology, research, crisis management. You handle intensity and transformation.",
-            'SAG': "**Career Strengths:** Education, travel, philosophy. Your love of learning guides your path.",
-            'CAP': "**Career Strengths:** Management, architecture, government. You build lasting structures and systems.",
-            'AQU': "**Career Strengths:** Technology, innovation, social causes. Your vision shapes future directions.",
-            'PIS': "**Career Strengths:** Arts, healing, spirituality. Your intuition guides creative and compassionate work."
-        }
-        
-        if sun_sign in career_interpretations:
-            st.write(career_interpretations[sun_sign])
-        
-        st.write("**Midheaven Influence:** Your career path and public image are also influenced by your Midheaven (10th house), indicating your vocational calling and life direction.")
-    
-    elif interpretation_type == "Spiritual":
-        st.write("**🌌 Spiritual Path**")
-        spiritual_interpretations = {
-            'ARI': "**Spiritual Focus:** Courage and initiation. Your path involves learning to lead with compassion.",
-            'TAU': "**Spiritual Focus:** Grounding and manifestation. You learn to balance material and spiritual worlds.",
-            'GEM': "**Spiritual Focus:** Communication and learning. Your path involves integrating diverse knowledge.",
-            'CAN': "**Spiritual Focus:** Emotional healing and nurturing. You develop unconditional compassion.",
-            'LEO': "**Spiritual Focus:** Creative expression and heart opening. You learn authentic self-expression.",
-            'VIR': "**Spiritual Focus:** Service and purification. Your path involves seeing divinity in details.",
-            'LIB': "**Spiritual Focus:** Harmony and relationship balance. You learn the art of peaceful coexistence.",
-            'SCO': "**Spiritual Focus:** Transformation and rebirth. Your path involves deep psychological healing.",
-            'SAG': "**Spiritual Focus:** Truth-seeking and expansion. You explore philosophical and spiritual systems.",
-            'CAP': "**Spiritual Focus:** Discipline and structure. You learn to build spiritual foundations.",
-            'AQU': "**Spiritual Focus:** Innovation and collective consciousness. Your path involves future vision.",
-            'PIS': "**Spiritual Focus:** Unity and compassion. You experience the interconnectedness of all life."
-        }
-        
-        if sun_sign in spiritual_interpretations:
-            st.write(spiritual_interpretations[sun_sign])
-        
-        st.write("**Neptune Influence:** Your spiritual development and connection to the transcendent are further shaped by Neptune's position in your chart, indicating your ideals and mystical inclinations.")
+    # Afișează interpretări pentru planetele relevante
+    for planet_name in ["Sun", "Moon", "Mercury", "Venus", "Mars"]:
+        if planet_name in chart_data['planets']:
+            planet_data = chart_data['planets'][planet_name]
+            planet_sign = planet_data['sign']
+            
+            if (planet_name in interpretations and 
+                planet_sign in interpretations[planet_name]):
+                
+                st.write(f"**** {planet_name}{planet_sign}")
+                st.write(interpretations[planet_name][planet_sign])
+                st.write("")
 
 def display_about():
     st.header("ℹ️ About 1.Horoscope")
@@ -555,10 +581,12 @@ def display_about():
     
     **Features**  
     - Accurate planetary positions using Swiss Ephemeris
-    - Natal chart calculations
-    - House system (Equal houses)
+    - Natal chart calculations with Placidus houses
     - Aspect calculations
-    - Detailed interpretations
+    - Detailed interpretations (Natal & Sexual)
+    
+    **House System**  
+    Placidus - the most widely used house system in Western astrology
     
     **Original Concept**  
     Palm OS astrological application "1.Chart"
