@@ -6,7 +6,7 @@ import math
 import pandas as pd
 
 def main():
-    st.set_page_config(page_title="1.Horoscope", layout="wide", page_icon="♈")
+    st.set_page_config(page_title="Horoscope", layout="wide", page_icon="♈")
     
     # Inițializare session state
     if 'chart_data' not in st.session_state:
@@ -16,7 +16,7 @@ def main():
     
     # Sidebar meniu
     with st.sidebar:
-        st.title("♈ 1.Horoscope")
+        st.title("♈ Horoscope")
         st.markdown("---")
         menu_option = st.radio("Main Menu", ["Data Input", "Chart", "Positions", "Aspects", "Interpretation", "About"])
     
@@ -666,15 +666,13 @@ def display_complete_interpretations(chart_data, interpretation_type):
                 st.write("")
 
 def display_about():
-    st.header("ℹ️ About 1.Horoscope")
+    st.header("ℹ️ About Horoscope")
     st.markdown("""
-    ### 1.Horoscope ver. 2.42 (Streamlit Edition)
+    ### Horoscope ver. 1.0(Streamlit Edition)
     
-    **Copyright © 1998-2001**  
-    Danko Josic & Nenad Zezlina  
+    **Copyright © 2025**  
+    RAD  
     
-    **Modern Conversion**  
-    Streamlit web interface with PyEphem engine
     
     **Features**  
     - Accurate planetary positions using PyEphem
@@ -682,17 +680,6 @@ def display_about():
     - Aspect calculations
     - Complete interpretations for signs and degrees
     - Multiple interpretation types
-    
-    **Original Concept**  
-    Palm OS astrological application "1.Chart"
-    """)
-    
-    st.info("""
-    This is a modern web conversion of the original Palm OS application.
-    For information about the original software check:
-    www.j-sistem.hr/online
-    or
-    www.1horoscope.com
     """)
 
 if __name__ == "__main__":
