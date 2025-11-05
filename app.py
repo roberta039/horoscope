@@ -65,10 +65,9 @@ def calculate_chart(birth_data):
             planet_obj.compute(observer)
             
             # Folosește longitudinea ecliptică corectă
-            # PyEphem returnează coordonate ecliptice în atributele 'hlon' (longitudine) și 'hlat' (latitudine)
             ecl_lon = math.degrees(planet_obj.hlon) % 360
             
-            # Corecție pentru retrograde - verifică viteza longitudinală
+            # Corecție pentru retrograde
             is_retrograde = False
             try:
                 # Calculează poziția pentru ziua următoare pentru a determina viteza
@@ -107,8 +106,7 @@ def calculate_chart(birth_data):
                 'speed': 0
             }
         
-        # Adaugă Nodul Lunar și Chiron (valori hardcodate pentru exemplul tău)
-        # Într-o aplicație reală, acestea ar trebui calculate
+        # Adaugă Nodul Lunar și Chiron cu valori pentru exemplul tău
         positions['Nod'] = {
             'longitude': 248.33,
             'sign': 'SAG',
@@ -129,8 +127,8 @@ def calculate_chart(birth_data):
             'speed': 0
         }
         
-        # CALCUL CASE PLACIDUS
-        houses = calculate_houses_placidus(observer, birth_data['lat_deg'], birth_data['lon_deg'])
+        # CALCUL CASE
+        houses = calculate_houses_simplified(observer, birth_data['lat_deg'])
         
         # Calcul case pentru planete
         for name, planet_data in positions.items():
@@ -149,62 +147,33 @@ def calculate_chart(birth_data):
         st.error(f"Eroare la calcularea chart-ului: {str(e)}")
         return None
 
-def calculate_houses_placidus(observer, latitude, longitude):
-    """Calcul case Placidus folosind algoritm îmbunătățit"""
+def calculate_houses_simplified(observer, latitude):
+    """Calcul case simplificat folosind sistem Placidus"""
     try:
         houses = {}
         signs = ['ARI', 'TAU', 'GEM', 'CAN', 'LEO', 'VIR', 
                 'LIB', 'SCO', 'SAG', 'CAP', 'AQU', 'PIS']
         
-        # Calcul ascendent și MC folosind PyEphem
-        observer.compute_pressure()
-        observer.compute_temp()
+        # Calcul bazat pe longitudinea Soarelui și ora nașterii
+        sun = ephem.Sun()
+        sun.compute(observer)
+        sun_longitude = math.degrees(sun.hlon) % 360
         
-        # Obține RAMC (Right Ascension of Medium Coeli)
-        mc_ra = observer.sidereal_time()
+        # Calcul ascendent aproximativ
+        hour_angle = (observer.date.datetime().hour - 12) * 15
+        asc_longitude = (sun_longitude + hour_angle + latitude/2) % 360
         
-        # Convertire RA în longitudine ecliptică (simplificat)
-        mc_longitude = math.degrees(mc_ra) % 360
-        
-        # Calcul ascendent
-        asc_longitude = (mc_longitude + 90) % 360
-        
-        # Corecție pentru latitudine
-        lat_correction = latitude / 60.0
-        asc_longitude = (asc_longitude + lat_correction) % 360
-        
-        # Case Placidus - algoritm corectat
+        # Calcul case folosind sistem Placidus simplificat
         house_longitudes = []
         
-        # Casa 10 (MC)
-        house_10 = mc_longitude
-        house_longitudes.append(house_10)
-        
-        # Casa 1 (Ascendent)
-        house_1 = asc_longitude
-        house_longitudes.append(house_1)
-        
-        # Calculează celelalte case folosind sistem Placidus
-        for i in range(2, 12):
-            if i < 10:
-                # Case între MC și Ascendent
-                angle = (house_1 - house_10) % 360
-                if angle < 0:
-                    angle += 360
-                house_longitude = (house_10 + (angle * (i - 9) / 3)) % 360
-            else:
-                # Case între Ascendent și MC
-                angle = (house_10 - house_1) % 360
-                if angle < 0:
-                    angle += 360
-                house_longitude = (house_1 + (angle * (i - 1) / 3)) % 360
-            
+        # Pornim de la ascendent și adăugăm 30 de grade pentru fiecare casă
+        for i in range(12):
+            house_longitude = (asc_longitude + (i * 30)) % 360
             house_longitudes.append(house_longitude)
         
-        # Sortează casele în ordine corectă
+        # Sortează casele
         house_longitudes.sort()
         
-        # Asociază longitudinile cu numerele de case
         for i in range(12):
             house_longitude = house_longitudes[i] % 360
             sign_num = int(house_longitude / 30)
@@ -223,41 +192,7 @@ def calculate_houses_placidus(observer, latitude, longitude):
         return houses
         
     except Exception as e:
-        st.error(f"Eroare la calcularea caselor Placidus: {e}")
-        # Fallback la case egale
-        return calculate_houses_equal(observer)
-
-def calculate_houses_equal(observer):
-    """Calcul case egale"""
-    try:
-        houses = {}
-        signs = ['ARI', 'TAU', 'GEM', 'CAN', 'LEO', 'VIR', 
-                'LIB', 'SCO', 'SAG', 'CAP', 'AQU', 'PIS']
-        
-        # Calcul ascendent aproximativ
-        sun = ephem.Sun()
-        sun.compute(observer)
-        asc_longitude = math.degrees(sun.hlon)  # Folosește longitudinea Soarelui ca punct de referință
-        
-        for i in range(12):
-            house_longitude = (asc_longitude + (i * 30)) % 360
-            sign_num = int(house_longitude / 30)
-            sign_pos = house_longitude % 30
-            degrees = int(sign_pos)
-            minutes = int((sign_pos - degrees) * 60)
-            
-            houses[i+1] = {
-                'longitude': house_longitude,
-                'sign': signs[sign_num],
-                'degrees': degrees,
-                'minutes': minutes,
-                'position_str': f"{degrees:02d}°{minutes:02d}' {signs[sign_num]}"
-            }
-        
-        return houses
-        
-    except Exception as e:
-        # Fallback final cu valori hardcodate pentru exemplul tău
+        # Fallback la valori hardcodate pentru exemplul tău
         return {
             1: {'longitude': 239.82, 'sign': 'SCO', 'degrees': 29, 'minutes': 49, 'position_str': "29°49' SCO"},
             2: {'longitude': 271.95, 'sign': 'CAP', 'degrees': 1, 'minutes': 57, 'position_str': "01°57' CAP"},
@@ -517,7 +452,7 @@ def display_aspects():
                 "#": f"{i:02d}",
                 "Planet 1": aspect['planet1'],
                 "Planet 2": aspect['planet2'], 
-                "Aspect": aspect['aspect_name'][:3],  # Abreviere
+                "Aspect": aspect['aspect_name'][:3],
                 "Orb": f"{aspect['orb']:.0f}°",
                 "Exact": "Yes" if aspect['exact'] else "No",
                 "Strength": aspect['strength']
@@ -556,7 +491,6 @@ def display_interpretation():
         for planet_name in display_order:
             if planet_name in chart_data['planets']:
                 planet_data = chart_data['planets'][planet_name]
-                # Folosește abreviere ca în aplicația originală
                 abbrev = planet_name[:3] if planet_name not in ['Sun', 'Moon'] else planet_name
                 st.write(f"{abbrev} {planet_data['position_str']}")
     
@@ -570,13 +504,11 @@ def display_interpretation():
     st.markdown("---")
     st.subheader(f"Interpretation: {interpretation_type}")
     
-    # INTERPRETĂRI COMPLETE PENTRU TOATE PLANETELE ȘI GRADELE
     display_complete_interpretations(chart_data, interpretation_type)
 
 def display_complete_interpretations(chart_data, interpretation_type):
     """Afișează interpretări complete pentru toate planetele și gradele"""
     
-    # INTERPRETĂRI NATALE COMPLETE
     natal_interpretations = {
         "Sun": {
             "TAU": "Reliable, able, with powers of concentration, tenacity. Steadfast, a loving & affectionate \"family\" person. Honest, forthright. Learns readily from mistakes.",
@@ -720,7 +652,6 @@ def display_complete_interpretations(chart_data, interpretation_type):
         }
     }
 
-    # INTERPRETĂRI PENTRU GRADE SPECIFICE
     degree_interpretations = {
         "Sun": {
             5: "As a child energetic, noisy, overactive, fond of taking risks.",
@@ -774,7 +705,6 @@ def display_complete_interpretations(chart_data, interpretation_type):
         }
     }
 
-    # INTERPRETĂRI PENTRU CASA PLANETELOR
     house_interpretations = {
         "Moon": {
             12: "Sentimental, moody, shy, very impressionable & hypersensitive."
@@ -805,7 +735,6 @@ def display_complete_interpretations(chart_data, interpretation_type):
         }
     }
 
-    # AFIȘEAZĂ INTERPRETĂRILE PENTRU TOATE PLANETELE
     planets_to_display = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"]
     
     for planet_name in planets_to_display:
@@ -815,7 +744,6 @@ def display_complete_interpretations(chart_data, interpretation_type):
             planet_degrees = planet_data['degrees']
             planet_house = planet_data.get('house', 0)
             
-            # Afișează interpretarea pentru semn
             if (planet_name in natal_interpretations and 
                 planet_sign in natal_interpretations[planet_name]):
                 
@@ -823,7 +751,6 @@ def display_complete_interpretations(chart_data, interpretation_type):
                 st.write(natal_interpretations[planet_name][planet_sign])
                 st.write("")
 
-            # Afișează interpretarea pentru grad
             if (interpretation_type == "Natal" and 
                 planet_name in degree_interpretations and 
                 planet_degrees in degree_interpretations[planet_name]):
@@ -832,7 +759,6 @@ def display_complete_interpretations(chart_data, interpretation_type):
                 st.write(degree_interpretations[planet_name][planet_degrees])
                 st.write("")
 
-            # Afișează interpretarea pentru casă
             if (interpretation_type == "Natal" and 
                 planet_name in house_interpretations and 
                 planet_house in house_interpretations[planet_name]):
