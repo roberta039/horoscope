@@ -534,31 +534,136 @@ def display_interpretation():
     st.markdown("---")
     st.subheader(f"Interpretation: {interpretation_type}")
     
-    # Interpretări simple pentru demo
-    sun_data = chart_data['planets']['Sun']
-    moon_data = chart_data['planets']['Moon']
+    # INTERPRETĂRI COMPLETE PENTRU TOATE PLANETELE ȘI GRADELE
+    display_complete_interpretations(chart_data, interpretation_type)
+
+def display_complete_interpretations(chart_data, interpretation_type):
+    """Afișează interpretări complete pentru toate planetele și gradele"""
     
-    st.write(f"**Sun in {sun_data['sign']}**")
-    sun_interpretations = {
-        'ARI': "Energetic, pioneering, courageous. Natural leader with strong initiative.",
-        'TAU': "Practical, reliable, patient. Values security and comfort.",
-        'GEM': "Clever, bright, quickwitted, communicative, adaptable.",
-        'CAN': "Nurturing, emotional, protective. Strong connection to home.",
-        'LEO': "Confident, creative, generous. Natural performer.",
-        'VIR': "Analytical, practical, helpful. Attention to detail.",
-        'LIB': "Friendly, artistic, sociable, balanced.",
-        'SCO': "Intense, passionate, transformative.",
-        'SAG': "Adventurous, philosophical, optimistic.",
-        'CAP': "Ambitious, disciplined, responsible.",
-        'AQU': "Innovative, independent, humanitarian.",
-        'PIS': "Compassionate, intuitive, artistic."
+    # INTERPRETĂRI NATALE COMPLETE
+    natal_interpretations = {
+        "Sun": {
+            "TAU": "Reliable, able, with powers of concentration, tenacity. Steadfast, a loving & affectionate \"family\" person. Honest, forthright. Learns readily from mistakes.",
+            "ARI": "Energetic, pioneering, courageous. Natural leader with strong initiative. Impulsive and direct.",
+            "GEM": "Clever, bright, quickwitted, communicative, able to do many different things at once, eager to learn new subjects. Openminded, adaptable, curious, restless, confident, seldom settling down.",
+            "CAN": "Nurturing, emotional, protective. Strong connection to home and family. Sensitive and caring.",
+            "LEO": "Confident, creative, generous. Natural performer and leader. Dramatic and warm-hearted.",
+            "VIR": "Analytical, practical, helpful. Attention to detail and service-oriented. Methodical and precise.",
+            "LIB": "Friendly, cordial, artistic, kind, considerate, loyal, alert, sociable, moderate, balanced in views, open-minded.",
+            "SCO": "Intense, passionate, transformative. Deep emotional understanding. Powerful and determined.",
+            "SAG": "Adventurous, philosophical, optimistic. Seeks truth and expansion. Freedom-loving and honest.",
+            "CAP": "Ambitious, disciplined, responsible. Builds lasting structures. Serious and determined.",
+            "AQU": "Innovative, independent, humanitarian. Forward-thinking and original. Unconventional and idealistic.",
+            "PIS": "Compassionate, intuitive, artistic. Connected to spiritual realms. Dreamy and empathetic."
+        },
+        "Moon": {
+            "SCO": "Tenacious will, much energy & working power, passionate, often sensual. Honest.",
+            "ARI": "Energetic, ambitious, strongwilled, self-centred, impulsive, dominant & obstinate.",
+            "TAU": "Steady, patient, determined. Values comfort and security. Emotionally stable.",
+            "GEM": "Changeable, adaptable, curious. Needs mental stimulation. Restless emotions.",
+            "CAN": "Nurturing, sensitive, protective. Strong emotional connections. Home-oriented.",
+            "LEO": "Proud, dramatic, generous. Needs recognition and appreciation. Warm emotions.",
+            "VIR": "Practical, analytical, helpful. Attention to emotional details. Service-oriented.",
+            "LIB": "Harmonious, diplomatic, social. Seeks emotional balance. Relationship-focused.",
+            "SAG": "Adventurous, optimistic, freedom-loving. Needs emotional expansion. Philosophical.",
+            "CAP": "Responsible, disciplined, reserved. Controls emotions carefully. Ambitious.",
+            "AQU": "Independent, unconventional, detached. Unique emotional expression. Progressive.",
+            "PIS": "Compassionate, intuitive, dreamy. Sensitive emotional nature. Spiritual."
+        },
+        "Mercury": {
+            "TAU": "Thorough, persevering. Good at working with the hands. Inflexible, steady, obstinate, self-opinionated, conventional, limited in interests.",
+            "ARI": "Quick-thinking, direct, innovative. Expresses ideas boldly and spontaneously.",
+            "GEM": "Versatile, communicative, curious. Learns quickly and shares knowledge.",
+            "CAN": "Intuitive, emotional, memory-oriented. Thinks with heart and nostalgia.",
+            "LEO": "Confident, dramatic, creative. Expresses ideas with flair and authority.",
+            "VIR": "Analytical, precise, detail-oriented. Excellent at critical thinking.",
+            "LIB": "Diplomatic, balanced, artistic. Seeks harmony in communication.",
+            "SCO": "Penetrating, investigative, profound. Seeks hidden truths.",
+            "SAG": "Philosophical, broad-minded, honest. Thinks in big pictures.",
+            "CAP": "Practical, organized, ambitious. Strategic and disciplined thinking.",
+            "AQU": "Innovative, original, detached. Thinks outside conventional boxes.",
+            "PIS": "Intuitive, imaginative, compassionate. Thinks with psychic sensitivity."
+        },
+        "Venus": {
+            "GEM": "Flirtatious. Makes friends very easily. Has multifaceted relationships.",
+            "ARI": "Direct, passionate, impulsive in love. Attracted to challenge and excitement.",
+            "TAU": "Sensual, loyal, comfort-seeking. Values stability and physical pleasure.",
+            "CAN": "Nurturing, protective, home-oriented. Seeks emotional security.",
+            "LEO": "Dramatic, generous, proud. Loves romance and admiration.",
+            "VIR": "Practical, helpful, discerning. Shows love through service.",
+            "LIB": "Harmonious, diplomatic, artistic. Seeks balance and partnership.",
+            "SCO": "Intense, passionate, possessive. Seeks deep emotional bonds.",
+            "SAG": "Adventurous, freedom-loving, honest. Values independence in relationships.",
+            "CAP": "Serious, responsible, ambitious. Seeks stability and commitment.",
+            "AQU": "Unconventional, friendly, detached. Values friendship and independence.",
+            "PIS": "Romantic, compassionate, dreamy. Seeks spiritual connection."
+        },
+        "Mars": {
+            "AQU": "Strong reasoning powers. Often interested in science. Fond of freedom & independence.",
+            "ARI": "Energetic, competitive, pioneering. Direct and assertive action.",
+            "TAU": "Persistent, determined, practical. Slow but steady approach.",
+            "GEM": "Versatile, quick, communicative. Action through words and ideas.",
+            "CAN": "Protective, emotional, defensive. Actions driven by feelings.",
+            "LEO": "Confident, dramatic, creative. Actions with flair and leadership.",
+            "VIR": "Precise, analytical, efficient. Methodical and careful action.",
+            "LIB": "Diplomatic, balanced, cooperative. Seeks harmony in action.",
+            "SCO": "Intense, determined, transformative. Powerful and secretive action.",
+            "SAG": "Adventurous, optimistic, freedom-loving. Action with purpose.",
+            "CAP": "Ambitious, disciplined, patient. Strategic and persistent action.",
+            "PIS": "Compassionate, intuitive, adaptable. Action through inspiration."
+        }
     }
+
+    # INTERPRETĂRI PENTRU GRADE SPECIFICE
+    degree_interpretations = {
+        "Sun": {
+            5: "As a child energetic, noisy, overactive, fond of taking risks.",
+            1: "Usually warmhearted & lovable but also vain, hedonistic & flirtatious.",
+            9: "Has very wide-ranging interests."
+        },
+        "Moon": {
+            12: "Sentimental, moody, shy, very impressionable & hypersensitive.",
+            6: "Conscientious & easily influenced. Moody. Ready to help others. Illnesses of the nervous system."
+        },
+        "Mercury": {
+            6: "Anxious about health - may travel for health reasons.",
+            8: "Systematic, capable of concentrated thinking & planning. Feels things very deeply."
+        },
+        "Venus": {
+            7: "Loves a cheerful, relaxed atmosphere. Fond of music, art & beautiful houses.",
+            8: "Strong desire to possess another person. Strongly erotic."
+        },
+        "Mars": {
+            2: "Ambitious, energetic, competitive, tenacious, practical, financially competent, obstinate, persistent & fearless.",
+            11: "Enterprising, energetic. A good organizer of club & social activities."
+        }
+    }
+
+    # AFIȘEAZĂ INTERPRETĂRILE PENTRU TOATE PLANETELE
+    planets_to_display = ["Sun", "Moon", "Mercury", "Venus", "Mars"]
     
-    if sun_data['sign'] in sun_interpretations:
-        st.write(sun_interpretations[sun_data['sign']])
-    
-    st.write(f"**Moon in {moon_data['sign']}**")
-    st.write("Your emotional nature is influenced by the Moon's position in this sign.")
+    for planet_name in planets_to_display:
+        if planet_name in chart_data['planets']:
+            planet_data = chart_data['planets'][planet_name]
+            planet_sign = planet_data['sign']
+            planet_degrees = planet_data['degrees']
+            
+            # Afișează interpretarea pentru semn
+            if (planet_name in natal_interpretations and 
+                planet_sign in natal_interpretations[planet_name]):
+                
+                st.write(f"****  {planet_name}{planet_sign}")
+                st.write(natal_interpretations[planet_name][planet_sign])
+                st.write("")
+
+            # Afișează interpretarea pentru grad
+            if (interpretation_type == "Natal" and 
+                planet_name in degree_interpretations and 
+                planet_degrees in degree_interpretations[planet_name]):
+                
+                st.write(f"****  {planet_name}{planet_degrees:02d}")
+                st.write(degree_interpretations[planet_name][planet_degrees])
+                st.write("")
 
 def display_about():
     st.header("ℹ️ About 1.Horoscope")
@@ -575,6 +680,7 @@ def display_about():
     - Accurate planetary positions using PyEphem
     - Natal chart calculations with Placidus houses
     - Aspect calculations
+    - Complete interpretations for signs and degrees
     - Multiple interpretation types
     
     **Original Concept**  
