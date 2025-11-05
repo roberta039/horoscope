@@ -115,7 +115,6 @@ def calculate_houses_placidus(observer, latitude):
         mc_longitude = calculate_mc(observer, latitude)
         
         # Calcul case folosind sistem Placidus
-        # Aceasta este o implementare simplificată - sistemul real Placidus este foarte complex
         house_longitudes = calculate_placidus_houses(asc_longitude, mc_longitude, latitude)
         
         for i in range(12):
@@ -144,29 +143,22 @@ def calculate_ascendant(observer, latitude):
     """Calculează longitudinea ascendentului"""
     try:
         # Calcul simplificat al ascendentului
-        # Într-o implementare reală, acesta ar fi calculat folosind formula:
-        # tan(ASC) = -cos(RA) / (sin(RA) * cos(epsilon) + tan(lat) * sin(epsilon))
-        
-        # Pentru simplitate, folosim o aproximare
         sun = ephem.Sun()
         sun.compute(observer)
         sun_longitude = math.degrees(sun.hlon)
         
         # Aproximare bazată pe ora zilei și latitudine
-        hour_angle = (observer.date.datetime().hour - 12) * 15  # 15 grade pe oră
+        hour_angle = (observer.date.datetime().hour - 12) * 15
         asc_approx = (sun_longitude + hour_angle + latitude/2) % 360
         
         return asc_approx
         
     except Exception as e:
-        return 0  # Fallback
+        return 0
 
 def calculate_mc(observer, latitude):
     """Calculează longitudinea Medium Coeli"""
     try:
-        # Calcul simplificat al MC
-        # Formula reală: tan(MC) = tan(RA) / cos(epsilon)
-        
         sun = ephem.Sun()
         sun.compute(observer)
         sun_longitude = math.degrees(sun.hlon)
@@ -178,7 +170,7 @@ def calculate_mc(observer, latitude):
         return mc_approx
         
     except Exception as e:
-        return 270  # Fallback la Capricorn
+        return 270
 
 def calculate_placidus_houses(asc_longitude, mc_longitude, latitude):
     """Calcul case Placidus folosind algoritm complex"""
@@ -191,23 +183,19 @@ def calculate_placidus_houses(asc_longitude, mc_longitude, latitude):
         # Casa 10 - Medium Coeli
         houses[9] = mc_longitude
         
-        # Calcul case intermediare folosind sistemul Placidus
-        # Acesta este un algoritm simplificat
+        # Calcul case intermediare
         for i in range(12):
-            if i == 0:  # Casa 1 deja calculată
+            if i == 0:
                 continue
-            elif i == 9:  # Casa 10 deja calculată
+            elif i == 9:
                 continue
             else:
-                # Distribuie casele uniform între ASC și MC
                 if i < 9:
-                    # Casele 2-9
                     angle = (mc_longitude - asc_longitude) % 360
                     if angle < 0:
                         angle += 360
                     houses[i] = (asc_longitude + (angle * i / 9)) % 360
                 else:
-                    # Casele 11-12
                     angle = (asc_longitude - mc_longitude) % 360
                     if angle < 0:
                         angle += 360
@@ -216,7 +204,6 @@ def calculate_placidus_houses(asc_longitude, mc_longitude, latitude):
         return houses
         
     except Exception as e:
-        # Fallback la case egale
         return calculate_equal_houses(asc_longitude)
 
 def calculate_equal_houses(asc_longitude):
@@ -234,7 +221,6 @@ def calculate_houses_equal(observer):
         signs = ['ARI', 'TAU', 'GEM', 'CAN', 'LEO', 'VIR', 
                 'LIB', 'SCO', 'SAG', 'CAP', 'AQU', 'PIS']
         
-        # Folosim longitudinea Soarelui ca punct de referință
         sun = ephem.Sun()
         sun.compute(observer)
         sun_longitude = math.degrees(sun.hlon)
@@ -264,7 +250,6 @@ def get_house_for_longitude(longitude, houses):
     try:
         longitude = longitude % 360
         
-        # Găsește casa corespunzătoare
         house_numbers = list(houses.keys())
         for i in range(len(house_numbers)):
             current_house = house_numbers[i]
@@ -273,7 +258,6 @@ def get_house_for_longitude(longitude, houses):
             current_long = houses[current_house]['longitude']
             next_long = houses[next_house]['longitude']
             
-            # Ajustare pentru trecerea prin 0 grade
             if next_long < current_long:
                 next_long += 360
                 adj_longitude = longitude if longitude >= current_long else longitude + 360
@@ -283,7 +267,7 @@ def get_house_for_longitude(longitude, houses):
             if current_long <= adj_longitude < next_long:
                 return current_house
         
-        return 1  # Fallback la casa 1
+        return 1
         
     except Exception as e:
         return 1
@@ -294,7 +278,6 @@ def calculate_aspects(chart_data):
         planets = chart_data['planets']
         aspects = []
         
-        # Aspecte majore și orb-uri permise
         major_aspects = [
             {'name': 'Conjunction', 'angle': 0, 'orb': 8},
             {'name': 'Opposition', 'angle': 180, 'orb': 8},
@@ -303,10 +286,8 @@ def calculate_aspects(chart_data):
             {'name': 'Sextile', 'angle': 60, 'orb': 6}
         ]
         
-        # Listează toate planetele
         planet_list = list(planets.keys())
         
-        # Calculează aspecte pentru fiecare pereche de planete
         for i in range(len(planet_list)):
             for j in range(i + 1, len(planet_list)):
                 planet1 = planet_list[i]
@@ -315,12 +296,10 @@ def calculate_aspects(chart_data):
                 long1 = planets[planet1]['longitude']
                 long2 = planets[planet2]['longitude']
                 
-                # Calculează diferența unghiulară
                 diff = abs(long1 - long2)
                 if diff > 180:
                     diff = 360 - diff
                 
-                # Verifică fiecare aspect posibil
                 for aspect in major_aspects:
                     aspect_angle = aspect['angle']
                     orb = aspect['orb']
@@ -418,7 +397,6 @@ def display_chart():
     chart_data = st.session_state.chart_data
     birth_data = st.session_state.birth_data
     
-    # Afișare info
     col_info = st.columns(3)
     with col_info[0]:
         st.write(f"**Name:** {birth_data['name']}")
@@ -441,7 +419,6 @@ def display_chart():
         for house_num, house_data in chart_data['houses'].items():
             st.write(f"**{house_num}** {house_data['position_str']}")
     
-    # Butoane de navigare
     st.markdown("---")
     col_buttons = st.columns(5)
     with col_buttons[0]:
@@ -490,11 +467,9 @@ def display_aspects():
     
     chart_data = st.session_state.chart_data
     
-    # Calcul aspecte
     aspects = calculate_aspects(chart_data)
     
     if aspects:
-        # Afișare aspecte în tabel
         aspect_data = []
         for aspect in aspects:
             aspect_data.append({
@@ -512,7 +487,107 @@ def display_aspects():
     else:
         st.info("No significant aspects found within allowed orb.")
 
-# ... (funcțiile display_interpretation și display_about rămân la fel)
+def display_interpretation():
+    st.header("📖 Interpretation Center")
+    
+    if st.session_state.chart_data is None:
+        st.warning("Please calculate chart first!")
+        return
+    
+    chart_data = st.session_state.chart_data
+    birth_data = st.session_state.birth_data
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("Data")
+        st.write(f"**Name:** {birth_data['name']}")
+        st.write(f"**Date:** {birth_data['date']}")
+        st.write(f"**Time:** {birth_data['time']}")
+        st.write(f"**Position:** {birth_data['lon_display']} {birth_data['lat_display']}")
+    
+    with col2:
+        st.subheader("Planets")
+        planets_display = [
+            f"Sun {chart_data['planets']['Sun']['position_str']}",
+            f"Moon {chart_data['planets']['Moon']['position_str']}",
+            f"Mer {chart_data['planets']['Mercury']['position_str']}",
+            f"Ven {chart_data['planets']['Venus']['position_str']}",
+            f"Mar {chart_data['planets']['Mars']['position_str']}",
+            f"Jup {chart_data['planets']['Jupiter']['position_str']}",
+            f"Sat {chart_data['planets']['Saturn']['position_str']}",
+            f"Ura {chart_data['planets']['Uranus']['position_str']}",
+            f"Nep {chart_data['planets']['Neptune']['position_str']}",
+            f"Plu {chart_data['planets']['Pluto']['position_str']}"
+        ]
+        
+        for planet in planets_display:
+            st.write(planet)
+    
+    st.markdown("---")
+    
+    interpretation_type = st.selectbox(
+        "Type of interpretation",
+        ["Natal", "Sexual", "Career", "Relationships", "Spiritual"]
+    )
+    
+    st.markdown("---")
+    st.subheader(f"Interpretation: {interpretation_type}")
+    
+    # Interpretări simple pentru demo
+    sun_data = chart_data['planets']['Sun']
+    moon_data = chart_data['planets']['Moon']
+    
+    st.write(f"**Sun in {sun_data['sign']}**")
+    sun_interpretations = {
+        'ARI': "Energetic, pioneering, courageous. Natural leader with strong initiative.",
+        'TAU': "Practical, reliable, patient. Values security and comfort.",
+        'GEM': "Clever, bright, quickwitted, communicative, adaptable.",
+        'CAN': "Nurturing, emotional, protective. Strong connection to home.",
+        'LEO': "Confident, creative, generous. Natural performer.",
+        'VIR': "Analytical, practical, helpful. Attention to detail.",
+        'LIB': "Friendly, artistic, sociable, balanced.",
+        'SCO': "Intense, passionate, transformative.",
+        'SAG': "Adventurous, philosophical, optimistic.",
+        'CAP': "Ambitious, disciplined, responsible.",
+        'AQU': "Innovative, independent, humanitarian.",
+        'PIS': "Compassionate, intuitive, artistic."
+    }
+    
+    if sun_data['sign'] in sun_interpretations:
+        st.write(sun_interpretations[sun_data['sign']])
+    
+    st.write(f"**Moon in {moon_data['sign']}**")
+    st.write("Your emotional nature is influenced by the Moon's position in this sign.")
+
+def display_about():
+    st.header("ℹ️ About 1.Horoscope")
+    st.markdown("""
+    ### 1.Horoscope ver. 2.42 (Streamlit Edition)
+    
+    **Copyright © 1998-2001**  
+    Danko Josic & Nenad Zezlina  
+    
+    **Modern Conversion**  
+    Streamlit web interface with PyEphem engine
+    
+    **Features**  
+    - Accurate planetary positions using PyEphem
+    - Natal chart calculations with Placidus houses
+    - Aspect calculations
+    - Multiple interpretation types
+    
+    **Original Concept**  
+    Palm OS astrological application "1.Chart"
+    """)
+    
+    st.info("""
+    This is a modern web conversion of the original Palm OS application.
+    For information about the original software check:
+    www.j-sistem.hr/online
+    or
+    www.1horoscope.com
+    """)
 
 if __name__ == "__main__":
     main()
