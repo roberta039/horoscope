@@ -1,4 +1,4 @@
-# 🔮 1.Chart Horoscope
+# 🔮 Chart Horoscope
 
 ## 🚀 Features
 
