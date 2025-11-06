@@ -253,11 +253,10 @@ def get_house_for_longitude_swiss(longitude, houses):
         return 1
 
 def create_chart_wheel(chart_data, birth_data):
-    """Creează graficul circular cu planetele, casele și aspectele colorate"""
+    """Creează un grafic circular cu planetele, casele și aspectele colorate"""
     try:
         fig, ax = plt.subplots(figsize=(7, 7))
         ax.set_aspect('equal')
-
         center_x, center_y = 0, 0
         outer_radius = 5
         inner_radius = 4
@@ -267,8 +266,8 @@ def create_chart_wheel(chart_data, birth_data):
         # Culori
         background_color = 'white'
         circle_color = '#262730'
-        house_color = 'black'
         text_color = 'black'
+        house_color = 'black'
         planet_colors = {
             'Sun': '#FFD700', 'Moon': '#C0C0C0', 'Mercury': '#A9A9A9',
             'Venus': '#FFB6C1', 'Mars': '#FF4500', 'Jupiter': '#FFA500',
@@ -276,61 +275,59 @@ def create_chart_wheel(chart_data, birth_data):
             'Pluto': '#8B008B', 'Nod': '#FF69B4', 'Chi': '#32CD32'
         }
 
+        # Fundal
         fig.patch.set_facecolor(background_color)
         ax.set_facecolor(background_color)
 
         # Cercuri principale
-        outer_circle = Circle((center_x, center_y), outer_radius, fill=True, color=circle_color, alpha=0.3)
-        inner_circle = Circle((center_x, center_y), inner_radius, fill=True, color=background_color)
-        ax.add_patch(outer_circle)
-        ax.add_patch(inner_circle)
+        ax.add_patch(Circle((center_x, center_y), outer_radius, fill=True, color=circle_color, alpha=0.3))
+        ax.add_patch(Circle((center_x, center_y), inner_radius, fill=True, color=background_color))
 
         # Semne zodiacale
-        signs_symbols = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
-        signs_names = ['ARI', 'TAU', 'GEM', 'CAN', 'LEO', 'VIR', 'LIB', 'SCO', 'SAG', 'CAP', 'AQU', 'PIS']
+        signs = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
+        sign_names = ['ARI', 'TAU', 'GEM', 'CAN', 'LEO', 'VIR', 'LIB', 'SCO', 'SAG', 'CAP', 'AQU', 'PIS']
 
+        # Desenăm case și semne
         for i in range(12):
             angle = i * 30 - 90
             rad_angle = np.radians(angle)
-
-            # Linii case
             x_outer = center_x + outer_radius * np.cos(rad_angle)
             y_outer = center_y + outer_radius * np.sin(rad_angle)
             x_inner = center_x + inner_radius * np.cos(rad_angle)
             y_inner = center_y + inner_radius * np.sin(rad_angle)
             ax.plot([x_inner, x_outer], [y_inner, y_outer], color=house_color, linewidth=1, alpha=0.5)
 
-            # Numere case
+            # Numerele caselor
             house_text_angle = angle + 15
-            rad_house = np.radians(house_text_angle)
-            x_house = center_x + house_radius * np.cos(rad_house)
-            y_house = center_y + house_radius * np.sin(rad_house)
+            house_rad_angle = np.radians(house_text_angle)
+            x_house = center_x + house_radius * np.cos(house_rad_angle)
+            y_house = center_y + house_radius * np.sin(house_rad_angle)
             ax.text(x_house, y_house, str(i+1), ha='center', va='center', color=house_color, fontsize=10, fontweight='bold')
 
-            # Semne zodiacale
+            # Semnele zodiacale
             sign_angle = i * 30 - 75
-            rad_sign = np.radians(sign_angle)
-            x_sign = center_x + (outer_radius + 0.3) * np.cos(rad_sign)
-            y_sign = center_y + (outer_radius + 0.3) * np.sin(rad_sign)
-            ax.text(x_sign, y_sign, signs_symbols[i], ha='center', va='center', color=house_color, fontsize=14)
+            sign_rad_angle = np.radians(sign_angle)
+            x_sign = center_x + (outer_radius + 0.3) * np.cos(sign_rad_angle)
+            y_sign = center_y + (outer_radius + 0.3) * np.sin(sign_rad_angle)
+            ax.text(x_sign, y_sign, signs[i], ha='center', va='center', color=house_color, fontsize=14)
 
-            # Nume semn
-            x_name = center_x + (outer_radius + 0.7) * np.cos(rad_sign)
-            y_name = center_y + (outer_radius + 0.7) * np.sin(rad_sign)
-            ax.text(x_name, y_name, signs_names[i], ha='center', va='center', color=house_color, fontsize=8, rotation=angle+90)
+            # Numele semnului
+            x_name = center_x + (outer_radius + 0.7) * np.cos(sign_rad_angle)
+            y_name = center_y + (outer_radius + 0.7) * np.sin(sign_rad_angle)
+            ax.text(x_name, y_name, sign_names[i], ha='center', va='center', color=house_color, fontsize=8, rotation=angle+90)
 
         # -------------------
         # PLANETE
         # -------------------
+        planets = chart_data['planets']
         planet_symbols = {
             'Sun': '☉', 'Moon': '☽', 'Mercury': '☿', 'Venus': '♀',
             'Mars': '♂', 'Jupiter': '♃', 'Saturn': '♄', 'Uranus': '♅',
             'Neptune': '♆', 'Pluto': '♇', 'Nod': '☊', 'Chi': '⚷'
         }
 
-        planet_positions = {}  # coordonate planete
-        planets = chart_data['planets']
-
+        # Calculăm pozițiile pentru aspecte
+        planet_positions = {}
         for pname, pdata in planets.items():
             longitude = pdata['longitude']
             angle = longitude - 90
@@ -338,11 +335,6 @@ def create_chart_wheel(chart_data, birth_data):
             x = center_x + planet_radius * np.cos(rad_angle)
             y = center_y + planet_radius * np.sin(rad_angle)
             planet_positions[pname] = (x, y)
-
-            # Simbol planetă
-            symbol = planet_symbols.get(pname, '•')
-            color = planet_colors.get(pname, 'white')
-            ax.text(x, y, symbol, ha='center', va='center', color=color, fontsize=12, fontweight='bold')
 
         # -------------------
         # ASPECTE COLORATE
@@ -354,7 +346,6 @@ def create_chart_wheel(chart_data, birth_data):
             'Square': 'orange',
             'Sextile': 'purple'
         }
-
         aspects = calculate_aspects(chart_data)
         for a in aspects:
             p1, p2 = a['planet1'], a['planet2']
@@ -362,16 +353,35 @@ def create_chart_wheel(chart_data, birth_data):
                 x1, y1 = planet_positions[p1]
                 x2, y2 = planet_positions[p2]
                 color = aspect_colors.get(a['aspect_name'], 'gray')
-                ax.plot([x1, x2], [y1, y2], color=color, linewidth=1.5, alpha=0.6)
+                linewidth = 2.0 if a['exact'] else 1.2
+                ax.plot([x1, x2], [y1, y2], color=color, linewidth=linewidth, alpha=0.6)
 
-        # Titlu
+        # -------------------
+        # DESENĂM PLANETELE
+        # -------------------
+        for pname, pdata in planets.items():
+            x, y = planet_positions[pname]
+            symbol = planet_symbols.get(pname, '•')
+            color = planet_colors.get(pname, 'white')
+            ax.text(x, y, symbol, ha='center', va='center', color=color, fontsize=12, fontweight='bold')
+
+            # Numele planetei
+            abbrev = pname[:3] if pname not in ['Sun', 'Moon'] else pname
+            if pdata.get('retrograde', False):
+                abbrev += " R"
+            offset = 0.25
+            ax.text(x, y + offset, abbrev, ha='center', va='center', color=color, fontsize=8, alpha=0.9)
+
+        # Titlul chart-ului
         name = birth_data.get('name', 'Natal Chart')
         date_str = birth_data.get('date', '').strftime('%Y-%m-%d')
         ax.set_title(f'{name} - {date_str}\nNatal Chart', color=text_color, fontsize=16, pad=20)
 
+        # Eliminăm axele
         ax.set_xlim(-outer_radius-1, outer_radius+1)
         ax.set_ylim(-outer_radius-1, outer_radius+1)
         ax.axis('off')
+
         plt.tight_layout()
         return fig
 
