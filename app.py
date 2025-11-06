@@ -255,7 +255,7 @@ def get_house_for_longitude_swiss(longitude, houses):
 def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart"):
     """Creează un grafic circular cu planetele în case"""
     try:
-        fig, ax = plt.subplots(figsize=(6, 6))
+        fig, ax = plt.subplots(figsize=(12, 12))
         ax.set_aspect('equal')
         
         # Setări pentru cercul principal
@@ -1030,7 +1030,7 @@ def display_interpretation():
     
     interpretation_type = st.selectbox(
         "Type of interpretation",
-        ["Natal", "Sexual", "Career", "Relationships", "Spiritual"]
+        ["Natal", "Career", "Relationships", "Spiritual", "Sexual"]
     )
     
     st.markdown("---")
@@ -1041,7 +1041,7 @@ def display_interpretation():
 def display_complete_interpretations(chart_data, interpretation_type):
     """Afișează interpretări complete pentru toate planetele și gradele"""
     
-    # INTERPRETĂRI COMPLETE PENTRU SEMNE
+    # INTERPRETĂRI COMPLETE PENTRU SEMNE - NATAL
     natal_interpretations = {
         "Sun": {
             "TAU": "Reliable, able, with powers of concentration, tenacity. Steadfast, a loving & affectionate \"family\" person. Honest, forthright. Learns readily from mistakes.",
@@ -1070,282 +1070,221 @@ def display_complete_interpretations(chart_data, interpretation_type):
             "CAP": "Responsible, disciplined, reserved. Controls emotions carefully. Ambitious.",
             "AQU": "Independent, unconventional, detached. Unique emotional expression. Progressive.",
             "PIS": "Compassionate, intuitive, dreamy. Sensitive emotional nature. Spiritual."
-        },
-        "Mercury": {
-            "TAU": "Thorough, persevering. Good at working with the hands. Inflexible, steady, obstinate, self-opinionated, conventional, limited in interests.",
-            "ARI": "Quick-thinking, direct, innovative. Expresses ideas boldly and spontaneously.",
-            "GEM": "Versatile, communicative, curious. Learns quickly and shares knowledge.",
-            "CAN": "Intuitive, emotional, memory-oriented. Thinks with heart and nostalgia.",
-            "LEO": "Confident, dramatic, creative. Expresses ideas with flair and authority.",
-            "VIR": "Analytical, precise, detail-oriented. Excellent at critical thinking.",
-            "LIB": "Diplomatic, balanced, artistic. Seeks harmony in communication.",
-            "SCO": "Penetrating, investigative, profound. Seeks hidden truths.",
-            "SAG": "Philosophical, broad-minded, honest. Thinks in big pictures.",
-            "CAP": "Practical, organized, ambitious. Strategic and disciplined thinking.",
-            "AQU": "Innovative, original, detached. Thinks outside conventional boxes.",
-            "PIS": "Intuitive, imaginative, compassionate. Thinks with psychic sensitivity."
-        },
-        "Venus": {
-            "GEM": "Flirtatious. Makes friends very easily. Has multifaceted relationships.",
-            "ARI": "Direct, passionate, impulsive in love. Attracted to challenge and excitement.",
-            "TAU": "Sensual, loyal, comfort-seeking. Values stability and physical pleasure.",
-            "CAN": "Nurturing, protective, home-oriented. Seeks emotional security.",
-            "LEO": "Dramatic, generous, proud. Loves romance and admiration.",
-            "VIR": "Practical, helpful, discerning. Shows love through service.",
-            "LIB": "Harmonious, diplomatic, artistic. Seeks balance and partnership.",
-            "SCO": "Intense, passionate, possessive. Seeks deep emotional bonds.",
-            "SAG": "Adventurous, freedom-loving, honest. Values independence in relationships.",
-            "CAP": "Serious, responsible, ambitious. Seeks stability and commitment.",
-            "AQU": "Unconventional, friendly, detached. Values friendship and independence.",
-            "PIS": "Romantic, compassionate, dreamy. Seeks spiritual connection."
-        },
-        "Mars": {
-            "AQU": "Strong reasoning powers. Often interested in science. Fond of freedom & independence.",
-            "ARI": "Energetic, competitive, pioneering. Direct and assertive action.",
-            "TAU": "Persistent, determined, practical. Slow but steady approach.",
-            "GEM": "Versatile, quick, communicative. Action through words and ideas.",
-            "CAN": "Protective, emotional, defensive. Actions driven by feelings.",
-            "LEO": "Confident, dramatic, creative. Actions with flair and leadership.",
-            "VIR": "Precise, analytical, efficient. Methodical and careful action.",
-            "LIB": "Diplomatic, balanced, cooperative. Seeks harmony in action.",
-            "SCO": "Intense, determined, transformative. Powerful and secretive action.",
-            "SAG": "Adventurous, optimistic, freedom-loving. Action with purpose.",
-            "CAP": "Ambitious, disciplined, patient. Strategic and persistent action.",
-            "PIS": "Compassionate, intuitive, adaptable. Action through inspiration."
-        },
-        "Jupiter": {
-            "LEO": "Has a talent for organizing & leading. Open & ready to help anyone in need - magnanimous & affectionate.",
-            "ARI": "Enthusiastic, confident, generous. Natural leadership abilities.",
-            "TAU": "Practical, steady growth. Values material security and comfort.",
-            "GEM": "Curious, communicative, versatile. Expands through learning and connections.",
-            "CAN": "Nurturing, protective growth. Expands family and home life.",
-            "VIR": "Analytical, service-oriented growth. Improves through attention to detail.",
-            "LIB": "Harmonious, diplomatic expansion. Grows through relationships and beauty.",
-            "SCO": "Intense, transformative growth. Expands through deep investigation.",
-            "SAG": "Philosophical, adventurous expansion. Seeks truth and meaning.",
-            "CAP": "Ambitious, disciplined growth. Builds lasting structures and authority.",
-            "AQU": "Innovative, humanitarian expansion. Progress through originality.",
-            "PIS": "Compassionate, spiritual growth. Expands through intuition and service."
-        },
-        "Saturn": {
-            "SAG": "Upright, open, courageous, honourable, grave, dignified, very capable.",
-            "ARI": "Ambitious, disciplined pioneer. Builds structures with initiative.",
-            "TAU": "Practical, patient builder. Creates lasting material security.",
-            "GEM": "Serious, organized communicator. Structures thinking and learning.",
-            "CAN": "Responsible, protective authority. Builds family traditions.",
-            "LEO": "Dignified, authoritative leader. Structures creative expression.",
-            "VIR": "Precise, efficient organizer. Creates order through service.",
-            "LIB": "Balanced, diplomatic judge. Structures relationships fairly.",
-            "SCO": "Intense, transformative discipline. Builds through deep investigation.",
-            "CAP": "Ambitious, responsible builder. Creates lasting institutions.",
-            "AQU": "Innovative, disciplined reformer. Structures progressive ideas.",
-            "PIS": "Compassionate, spiritual discipline. Builds through faith."
-        },
-        "Uranus": {
-            "CAN": "Rather passive, compassionate, sensitive, impressionable, intuitive.",
-            "ARI": "Innovative, independent pioneer. Sudden changes and breakthroughs.",
-            "TAU": "Unconventional values and financial ideas. Slow but revolutionary change.",
-            "GEM": "Revolutionary thinking and communication. Sudden insights.",
-            "LEO": "Creative innovation and dramatic self-expression.",
-            "VIR": "Unconventional approaches to health and service.",
-            "LIB": "Revolutionary relationships and artistic expression.",
-            "SCO": "Transformative insights and psychological breakthroughs.",
-            "SAG": "Philosophical innovation and expansion of consciousness.",
-            "CAP": "Structural reforms and institutional changes.",
-            "AQU": "Humanitarian vision and technological innovation.",
-            "PIS": "Spiritual insights and mystical revelations."
-        },
-        "Neptune": {
-            "LIB": "Idealistic, often a bit out of touch with reality. Has only a hazy view & understanding of real life & the world.",
-            "ARI": "Spiritual pioneering and inspired action.",
-            "TAU": "Dreamy values and idealized security.",
-            "GEM": "Imaginative communication and inspired ideas.",
-            "CAN": "Mystical home life and spiritual nurturing.",
-            "LEO": "Creative inspiration and dramatic spirituality.",
-            "VIR": "Service through inspiration and healing.",
-            "SCO": "Deep spiritual transformation and psychic sensitivity.",
-            "SAG": "Philosophical idealism and spiritual expansion.",
-            "CAP": "Structured spirituality and institutional faith.",
-            "AQU": "Collective ideals and humanitarian dreams.",
-            "PIS": "Spiritual connection and mystical understanding."
-        },
-        "Pluto": {
-            "LEO": "Strong creative desires. Uncontrollable sexual appetite. Determined to win.",
-            "ARI": "Transformative initiative and rebirth through action.",
-            "TAU": "Deep financial transformation and value regeneration.",
-            "GEM": "Psychological communication and mental transformation.",
-            "CAN": "Emotional rebirth and family transformation.",
-            "VIR": "Service transformation and health regeneration.",
-            "LIB": "Relationship transformation and artistic rebirth.",
-            "SCO": "Deep psychological transformation and rebirth.",
-            "SAG": "Philosophical transformation and belief regeneration.",
-            "CAP": "Structural transformation and power rebirth.",
-            "AQU": "Collective transformation and social regeneration.",
-            "PIS": "Spiritual transformation and mystical rebirth."
         }
     }
 
-    # INTERPRETĂRI PENTRU GRADE
-    degree_interpretations = {
+    # INTERPRETĂRI SPECIFICE PENTRU CAREER
+    career_interpretations = {
         "Sun": {
-            1: "Usually warmhearted & lovable but also vain, hedonistic & flirtatious.",
-            5: "As a child energetic, noisy, overactive, fond of taking risks.",
-            9: "Has very wide-ranging interests.",
-            15: "Strong sense of personal identity and purpose.",
-            18: "Creative talents and artistic abilities.",
-            22: "Strong leadership qualities and determination.",
-            25: "Mature understanding of life's purpose and direction.",
-            29: "Transformative experiences and spiritual growth."
+            "ARI": "Natural entrepreneur and pioneer. Thrives in competitive environments. Excellent at starting new projects.",
+            "TAU": "Steady and reliable worker. Excellent in finance, real estate, and stable professions.",
+            "GEM": "Communicator and networker. Excels in sales, teaching, writing, and multi-tasking roles.",
+            "CAN": "Nurturing careers in healthcare, education, hospitality. Strong in family businesses.",
+            "LEO": "Natural leader and performer. Thrives in management, entertainment, and creative fields.",
+            "VIR": "Analytical and detail-oriented. Excellent in research, accounting, healthcare, and service industries.",
+            "LIB": "Diplomatic and artistic. Successful in law, design, public relations, and partnership-based businesses.",
+            "SCO": "Intense and investigative. Excels in research, psychology, finance, and transformative roles.",
+            "SAG": "Adventurous and philosophical. Thrives in travel, education, publishing, and international business.",
+            "CAP": "Ambitious and disciplined. Natural executive material. Excels in corporate leadership and long-term planning.",
+            "AQU": "Innovative and humanitarian. Successful in technology, science, social work, and progressive fields.",
+            "PIS": "Compassionate and creative. Excels in arts, healing professions, spirituality, and service-oriented work."
+        },
+        "Saturn": {
+            "ARI": "Career success through initiative and courage. Learns responsibility through taking risks.",
+            "TAU": "Stable career growth through persistence. Financial security achieved through hard work.",
+            "GEM": "Career development through communication skills. Responsibility in teaching or writing.",
+            "CAN": "Career tied to family or emotional security. Success in nurturing professions.",
+            "LEO": "Leadership responsibilities. Career growth through creative expression and authority.",
+            "VIR": "Career excellence through attention to detail. Success in service and analytical work.",
+            "LIB": "Career success through partnerships and diplomacy. Responsibility in legal or artistic fields.",
+            "SCO": "Career transformation through deep work. Success in research or investigative fields.",
+            "SAG": "Career expansion through education and travel. Responsibility in philosophical pursuits.",
+            "CAP": "Natural career ambition and discipline. Built for long-term professional success.",
+            "AQU": "Career innovation through original thinking. Success in technology and humanitarian work.",
+            "PIS": "Career fulfillment through service and compassion. Success in healing and artistic fields."
+        },
+        "Midheaven": {
+            "ARI": "Career pioneer and innovator. Natural entrepreneur and leader.",
+            "TAU": "Stable and secure career path. Success in finance and practical professions.",
+            "GEM": "Versatile career with multiple interests. Success in communication fields.",
+            "CAN": "Career focused on nurturing and protection. Success in family businesses.",
+            "LEO": "High-profile career with recognition. Natural performer and leader.",
+            "VIR": "Career excellence through service and analysis. Success in healthcare and detail work.",
+            "LIB": "Career success through partnerships and beauty. Diplomatic and artistic professions.",
+            "SCO": "Career transformation and power. Success in research and intense professions.",
+            "SAG": "Career expansion through travel and education. Philosophical and adventurous work.",
+            "CAP": "Ambitious career with long-term goals. Natural executive and leader.",
+            "AQU": "Innovative and humanitarian career. Success in technology and social change.",
+            "PIS": "Compassionate and creative career. Success in arts and healing professions."
+        }
+    }
+
+    # INTERPRETĂRI SPECIFICE PENTRU RELATIONSHIPS
+    relationships_interpretations = {
+        "Venus": {
+            "ARI": "Passionate and direct in love. Attracted to challenge and excitement in relationships.",
+            "TAU": "Loyal and sensual partner. Values stability, comfort, and physical affection.",
+            "GEM": "Communicative and playful in relationships. Needs mental connection and variety.",
+            "CAN": "Nurturing and protective partner. Seeks emotional security and family connection.",
+            "LEO": "Generous and dramatic in love. Needs admiration and romance in relationships.",
+            "VIR": "Practical and helpful partner. Shows love through service and attention to details.",
+            "LIB": "Harmonious and diplomatic in relationships. Seeks balance, beauty, and partnership.",
+            "SCO": "Intense and passionate in love. Seeks deep emotional bonds and transformation.",
+            "SAG": "Adventurous and freedom-loving partner. Values honesty and philosophical connection.",
+            "CAP": "Serious and responsible in relationships. Seeks stability and long-term commitment.",
+            "AQU": "Unconventional and friendly partner. Values friendship and independence in love.",
+            "PIS": "Romantic and compassionate in relationships. Seeks spiritual connection and soulmates."
+        },
+        "Mars": {
+            "ARI": "Direct and passionate pursuit of partners. Competitive and enthusiastic in relationships.",
+            "TAU": "Persistent and determined approach to love. Slow but steady in building relationships.",
+            "GEM": "Playful and communicative in romantic pursuits. Enjoys mental stimulation in partnerships.",
+            "CAN": "Protective and emotional approach to relationships. Actions driven by deep feelings.",
+            "LEO": "Confident and dramatic pursuit of love. Generous and proud in relationships.",
+            "VIR": "Practical and helpful approach to partnerships. Shows care through service.",
+            "LIB": "Diplomatic and balanced in relationships. Seeks harmony and partnership.",
+            "SCO": "Intense and transformative approach to love. Powerful and determined in relationships.",
+            "SAG": "Adventurous and optimistic in romantic pursuits. Values freedom and honesty.",
+            "CAP": "Ambitious and disciplined approach to relationships. Builds partnerships carefully.",
+            "AQU": "Innovative and independent in love. Unconventional approach to relationships.",
+            "PIS": "Compassionate and intuitive in partnerships. Romantic and dreamy approach to love."
         },
         "Moon": {
-            1: "Strong emotional needs and sensitivity.",
-            6: "Conscientious & easily influenced. Moody. Ready to help others. Illnesses of the nervous system.",
-            12: "Sentimental, moody, shy, very impressionable & hypersensitive.",
-            18: "Strong emotional intuition and sensitivity to others.",
-            22: "Practical emotional expression and nurturing abilities.",
-            27: "Deep emotional wisdom and understanding of cycles."
-        },
-        "Mercury": {
-            1: "Quick thinking and mental agility.",
-            6: "Anxious about health - may travel for health reasons.",
-            8: "Systematic, capable of concentrated thinking & planning. Feels things very deeply.",
-            12: "Excellent memory and learning abilities.",
-            17: "Analytical mind with good problem-solving skills.",
-            22: "Mature communication skills and wisdom in expression.",
-            27: "Philosophical thinking and deep understanding."
-        },
-        "Venus": {
-            1: "Charming and attractive personality.",
-            7: "Loves a cheerful, relaxed atmosphere. Fond of music, art & beautiful houses.",
-            8: "Strong desire to possess another person. Strongly erotic.",
-            15: "Artistic talents and appreciation for beauty.",
-            21: "Harmonious relationships and social grace.",
-            27: "Spiritual understanding of love and relationships."
-        },
-        "Mars": {
-            1: "Energetic and competitive nature.",
-            2: "Ambitious, energetic, competitive, tenacious, practical, financially competent, obstinate, persistent & fearless.",
-            9: "Adventurous spirit and love for exploration.",
-            15: "Strong willpower and determination.",
-            21: "Leadership abilities and strategic thinking.",
-            27: "Transformative energy and spiritual power."
-        },
-        "Jupiter": {
-            1: "Optimistic and expansive nature.",
-            5: "Generous and philosophical mindset.",
-            9: "Good-natured, upright, frequently talented in languages & law.",
-            14: "Spiritual growth and wisdom.",
-            19: "Success through higher education and travel.",
-            25: "Mature wisdom and spiritual understanding."
-        },
-        "Saturn": {
-            1: "Subject to constraints & uncertainties. Serious by nature. Slow but persistent & unchanging.",
-            7: "Responsibility in relationships and partnerships.",
-            13: "Discipline and structure in daily work.",
-            19: "Career achievements through hard work.",
-            25: "Mature understanding of limitations and spiritual discipline."
+            "ARI": "Emotionally direct and passionate in relationships. Needs independence and excitement.",
+            "TAU": "Emotionally stable and loyal partner. Values security and physical comfort.",
+            "GEM": "Emotionally communicative and curious. Needs mental connection and variety.",
+            "CAN": "Deeply nurturing and protective. Strong emotional bonds and family orientation.",
+            "LEO": "Emotionally generous and proud. Needs recognition and appreciation in relationships.",
+            "VIR": "Emotionally practical and helpful. Shows care through service and attention.",
+            "LIB": "Emotionally harmonious and diplomatic. Seeks balance and partnership in relationships.",
+            "SCO": "Emotionally intense and passionate. Deep emotional connections and transformation.",
+            "SAG": "Emotionally adventurous and optimistic. Needs freedom and philosophical connection.",
+            "CAP": "Emotionally responsible and reserved. Controls feelings carefully in relationships.",
+            "AQU": "Emotionally independent and unconventional. Unique emotional expression in partnerships.",
+            "PIS": "Emotionally compassionate and intuitive. Deep spiritual connections in relationships."
         }
     }
 
-    # INTERPRETĂRI PENTRU CASE
-    house_interpretations = {
-        "Sun": {
-            1: "Strong personality and leadership qualities.",
-            5: "Creative self-expression and romantic nature.",
-            9: "Philosophical mind and love for travel.",
-            10: "Ambitious and career-oriented."
-        },
-        "Moon": {
-            1: "Emotional and sensitive personality.",
-            4: "Strong connection to home and family.",
-            7: "Emotional needs in relationships.",
-            10: "Public emotional expression.",
-            12: "Sentimental, moody, shy, very impressionable & hypersensitive."
-        },
-        "Mercury": {
-            3: "Communicative and curious mind.",
-            6: "Anxious about health - may travel for health reasons.",
-            9: "Philosophical and higher thinking.",
-            11: "Social communication and networking."
-        },
-        "Venus": {
-            2: "Artistic values and financial harmony.",
-            5: "Romantic and creative expression.",
-            7: "Loves a cheerful, relaxed atmosphere. Fond of music, art & beautiful houses.",
-            11: "Social grace and friendship networks."
-        },
-        "Mars": {
-            1: "Energetic and assertive personality.",
-            2: "Ambitious, energetic, competitive, tenacious, practical, financially competent, obstinate, persistent & fearless.",
-            6: "Hardworking and health-conscious.",
-            10: "Ambitious career drive."
-        },
-        "Jupiter": {
-            2: "Financial expansion and prosperity.",
-            5: "Creative and romantic expansion.",
-            7: "Beneficial partnerships.",
-            9: "Good-natured, upright, frequently talented in languages & law.",
-            11: "Social success and humanitarian interests."
-        },
-        "Saturn": {
-            1: "Subject to constraints & uncertainties. Serious by nature. Slow but persistent & unchanging.",
-            4: "Responsibility towards family and home.",
-            7: "Serious relationships and partnerships.",
-            10: "Career responsibilities and achievements."
-        },
-        "Uranus": {
-            1: "Independent and innovative personality.",
-            5: "Unconcreative creativity and romance.",
-            7: "Unconventional relationships.",
-            11: "Progressive social networks."
-        },
+    # INTERPRETĂRI SPECIFICE PENTRU SPIRITUAL
+    spiritual_interpretations = {
         "Neptune": {
-            1: "Dreamy and spiritual personality.",
-            4: "Mystical home environment.",
-            7: "Idealistic relationships.",
-            12: "Spiritual and psychic sensitivity."
+            "ARI": "Spiritual pioneer. Direct connection to divine energy. Spiritual warrior.",
+            "TAU": "Grounded spirituality. Connection to earth energies and practical mysticism.",
+            "GEM": "Communicative spirituality. Channel for divine messages and teachings.",
+            "CAN": "Nurturing spiritual path. Connection to ancestral wisdom and emotional healing.",
+            "LEO": "Creative spirituality. Divine expression through art and performance.",
+            "VIR": "Service-oriented spirituality. Healing through practical service and analysis.",
+            "LIB": "Harmonious spirituality. Connection to beauty, balance, and divine partnership.",
+            "SCO": "Transformative spirituality. Deep psychic abilities and rebirth.",
+            "SAG": "Philosophical spirituality. Expansion through truth-seeking and adventure.",
+            "CAP": "Structured spirituality. Building spiritual foundations and discipline.",
+            "AQU": "Innovative spirituality. Connection to collective consciousness and futurism.",
+            "PIS": "Natural mystic. Deep connection to universal love and compassion."
         },
         "Pluto": {
-            1: "Transformative personality.",
-            4: "Family transformations.",
-            8: "Deep psychological insights.",
-            12: "Spiritual transformation."
+            "ARI": "Spiritual rebirth through action. Transformative spiritual initiations.",
+            "TAU": "Transformation of values. Spiritual growth through material detachment.",
+            "GEM": "Mental transformation. Spiritual awakening through communication.",
+            "CAN": "Emotional rebirth. Spiritual healing of family patterns.",
+            "LEO": "Creative transformation. Spiritual rebirth through self-expression.",
+            "VIR": "Service transformation. Spiritual growth through healing service.",
+            "LIB": "Relationship transformation. Spiritual evolution through partnerships.",
+            "SCO": "Deep spiritual transformation. Natural psychic and healing abilities.",
+            "SAG": "Philosophical rebirth. Spiritual expansion through truth-seeking.",
+            "CAP": "Structural transformation. Spiritual rebuilding of foundations.",
+            "AQU": "Collective transformation. Spiritual evolution of humanity.",
+            "PIS": "Complete spiritual rebirth. Ultimate surrender and enlightenment."
+        },
+        "Jupiter": {
+            "ARI": "Expansive spiritual seeking. Philosophical exploration and truth-seeking.",
+            "TAU": "Grounded spiritual growth. Expansion through practical wisdom.",
+            "GEM": "Communicative spirituality. Learning and teaching spiritual concepts.",
+            "CAN": "Nurturing spiritual path. Expansion through emotional wisdom.",
+            "LEO": "Creative spiritual expression. Expansion through divine creativity.",
+            "VIR": "Service-oriented spirituality. Growth through healing and analysis.",
+            "LIB": "Harmonious spiritual path. Expansion through beauty and partnership.",
+            "SCO": "Transformative spiritual growth. Expansion through deep investigation.",
+            "SAG": "Natural spiritual seeker. Philosophical expansion and adventure.",
+            "CAP": "Structured spiritual growth. Expansion through discipline and tradition.",
+            "AQU": "Innovative spirituality. Expansion through universal consciousness.",
+            "PIS": "Compassionate spiritual path. Expansion through universal love."
         }
     }
 
-    planets_to_display = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"]
+    # INTERPRETĂRI PENTRU SEXUAL
+    sexual_interpretations = {
+        "Mars": {
+            "ARI": "Passionate and direct sexual energy. Enthusiastic and competitive in intimacy.",
+            "TAU": "Sensual and persistent sexual nature. Values physical pleasure and stability.",
+            "GEM": "Playful and communicative sexuality. Enjoys variety and mental stimulation.",
+            "CAN": "Emotional and protective sexual nature. Deep emotional connections in intimacy.",
+            "LEO": "Dramatic and generous sexuality. Needs admiration and creative expression.",
+            "VIR": "Practical and attentive lover. Shows care through service and attention to details.",
+            "LIB": "Harmonious and artistic sexuality. Values beauty and partnership in intimacy.",
+            "SCO": "Intense and transformative sexual energy. Deep psychological connections.",
+            "SAG": "Adventurous and optimistic sexuality. Values freedom and exploration.",
+            "CAP": "Disciplined and ambitious sexual nature. Builds intimacy carefully and responsibly.",
+            "AQU": "Innovative and unconventional sexuality. Experimental and freedom-loving.",
+            "PIS": "Compassionate and intuitive sexuality. Spiritual and romantic connections."
+        },
+        "Venus": {
+            "ARI": "Direct and passionate in love. Attracted to challenge and excitement.",
+            "TAU": "Sensual and loyal in relationships. Values physical touch and stability.",
+            "GEM": "Playful and communicative in love. Needs mental connection and variety.",
+            "CAN": "Nurturing and emotional in intimacy. Seeks security and deep bonding.",
+            "LEO": "Generous and dramatic in love. Needs romance and admiration.",
+            "VIR": "Practical and attentive partner. Shows love through service and care.",
+            "LIB": "Harmonious and artistic in relationships. Values beauty and partnership.",
+            "SCO": "Intense and passionate in love. Seeks deep transformation through intimacy.",
+            "SAG": "Adventurous and freedom-loving. Values honesty and philosophical connection.",
+            "CAP": "Serious and responsible in love. Seeks commitment and stability.",
+            "AQU": "Unconventional and friendly. Values independence and intellectual connection.",
+            "PIS": "Romantic and compassionate. Seeks spiritual union and soul connection."
+        },
+        "Pluto": {
+            "ARI": "Transformative sexual energy through direct action. Powerful initiations.",
+            "TAU": "Deep sensual transformation. Rebirth through physical intimacy.",
+            "GEM": "Mental and communicative sexual transformation. Psychological intimacy.",
+            "CAN": "Emotional sexual rebirth. Healing of family patterns through intimacy.",
+            "LEO": "Creative sexual transformation. Rebirth through self-expression.",
+            "VIR": "Service-oriented sexual healing. Transformation through attentive care.",
+            "LIB": "Relationship transformation through intimacy. Deep partnership bonds.",
+            "SCO": "Intense sexual transformation. Natural depth and psychological insight.",
+            "SAG": "Philosophical sexual expansion. Growth through adventure and truth.",
+            "CAP": "Structured sexual transformation. Rebuilding intimacy foundations.",
+            "AQU": "Innovative sexual evolution. Transformation through experimentation.",
+            "PIS": "Complete sexual surrender. Spiritual union and transcendental intimacy."
+        }
+    }
+
+    # Alege dicționarul de interpretări în funcție de tip
+    if interpretation_type == "Career":
+        interpretations = career_interpretations
+        planets_to_display = ["Sun", "Saturn", "Midheaven"]
+    elif interpretation_type == "Relationships":
+        interpretations = relationships_interpretations
+        planets_to_display = ["Venus", "Mars", "Moon"]
+    elif interpretation_type == "Spiritual":
+        interpretations = spiritual_interpretations
+        planets_to_display = ["Neptune", "Pluto", "Jupiter"]
+    elif interpretation_type == "Sexual":
+        interpretations = sexual_interpretations
+        planets_to_display = ["Mars", "Venus", "Pluto"]
+    else:  # Natal
+        interpretations = natal_interpretations
+        planets_to_display = ["Sun", "Moon"]
     
     for planet_name in planets_to_display:
         if planet_name in chart_data['planets']:
             planet_data = chart_data['planets'][planet_name]
             planet_sign = planet_data['sign']
-            planet_degrees = planet_data['degrees']
-            planet_house = planet_data.get('house', 0)
             
             # Afișează interpretarea pentru semn
-            if (planet_name in natal_interpretations and 
-                planet_sign in natal_interpretations[planet_name]):
+            if (planet_name in interpretations and 
+                planet_sign in interpretations[planet_name]):
                 
-                st.write(f"****  {planet_name}{planet_sign}")
-                st.write(natal_interpretations[planet_name][planet_sign])
-                st.write("")
-
-            # Afișează interpretarea pentru grad
-            if (interpretation_type == "Natal" and 
-                planet_name in degree_interpretations and 
-                planet_degrees in degree_interpretations[planet_name]):
-                
-                st.write(f"****  {planet_name}{planet_degrees:02d}")
-                st.write(degree_interpretations[planet_name][planet_degrees])
-                st.write("")
-
-            # Afișează interpretarea pentru casă
-            if (interpretation_type == "Natal" and 
-                planet_name in house_interpretations and 
-                planet_house in house_interpretations[planet_name]):
-                
-                st.write(f"****  {planet_name}{planet_house:02d}")
-                st.write(house_interpretations[planet_name][planet_house])
+                st.write(f"**{planet_name} in {planet_sign}**")
+                st.write(interpretations[planet_name][planet_sign])
                 st.write("")
 
 def display_about():
