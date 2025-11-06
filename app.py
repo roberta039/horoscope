@@ -836,7 +836,7 @@ def display_positions():
             positions_data.append({
                 'Planet': planet_name,
                 'Position': planet_data['position_str'],
-                'Longitude': f"{planet_data['longitude']:.2f}°"['longitude']:.2f}°",
+                'Longitude': f"{int(planet_data['longitude'])}°{int((planet_data['longitude'] % 1) * 60)}'",
                 'House': planet_data.get('house', 'N/A')
             })
     
