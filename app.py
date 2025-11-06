@@ -245,8 +245,8 @@ def create_chart_wheel(chart_data, birth_data):
         # Culori
         background_color = '#41b3f1'
         circle_color = '#262730'
-        text_color = 'white'
-        house_color = '#FAFAFA'
+        text_color = 'black'
+        house_color = 'black'
         planet_colors = {
             'Sun': '#FFD700', 'Moon': '#C0C0C0', 'Mercury': '#A9A9A9',
             'Venus': '#FFB6C1', 'Mars': '#FF4500', 'Jupiter': '#FFA500',
