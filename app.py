@@ -255,13 +255,13 @@ def get_house_for_longitude_swiss(longitude, houses):
 def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart"):
     """Creează un grafic circular cu planetele în case"""
     try:
-        fig, ax = plt.subplots(figsize=(6, 6))
+        fig, ax = plt.subplots(figsize=(12, 12))
         ax.set_aspect('equal')
         
         # Setări pentru cercul principal
         center_x, center_y = 0, 0
-        outer_radius = 4.5
-        inner_radius = 3.8
+        outer_radius = 5
+        inner_radius = 4
         house_radius = 3.5
         planet_radius = 3.0
         
@@ -1041,7 +1041,7 @@ def display_interpretation():
 def display_complete_interpretations(chart_data, interpretation_type):
     """Afișează interpretări complete pentru toate planetele și gradele"""
     
-    # INTERPRETĂRI COMPLETE PENTRU SEMNE - NATAL
+    # INTERPRETĂRI COMPLETE PENTRU SEMNE - NATAL (EXTINS)
     natal_interpretations = {
         "Sun": {
             "TAU": "Reliable, able, with powers of concentration, tenacity. Steadfast, a loving & affectionate \"family\" person. Honest, forthright. Learns readily from mistakes.",
@@ -1070,6 +1070,118 @@ def display_complete_interpretations(chart_data, interpretation_type):
             "CAP": "Responsible, disciplined, reserved. Controls emotions carefully. Ambitious.",
             "AQU": "Independent, unconventional, detached. Unique emotional expression. Progressive.",
             "PIS": "Compassionate, intuitive, dreamy. Sensitive emotional nature. Spiritual."
+        },
+        "Mercury": {
+            "TAU": "Thorough, persevering. Good at working with the hands. Inflexible, steady, obstinate, self-opinionated, conventional, limited in interests.",
+            "ARI": "Quick-thinking, direct, innovative. Expresses ideas boldly and spontaneously.",
+            "GEM": "Versatile, communicative, curious. Learns quickly and shares knowledge.",
+            "CAN": "Intuitive, emotional, memory-oriented. Thinks with heart and nostalgia.",
+            "LEO": "Confident, dramatic, creative. Expresses ideas with flair and authority.",
+            "VIR": "Analytical, precise, detail-oriented. Excellent at critical thinking.",
+            "LIB": "Diplomatic, balanced, artistic. Seeks harmony in communication.",
+            "SCO": "Penetrating, investigative, profound. Seeks hidden truths.",
+            "SAG": "Philosophical, broad-minded, honest. Thinks in big pictures.",
+            "CAP": "Practical, organized, ambitious. Strategic and disciplined thinking.",
+            "AQU": "Innovative, original, detached. Thinks outside conventional boxes.",
+            "PIS": "Intuitive, imaginative, compassionate. Thinks with psychic sensitivity."
+        },
+        "Venus": {
+            "GEM": "Flirtatious. Makes friends very easily. Has multifaceted relationships.",
+            "ARI": "Direct, passionate, impulsive in love. Attracted to challenge and excitement.",
+            "TAU": "Sensual, loyal, comfort-seeking. Values stability and physical pleasure.",
+            "CAN": "Nurturing, protective, home-oriented. Seeks emotional security.",
+            "LEO": "Dramatic, generous, proud. Loves romance and admiration.",
+            "VIR": "Practical, helpful, discerning. Shows love through service.",
+            "LIB": "Harmonious, diplomatic, artistic. Seeks balance and partnership.",
+            "SCO": "Intense, passionate, possessive. Seeks deep emotional bonds.",
+            "SAG": "Adventurous, freedom-loving, honest. Values independence in relationships.",
+            "CAP": "Serious, responsible, ambitious. Seeks stability and commitment.",
+            "AQU": "Unconventional, friendly, detached. Values friendship and independence.",
+            "PIS": "Romantic, compassionate, dreamy. Seeks spiritual connection."
+        },
+        "Mars": {
+            "AQU": "Strong reasoning powers. Often interested in science. Fond of freedom & independence.",
+            "ARI": "Energetic, competitive, pioneering. Direct and assertive action.",
+            "TAU": "Persistent, determined, practical. Slow but steady approach.",
+            "GEM": "Versatile, quick, communicative. Action through words and ideas.",
+            "CAN": "Protective, emotional, defensive. Actions driven by feelings.",
+            "LEO": "Confident, dramatic, creative. Actions with flair and leadership.",
+            "VIR": "Precise, analytical, efficient. Methodical and careful action.",
+            "LIB": "Diplomatic, balanced, cooperative. Seeks harmony in action.",
+            "SCO": "Intense, determined, transformative. Powerful and secretive action.",
+            "SAG": "Adventurous, optimistic, freedom-loving. Action with purpose.",
+            "CAP": "Ambitious, disciplined, patient. Strategic and persistent action.",
+            "PIS": "Compassionate, intuitive, adaptable. Action through inspiration."
+        },
+        "Jupiter": {
+            "LEO": "Has a talent for organizing & leading. Open & ready to help anyone in need - magnanimous & affectionate.",
+            "ARI": "Enthusiastic, confident, generous. Natural leadership abilities.",
+            "TAU": "Practical, steady growth. Values material security and comfort.",
+            "GEM": "Curious, communicative, versatile. Expands through learning and connections.",
+            "CAN": "Nurturing, protective growth. Expands family and home life.",
+            "VIR": "Analytical, service-oriented growth. Improves through attention to detail.",
+            "LIB": "Harmonious, diplomatic expansion. Grows through relationships and beauty.",
+            "SCO": "Intense, transformative growth. Expands through deep investigation.",
+            "SAG": "Philosophical, adventurous expansion. Seeks truth and meaning.",
+            "CAP": "Ambitious, disciplined growth. Builds lasting structures and authority.",
+            "AQU": "Innovative, humanitarian expansion. Progress through originality.",
+            "PIS": "Compassionate, spiritual growth. Expands through intuition and service."
+        },
+        "Saturn": {
+            "SAG": "Upright, open, courageous, honourable, grave, dignified, very capable.",
+            "ARI": "Ambitious, disciplined pioneer. Builds structures with initiative.",
+            "TAU": "Practical, patient builder. Creates lasting material security.",
+            "GEM": "Serious, organized communicator. Structures thinking and learning.",
+            "CAN": "Responsible, protective authority. Builds family traditions.",
+            "LEO": "Dignified, authoritative leader. Structures creative expression.",
+            "VIR": "Precise, efficient organizer. Creates order through service.",
+            "LIB": "Balanced, diplomatic judge. Structures relationships fairly.",
+            "SCO": "Intense, transformative discipline. Builds through deep investigation.",
+            "CAP": "Ambitious, responsible builder. Creates lasting institutions.",
+            "AQU": "Innovative, disciplined reformer. Structures progressive ideas.",
+            "PIS": "Compassionate, spiritual discipline. Builds through faith."
+        },
+        "Uranus": {
+            "CAN": "Rather passive, compassionate, sensitive, impressionable, intuitive.",
+            "ARI": "Innovative, independent pioneer. Sudden changes and breakthroughs.",
+            "TAU": "Unconventional values and financial ideas. Slow but revolutionary change.",
+            "GEM": "Revolutionary thinking and communication. Sudden insights.",
+            "LEO": "Creative innovation and dramatic self-expression.",
+            "VIR": "Unconventional approaches to health and service.",
+            "LIB": "Revolutionary relationships and artistic expression.",
+            "SCO": "Transformative insights and psychological breakthroughs.",
+            "SAG": "Philosophical innovation and expansion of consciousness.",
+            "CAP": "Structural reforms and institutional changes.",
+            "AQU": "Humanitarian vision and technological innovation.",
+            "PIS": "Spiritual insights and mystical revelations."
+        },
+        "Neptune": {
+            "LIB": "Idealistic, often a bit out of touch with reality. Has only a hazy view & understanding of real life & the world.",
+            "ARI": "Spiritual pioneering and inspired action.",
+            "TAU": "Dreamy values and idealized security.",
+            "GEM": "Imaginative communication and inspired ideas.",
+            "CAN": "Mystical home life and spiritual nurturing.",
+            "LEO": "Creative inspiration and dramatic spirituality.",
+            "VIR": "Service through inspiration and healing.",
+            "SCO": "Deep spiritual transformation and psychic sensitivity.",
+            "SAG": "Philosophical idealism and spiritual expansion.",
+            "CAP": "Structured spirituality and institutional faith.",
+            "AQU": "Collective ideals and humanitarian dreams.",
+            "PIS": "Spiritual connection and mystical understanding."
+        },
+        "Pluto": {
+            "LEO": "Strong creative desires. Uncontrollable sexual appetite. Determined to win.",
+            "ARI": "Transformative initiative and rebirth through action.",
+            "TAU": "Deep financial transformation and value regeneration.",
+            "GEM": "Psychological communication and mental transformation.",
+            "CAN": "Emotional rebirth and family transformation.",
+            "VIR": "Service transformation and health regeneration.",
+            "LIB": "Relationship transformation and artistic rebirth.",
+            "SCO": "Deep psychological transformation and rebirth.",
+            "SAG": "Philosophical transformation and belief regeneration.",
+            "CAP": "Structural transformation and power rebirth.",
+            "AQU": "Collective transformation and social regeneration.",
+            "PIS": "Spiritual transformation and mystical rebirth."
         }
     }
 
@@ -1272,7 +1384,7 @@ def display_complete_interpretations(chart_data, interpretation_type):
         planets_to_display = ["Mars", "Venus", "Pluto"]
     else:  # Natal
         interpretations = natal_interpretations
-        planets_to_display = ["Sun", "Moon"]
+        planets_to_display = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"]
     
     for planet_name in planets_to_display:
         if planet_name in chart_data['planets']:
