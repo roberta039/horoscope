@@ -3,7 +3,6 @@ import ephem
 from datetime import datetime
 import math
 import pytz
-from timezonefinder import TimezoneFinder
 import pandas as pd
 
 # Configurare pagină
@@ -181,7 +180,7 @@ def generate_relationships_interpretation(planets_data, houses_data):
     if seventh_house.get('sign') == 'Libra':
         interpretations.append("Relațiile tale sunt marcate de armonie și echilibru. Cauți parteneriate bazate pe respect reciproc.")
     elif seventh_house.get('sign') == 'Scorpio':
-        interpretations.append("Relațiile tale sunt intense și transformatoare. Cauți conexiuni profonde și autentice.")
+        interpretations.append("Relațiile tale sunt intense și transformatoare. Cauți conexiuni profunde și autentice.")
     else:
         interpretations.append("Relațiile tale se bazează pe comunicare și înțelegere reciprocă.")
     
