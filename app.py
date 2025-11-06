@@ -232,7 +232,7 @@ def get_house_for_longitude_swiss(longitude, houses):
 def create_chart_wheel(chart_data, birth_data):
     """Creează un grafic circular cu planetele în case"""
     try:
-        fig, ax = plt.subplots(figsize=(8, 8))
+        fig, ax = plt.subplots(figsize=(6, 6))
         ax.set_aspect('equal')
         
         # Setări pentru cercul principal
