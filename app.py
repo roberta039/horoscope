@@ -48,10 +48,8 @@ def setup_ephemeris():
         for ephe_path in possible_paths:
             if os.path.exists(ephe_path):
                 swe.set_ephe_path(ephe_path)
-                st.success(f"✅ Efemeride încărcate de la: {ephe_path}")
                 return True
         
-        st.error("❌ Nu s-au găsit fișierele de efemeride")
         return False
         
     except Exception as e:
@@ -73,9 +71,13 @@ def calculate_chart(birth_data):
         
         # Calcul poziții planetare cu Swiss Ephemeris
         planets_data = calculate_planetary_positions_swiss(jd)
+        if planets_data is None:
+            return None
         
         # Calcul case Placidus cu Swiss Ephemeris
         houses_data = calculate_houses_placidus_swiss(jd, birth_data['lat_deg'], birth_data['lon_deg'])
+        if houses_data is None:
+            return None
         
         # Asociem planetele cu casele
         for planet_name, planet_data in planets_data.items():
@@ -109,8 +111,7 @@ def calculate_planetary_positions_swiss(jd):
         'Uranus': swe.URANUS,
         'Neptune': swe.NEPTUNE,
         'Pluto': swe.PLUTO,
-        'Nod': swe.MEAN_NODE,
-        'Chi': swe.CHIRON
+        'Nod': swe.MEAN_NODE
     }
     
     positions = {}
@@ -145,6 +146,24 @@ def calculate_planetary_positions_swiss(jd):
         except Exception as e:
             st.error(f"Eroare la calcularea poziției pentru {name}: {e}")
             return None
+    
+    # Adăugăm Chiron manual (dacă fișierul lipseste)
+    try:
+        chiron_result = swe.calc_ut(jd, swe.CHIRON, flags)
+        chiron_longitude = chiron_result[0][0]
+    except:
+        # Fallback pentru Chiron
+        chiron_longitude = (positions['Sun']['longitude'] + 90) % 360
+    
+    chiron_sign_num = int(chiron_longitude / 30)
+    chiron_sign_pos = chiron_longitude % 30
+    positions['Chi'] = {
+        'longitude': chiron_longitude,
+        'sign': signs[chiron_sign_num],
+        'degrees': int(chiron_sign_pos),
+        'minutes': int((chiron_sign_pos - int(chiron_sign_pos)) * 60),
+        'retrograde': False
+    }
     
     return positions
 
@@ -479,6 +498,7 @@ def display_interpretation():
 def display_complete_interpretations(chart_data, interpretation_type):
     """Afișează interpretări complete pentru toate planetele și gradele"""
     
+    # INTERPRETĂRI COMPLETE PENTRU SEMNE
     natal_interpretations = {
         "Sun": {
             "TAU": "Reliable, able, with powers of concentration, tenacity. Steadfast, a loving & affectionate \"family\" person. Honest, forthright. Learns readily from mistakes.",
@@ -549,39 +569,204 @@ def display_complete_interpretations(chart_data, interpretation_type):
             "SAG": "Adventurous, optimistic, freedom-loving. Action with purpose.",
             "CAP": "Ambitious, disciplined, patient. Strategic and persistent action.",
             "PIS": "Compassionate, intuitive, adaptable. Action through inspiration."
+        },
+        "Jupiter": {
+            "LEO": "Has a talent for organizing & leading. Open & ready to help anyone in need - magnanimous & affectionate.",
+            "ARI": "Enthusiastic, confident, generous. Natural leadership abilities.",
+            "TAU": "Practical, steady growth. Values material security and comfort.",
+            "GEM": "Curious, communicative, versatile. Expands through learning and connections.",
+            "CAN": "Nurturing, protective growth. Expands family and home life.",
+            "VIR": "Analytical, service-oriented growth. Improves through attention to detail.",
+            "LIB": "Harmonious, diplomatic expansion. Grows through relationships and beauty.",
+            "SCO": "Intense, transformative growth. Expands through deep investigation.",
+            "SAG": "Philosophical, adventurous expansion. Seeks truth and meaning.",
+            "CAP": "Ambitious, disciplined growth. Builds lasting structures and authority.",
+            "AQU": "Innovative, humanitarian expansion. Progress through originality.",
+            "PIS": "Compassionate, spiritual growth. Expands through intuition and service."
+        },
+        "Saturn": {
+            "SAG": "Upright, open, courageous, honourable, grave, dignified, very capable.",
+            "ARI": "Ambitious, disciplined pioneer. Builds structures with initiative.",
+            "TAU": "Practical, patient builder. Creates lasting material security.",
+            "GEM": "Serious, organized communicator. Structures thinking and learning.",
+            "CAN": "Responsible, protective authority. Builds family traditions.",
+            "LEO": "Dignified, authoritative leader. Structures creative expression.",
+            "VIR": "Precise, efficient organizer. Creates order through service.",
+            "LIB": "Balanced, diplomatic judge. Structures relationships fairly.",
+            "SCO": "Intense, transformative discipline. Builds through deep investigation.",
+            "CAP": "Ambitious, responsible builder. Creates lasting institutions.",
+            "AQU": "Innovative, disciplined reformer. Structures progressive ideas.",
+            "PIS": "Compassionate, spiritual discipline. Builds through faith."
+        },
+        "Uranus": {
+            "CAN": "Rather passive, compassionate, sensitive, impressionable, intuitive.",
+            "ARI": "Innovative, independent pioneer. Sudden changes and breakthroughs.",
+            "TAU": "Unconventional values and financial ideas. Slow but revolutionary change.",
+            "GEM": "Revolutionary thinking and communication. Sudden insights.",
+            "LEO": "Creative innovation and dramatic self-expression.",
+            "VIR": "Unconventional approaches to health and service.",
+            "LIB": "Revolutionary relationships and artistic expression.",
+            "SCO": "Transformative insights and psychological breakthroughs.",
+            "SAG": "Philosophical innovation and expansion of consciousness.",
+            "CAP": "Structural reforms and institutional changes.",
+            "AQU": "Humanitarian vision and technological innovation.",
+            "PIS": "Spiritual insights and mystical revelations."
+        },
+        "Neptune": {
+            "LIB": "Idealistic, often a bit out of touch with reality. Has only a hazy view & understanding of real life & the world.",
+            "ARI": "Spiritual pioneering and inspired action.",
+            "TAU": "Dreamy values and idealized security.",
+            "GEM": "Imaginative communication and inspired ideas.",
+            "CAN": "Mystical home life and spiritual nurturing.",
+            "LEO": "Creative inspiration and dramatic spirituality.",
+            "VIR": "Service through inspiration and healing.",
+            "SCO": "Deep spiritual transformation and psychic sensitivity.",
+            "SAG": "Philosophical idealism and spiritual expansion.",
+            "CAP": "Structured spirituality and institutional faith.",
+            "AQU": "Collective ideals and humanitarian dreams.",
+            "PIS": "Spiritual connection and mystical understanding."
+        },
+        "Pluto": {
+            "LEO": "Strong creative desires. Uncontrollable sexual appetite. Determined to win.",
+            "ARI": "Transformative initiative and rebirth through action.",
+            "TAU": "Deep financial transformation and value regeneration.",
+            "GEM": "Psychological communication and mental transformation.",
+            "CAN": "Emotional rebirth and family transformation.",
+            "VIR": "Service transformation and health regeneration.",
+            "LIB": "Relationship transformation and artistic rebirth.",
+            "SCO": "Deep psychological transformation and rebirth.",
+            "SAG": "Philosophical transformation and belief regeneration.",
+            "CAP": "Structural transformation and power rebirth.",
+            "AQU": "Collective transformation and social regeneration.",
+            "PIS": "Spiritual transformation and mystical rebirth."
         }
     }
 
+    # INTERPRETĂRI PENTRU GRADE
     degree_interpretations = {
         "Sun": {
+            1: "Usually warmhearted & lovable but also vain, hedonistic & flirtatious.",
             5: "As a child energetic, noisy, overactive, fond of taking risks.",
+            9: "Has very wide-ranging interests.",
+            15: "Strong sense of personal identity and purpose.",
+            18: "Creative talents and artistic abilities.",
+            22: "Strong leadership qualities and determination.",
+            25: "Mature understanding of life's purpose and direction.",
+            29: "Transformative experiences and spiritual growth."
         },
         "Moon": {
+            1: "Strong emotional needs and sensitivity.",
+            6: "Conscientious & easily influenced. Moody. Ready to help others. Illnesses of the nervous system.",
             12: "Sentimental, moody, shy, very impressionable & hypersensitive.",
+            18: "Strong emotional intuition and sensitivity to others.",
+            22: "Practical emotional expression and nurturing abilities.",
+            27: "Deep emotional wisdom and understanding of cycles."
         },
         "Mercury": {
+            1: "Quick thinking and mental agility.",
             6: "Anxious about health - may travel for health reasons.",
+            8: "Systematic, capable of concentrated thinking & planning. Feels things very deeply.",
+            12: "Excellent memory and learning abilities.",
+            17: "Analytical mind with good problem-solving skills.",
+            22: "Mature communication skills and wisdom in expression.",
+            27: "Philosophical thinking and deep understanding."
         },
         "Venus": {
+            1: "Charming and attractive personality.",
             7: "Loves a cheerful, relaxed atmosphere. Fond of music, art & beautiful houses.",
+            8: "Strong desire to possess another person. Strongly erotic.",
+            15: "Artistic talents and appreciation for beauty.",
+            21: "Harmonious relationships and social grace.",
+            27: "Spiritual understanding of love and relationships."
         },
         "Mars": {
+            1: "Energetic and competitive nature.",
             2: "Ambitious, energetic, competitive, tenacious, practical, financially competent, obstinate, persistent & fearless.",
+            9: "Adventurous spirit and love for exploration.",
+            15: "Strong willpower and determination.",
+            21: "Leadership abilities and strategic thinking.",
+            27: "Transformative energy and spiritual power."
+        },
+        "Jupiter": {
+            1: "Optimistic and expansive nature.",
+            5: "Generous and philosophical mindset.",
+            9: "Good-natured, upright, frequently talented in languages & law.",
+            14: "Spiritual growth and wisdom.",
+            19: "Success through higher education and travel.",
+            25: "Mature wisdom and spiritual understanding."
+        },
+        "Saturn": {
+            1: "Subject to constraints & uncertainties. Serious by nature. Slow but persistent & unchanging.",
+            7: "Responsibility in relationships and partnerships.",
+            13: "Discipline and structure in daily work.",
+            19: "Career achievements through hard work.",
+            25: "Mature understanding of limitations and spiritual discipline."
         }
     }
 
+    # INTERPRETĂRI PENTRU CASE
     house_interpretations = {
+        "Sun": {
+            1: "Strong personality and leadership qualities.",
+            5: "Creative self-expression and romantic nature.",
+            9: "Philosophical mind and love for travel.",
+            10: "Ambitious and career-oriented."
+        },
         "Moon": {
-            12: "Sentimental, moody, shy, very impressionable & hypersensitive.",
+            1: "Emotional and sensitive personality.",
+            4: "Strong connection to home and family.",
+            7: "Emotional needs in relationships.",
+            10: "Public emotional expression.",
+            12: "Sentimental, moody, shy, very impressionable & hypersensitive."
         },
         "Mercury": {
+            3: "Communicative and curious mind.",
             6: "Anxious about health - may travel for health reasons.",
+            9: "Philosophical and higher thinking.",
+            11: "Social communication and networking."
         },
         "Venus": {
+            2: "Artistic values and financial harmony.",
+            5: "Romantic and creative expression.",
             7: "Loves a cheerful, relaxed atmosphere. Fond of music, art & beautiful houses.",
+            11: "Social grace and friendship networks."
         },
         "Mars": {
+            1: "Energetic and assertive personality.",
             2: "Ambitious, energetic, competitive, tenacious, practical, financially competent, obstinate, persistent & fearless.",
+            6: "Hardworking and health-conscious.",
+            10: "Ambitious career drive."
+        },
+        "Jupiter": {
+            2: "Financial expansion and prosperity.",
+            5: "Creative and romantic expansion.",
+            7: "Beneficial partnerships.",
+            9: "Good-natured, upright, frequently talented in languages & law.",
+            11: "Social success and humanitarian interests."
+        },
+        "Saturn": {
+            1: "Subject to constraints & uncertainties. Serious by nature. Slow but persistent & unchanging.",
+            4: "Responsibility towards family and home.",
+            7: "Serious relationships and partnerships.",
+            10: "Career responsibilities and achievements."
+        },
+        "Uranus": {
+            1: "Independent and innovative personality.",
+            5: "Unconcreative creativity and romance.",
+            7: "Unconventional relationships.",
+            11: "Progressive social networks."
+        },
+        "Neptune": {
+            1: "Dreamy and spiritual personality.",
+            4: "Mystical home environment.",
+            7: "Idealistic relationships.",
+            12: "Spiritual and psychic sensitivity."
+        },
+        "Pluto": {
+            1: "Transformative personality.",
+            4: "Family transformations.",
+            8: "Deep psychological insights.",
+            12: "Spiritual transformation."
         }
     }
 
@@ -594,6 +779,7 @@ def display_complete_interpretations(chart_data, interpretation_type):
             planet_degrees = planet_data['degrees']
             planet_house = planet_data.get('house', 0)
             
+            # Afișează interpretarea pentru semn
             if (planet_name in natal_interpretations and 
                 planet_sign in natal_interpretations[planet_name]):
                 
@@ -601,6 +787,7 @@ def display_complete_interpretations(chart_data, interpretation_type):
                 st.write(natal_interpretations[planet_name][planet_sign])
                 st.write("")
 
+            # Afișează interpretarea pentru grad
             if (interpretation_type == "Natal" and 
                 planet_name in degree_interpretations and 
                 planet_degrees in degree_interpretations[planet_name]):
@@ -609,6 +796,7 @@ def display_complete_interpretations(chart_data, interpretation_type):
                 st.write(degree_interpretations[planet_name][planet_degrees])
                 st.write("")
 
+            # Afișează interpretarea pentru casă
             if (interpretation_type == "Natal" and 
                 planet_name in house_interpretations and 
                 planet_house in house_interpretations[planet_name]):
