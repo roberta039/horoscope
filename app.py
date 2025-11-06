@@ -255,13 +255,13 @@ def get_house_for_longitude_swiss(longitude, houses):
 def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_aspects=True):
     """Creează un grafic circular cu planetele în case și aspectele cu linii colorate"""
     try:
-        fig, ax = plt.subplots(figsize=(12, 12))
+        fig, ax = plt.subplots(figsize=(6, 6))
         ax.set_aspect('equal')
         
         # Setări pentru cercul principal
         center_x, center_y = 0, 0
-        outer_radius = 5
-        inner_radius = 4
+        outer_radius = 4.5
+        inner_radius = 3.8
         house_radius = 3.5
         planet_radius = 3.0
         aspect_radius = 4.2  # Raza pentru liniile de aspect
