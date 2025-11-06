@@ -264,7 +264,7 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
         inner_radius = 3.8
         house_radius = 3.5
         planet_radius = 3.0
-        aspect_radius = 3.3  # Raza pentru liniile de aspect
+        aspect_radius = 2.5  # Raza pentru liniile de aspect
         
         # Culori
         background_color = 'white'
