@@ -3,7 +3,8 @@ import datetime
 from datetime import datetime
 import math
 import pandas as pd
-import numpy as np
+import swisseph as swe
+import os
 
 def main():
     st.set_page_config(page_title="Horoscope", layout="wide", page_icon="♈")
@@ -33,44 +34,53 @@ def main():
     elif menu_option == "About":
         display_about()
 
-def calculate_chart(birth_data):
-    """Calculează harta astrologică folosind algoritmi manuali pentru acuratețe"""
+def setup_ephemeris():
+    """Configurează calea către fișierele de efemeride"""
     try:
-        # Verificăm dacă datele corespund exemplului specific
-        is_target_example = (
-            birth_data['date'] == datetime(1956, 4, 25).date() and
-            birth_data['time'].hour == 21 and
-            birth_data['time'].minute == 0 and
-            abs(birth_data['lat_deg'] - 45.85) < 0.1 and
-            abs(birth_data['lon_deg'] - 16.0) < 0.1
-        )
+        # Încearcă mai multe căi posibile
+        possible_paths = [
+            './ephe',                           # Cale relativă
+            './swisseph-data/ephe',             # Submodul
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ephe'),  # Cale absolută
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), 'swisseph-data', 'ephe')
+        ]
         
-        if is_target_example:
-            # Folosim datele exacte pentru exemplul specific
-            return get_exact_chart_data()
-        else:
-            # Calculăm pentru alte date folosind algoritmi manuali
-            return calculate_chart_manual(birth_data)
+        for ephe_path in possible_paths:
+            if os.path.exists(ephe_path):
+                swe.set_ephe_path(ephe_path)
+                st.success(f"✅ Efemeride încărcate de la: {ephe_path}")
+                return True
+        
+        st.error("❌ Nu s-au găsit fișierele de efemeride")
+        return False
         
     except Exception as e:
-        st.error(f"Eroare la calcularea chart-ului: {str(e)}")
-        return get_exact_chart_data()
+        st.error(f"Eroare la configurarea efemeridelor: {e}")
+        return False
 
-def calculate_chart_manual(birth_data):
-    """Calculează harta astrologică folosind algoritmi manuali"""
+def calculate_chart(birth_data):
+    """Calculează harta astrologică folosind Swiss Ephemeris"""
     try:
+        # Configurează efemeridele
+        if not setup_ephemeris():
+            st.error("Nu s-au putut încărca fișierele de efemeride.")
+            return None
+        
+        # Convertire date în format Julian
         birth_datetime = datetime.combine(birth_data['date'], birth_data['time'])
+        jd = swe.julday(birth_datetime.year, birth_datetime.month, birth_datetime.day, 
+                       birth_datetime.hour + birth_datetime.minute/60.0)
         
-        # Calcul poziții planetare manual
-        planets_data = calculate_planetary_positions_manual(birth_datetime)
+        # Calcul poziții planetare cu Swiss Ephemeris
+        planets_data = calculate_planetary_positions_swiss(jd)
         
-        # Calcul case Placidus manual
-        houses_data = calculate_houses_placidus_manual(birth_datetime, birth_data['lat_deg'], birth_data['lon_deg'])
+        # Calcul case Placidus cu Swiss Ephemeris
+        houses_data = calculate_houses_placidus_swiss(jd, birth_data['lat_deg'], birth_data['lon_deg'])
         
         # Asociem planetele cu casele
         for planet_name, planet_data in planets_data.items():
             planet_longitude = planet_data['longitude']
-            planet_data['house'] = get_house_for_longitude_manual(planet_longitude, houses_data)
+            planet_data['house'] = get_house_for_longitude_swiss(planet_longitude, houses_data)
             
             # Formatare string pozitie
             retro_symbol = "R" if planet_data['retrograde'] else ""
@@ -79,135 +89,77 @@ def calculate_chart_manual(birth_data):
         return {
             'planets': planets_data,
             'houses': houses_data,
-            'is_exact': False
+            'jd': jd
         }
         
     except Exception as e:
-        st.error(f"Eroare la calcularea manuală: {str(e)}")
-        return get_exact_chart_data()
+        st.error(f"Eroare la calcularea chart-ului: {str(e)}")
+        return None
 
-def calculate_planetary_positions_manual(birth_datetime):
-    """Calculează pozițiile planetare folosind algoritmi manuali"""
-    # Aceasta este o implementare simplificată
-    # Într-o aplicație reală, ai folosi efemeride precise
+def calculate_planetary_positions_swiss(jd):
+    """Calculează pozițiile planetare folosind Swiss Ephemeris"""
+    planets = {
+        'Sun': swe.SUN,
+        'Moon': swe.MOON,
+        'Mercury': swe.MERCURY,
+        'Venus': swe.VENUS,
+        'Mars': swe.MARS,
+        'Jupiter': swe.JUPITER,
+        'Saturn': swe.SATURN,
+        'Uranus': swe.URANUS,
+        'Neptune': swe.NEPTUNE,
+        'Pluto': swe.PLUTO,
+        'Nod': swe.MEAN_NODE,
+        'Chi': swe.CHIRON
+    }
     
     positions = {}
+    flags = swe.FLG_SWIEPH | swe.FLG_SPEED
+    
     signs = ['ARI', 'TAU', 'GEM', 'CAN', 'LEO', 'VIR', 
             'LIB', 'SCO', 'SAG', 'CAP', 'AQU', 'PIS']
     
-    # Calcul bazat pe data și ora nașterii (simplificat)
-    year = birth_datetime.year
-    month = birth_datetime.month
-    day = birth_datetime.day
-    hour = birth_datetime.hour
-    minute = birth_datetime.minute
-    
-    # Calcul aproximativ pentru pozițiile planetare
-    # Aceste formule sunt foarte simplificate!
-    day_of_year = birth_datetime.timetuple().tm_yday
-    time_factor = hour + minute/60.0
-    
-    # Poziții aproximative bazate pe cicluri medii
-    sun_long = (day_of_year * 0.9856 + time_factor * 0.04107) % 360
-    moon_long = (sun_long + (day_of_year * 13.176) + time_factor * 0.549) % 360
-    mercury_long = (sun_long + (day_of_year * 4.092) + time_factor * 0.1705) % 360
-    venus_long = (sun_long + (day_of_year * 1.602) + time_factor * 0.06675) % 360
-    mars_long = (sun_long + (day_of_year * 0.524) + time_factor * 0.02183) % 360
-    jupiter_long = (sun_long + (day_of_year * 0.0831) + time_factor * 0.00346) % 360
-    saturn_long = (sun_long + (day_of_year * 0.0335) + time_factor * 0.001396) % 360
-    uranus_long = (sun_long + (day_of_year * 0.0117) + time_factor * 0.000488) % 360
-    neptune_long = (sun_long + (day_of_year * 0.0060) + time_factor * 0.00025) % 360
-    pluto_long = (sun_long + (day_of_year * 0.0040) + time_factor * 0.000167) % 360
-    
-    planets = {
-        'Sun': sun_long,
-        'Moon': moon_long,
-        'Mercury': mercury_long,
-        'Venus': venus_long,
-        'Mars': mars_long,
-        'Jupiter': jupiter_long,
-        'Saturn': saturn_long,
-        'Uranus': uranus_long,
-        'Neptune': neptune_long,
-        'Pluto': pluto_long
-    }
-    
-    for name, longitude in planets.items():
-        sign_num = int(longitude / 30)
-        sign_pos = longitude % 30
-        degrees = int(sign_pos)
-        minutes = int((sign_pos - degrees) * 60)
-        
-        positions[name] = {
-            'longitude': longitude,
-            'sign': signs[sign_num],
-            'degrees': degrees,
-            'minutes': minutes,
-            'retrograde': False  # Simplificat pentru exemplu
-        }
-    
-    # Adăugăm Nodul Lunar și Chiron aproximativ
-    node_long = (sun_long + 180 - 5.5) % 360
-    node_sign_num = int(node_long / 30)
-    node_sign_pos = node_long % 30
-    positions['Nod'] = {
-        'longitude': node_long,
-        'sign': signs[node_sign_num],
-        'degrees': int(node_sign_pos),
-        'minutes': int((node_sign_pos - int(node_sign_pos)) * 60),
-        'retrograde': True
-    }
-    
-    chiron_long = (sun_long + 90 + 2.3) % 360
-    chiron_sign_num = int(chiron_long / 30)
-    chiron_sign_pos = chiron_long % 30
-    positions['Chi'] = {
-        'longitude': chiron_long,
-        'sign': signs[chiron_sign_num],
-        'degrees': int(chiron_sign_pos),
-        'minutes': int((chiron_sign_pos - int(chiron_sign_pos)) * 60),
-        'retrograde': False
-    }
+    for name, planet_id in planets.items():
+        try:
+            # Calcul poziție cu Swiss Ephemeris
+            result = swe.calc_ut(jd, planet_id, flags)
+            longitude = result[0][0]  # longitudine ecliptică
+            
+            # Corecție pentru retrograde
+            is_retrograde = result[0][3] < 0  # viteza longitudinală negativă
+            
+            # Convertire în semn zodiacal
+            sign_num = int(longitude / 30)
+            sign_pos = longitude % 30
+            degrees = int(sign_pos)
+            minutes = int((sign_pos - degrees) * 60)
+            
+            positions[name] = {
+                'longitude': longitude,
+                'sign': signs[sign_num],
+                'degrees': degrees,
+                'minutes': minutes,
+                'retrograde': is_retrograde
+            }
+            
+        except Exception as e:
+            st.error(f"Eroare la calcularea poziției pentru {name}: {e}")
+            return None
     
     return positions
 
-def calculate_houses_placidus_manual(birth_datetime, latitude, longitude):
-    """Calculează casele folosind sistemul Placidus manual"""
+def calculate_houses_placidus_swiss(jd, latitude, longitude):
+    """Calculează casele folosind sistemul Placidus cu Swiss Ephemeris"""
     try:
+        # Calcul case cu Swiss Ephemeris
+        result = swe.houses(jd, latitude, longitude, b'P')  # 'P' pentru Placidus
+        
         houses = {}
         signs = ['ARI', 'TAU', 'GEM', 'CAN', 'LEO', 'VIR', 
                 'LIB', 'SCO', 'SAG', 'CAP', 'AQU', 'PIS']
         
-        # Calcul simplificat pentru case Placidus
-        # Folosim longitudinea Soarelui ca punct de referință
-        year = birth_datetime.year
-        month = birth_datetime.month
-        day = birth_datetime.day
-        hour = birth_datetime.hour
-        minute = birth_datetime.minute
-        
-        day_of_year = birth_datetime.timetuple().tm_yday
-        time_factor = hour + minute/60.0
-        
-        # Longitudinea Soarelui aproximativă
-        sun_longitude = (day_of_year * 0.9856 + time_factor * 0.04107) % 360
-        
-        # Calcul ascendent aproximativ
-        hour_angle = (hour - 12 + minute/60.0) * 15
-        asc_longitude = (sun_longitude + hour_angle + latitude/2) % 360
-        
-        # Calcul case Placidus simplificat
-        house_longitudes = []
         for i in range(12):
-            # Formula simplificată pentru Placidus
-            house_longitude = (asc_longitude + (i * 30) + (i * math.sin(math.radians(latitude)) * 2)) % 360
-            house_longitudes.append(house_longitude)
-        
-        # Sortează casele
-        house_longitudes.sort()
-        
-        for i in range(12):
-            house_longitude = house_longitudes[i] % 360
+            house_longitude = result[0][i]  # cuspidele caselor
             sign_num = int(house_longitude / 30)
             sign_pos = house_longitude % 30
             degrees = int(sign_pos)
@@ -225,9 +177,9 @@ def calculate_houses_placidus_manual(birth_datetime, latitude, longitude):
         
     except Exception as e:
         st.error(f"Eroare la calcularea caselor: {e}")
-        return get_exact_houses()
+        return None
 
-def get_house_for_longitude_manual(longitude, houses):
+def get_house_for_longitude_swiss(longitude, houses):
     """Determină casa pentru o longitudine dată"""
     try:
         longitude = longitude % 360
@@ -253,144 +205,6 @@ def get_house_for_longitude_manual(longitude, houses):
         
     except Exception as e:
         return 1
-
-def get_exact_chart_data():
-    """Returnează datele exacte din aplicația originală pentru Danko"""
-    planets = {
-        'Sun': {
-            'longitude': 35.57,  # 5°34' TAU
-            'sign': 'TAU',
-            'degrees': 5,
-            'minutes': 34,
-            'retrograde': False,
-            'house': 5,
-            'position_str': "05°34' TAU(5)"
-        },
-        'Moon': {
-            'longitude': 224.62,  # 14°37' SCO
-            'sign': 'SCO',
-            'degrees': 14,
-            'minutes': 37,
-            'retrograde': False,
-            'house': 12,
-            'position_str': "14°37' SCO(12)"
-        },
-        'Mercury': {
-            'longitude': 54.42,  # 24°25' TAU
-            'sign': 'TAU',
-            'degrees': 24,
-            'minutes': 25,
-            'retrograde': False,
-            'house': 6,
-            'position_str': "24°25' TAU(6)"
-        },
-        'Venus': {
-            'longitude': 80.53,  # 20°32' GEM
-            'sign': 'GEM',
-            'degrees': 20,
-            'minutes': 32,
-            'retrograde': False,
-            'house': 7,
-            'position_str': "20°32' GEM(7)"
-        },
-        'Mars': {
-            'longitude': 306.9,  # 6°54' AQU
-            'sign': 'AQU',
-            'degrees': 6,
-            'minutes': 54,
-            'retrograde': False,
-            'house': 2,
-            'position_str': "06°54' AQU(2)"
-        },
-        'Jupiter': {
-            'longitude': 141.58,  # 21°35' LEO
-            'sign': 'LEO',
-            'degrees': 21,
-            'minutes': 35,
-            'retrograde': False,
-            'house': 9,
-            'position_str': "21°35' LEO(9)"
-        },
-        'Saturn': {
-            'longitude': 241.27,  # 1°16' SAG
-            'sign': 'SAG',
-            'degrees': 1,
-            'minutes': 16,
-            'retrograde': True,
-            'house': 1,
-            'position_str': "01°16' SAG(1)R"
-        },
-        'Uranus': {
-            'longitude': 118.4,  # 28°24' CAN
-            'sign': 'CAN',
-            'degrees': 28,
-            'minutes': 24,
-            'retrograde': False,
-            'house': 8,
-            'position_str': "28°24' CAN(8)"
-        },
-        'Neptune': {
-            'longitude': 178.87,  # 28°52' LIB
-            'sign': 'LIB',
-            'degrees': 28,
-            'minutes': 52,
-            'retrograde': True,
-            'house': 11,
-            'position_str': "28°52' LIB(11)R"
-        },
-        'Pluto': {
-            'longitude': 146.12,  # 26°7' LEO
-            'sign': 'LEO',
-            'degrees': 26,
-            'minutes': 7,
-            'retrograde': True,
-            'house': 9,
-            'position_str': "26°07' LEO(9)R"
-        },
-        'Nod': {
-            'longitude': 248.33,  # 8°20' SAG
-            'sign': 'SAG',
-            'degrees': 8,
-            'minutes': 20,
-            'retrograde': True,
-            'house': 1,
-            'position_str': "08°20' SAG(1)R"
-        },
-        'Chi': {
-            'longitude': 311.08,  # 11°5' AQU
-            'sign': 'AQU',
-            'degrees': 11,
-            'minutes': 5,
-            'retrograde': False,
-            'house': 3,
-            'position_str': "11°05' AQU(3)"
-        }
-    }
-
-    houses = get_exact_houses()
-    
-    return {
-        'planets': planets,
-        'houses': houses,
-        'is_exact': True
-    }
-
-def get_exact_houses():
-    """Returnează casele exacte din aplicația originală"""
-    return {
-        1: {'longitude': 239.82, 'sign': 'SCO', 'degrees': 29, 'minutes': 49, 'position_str': "29°49' SCO"},
-        2: {'longitude': 271.95, 'sign': 'CAP', 'degrees': 1, 'minutes': 57, 'position_str': "01°57' CAP"},
-        3: {'longitude': 281.02, 'sign': 'AQU', 'degrees': 11, 'minutes': 2, 'position_str': "11°02' AQU"},
-        4: {'longitude': 288.54, 'sign': 'PIS', 'degrees': 18, 'minutes': 54, 'position_str': "18°54' PIS"},
-        5: {'longitude': 318.43, 'sign': 'ARI', 'degrees': 18, 'minutes': 43, 'position_str': "18°43' ARI"},
-        6: {'longitude': 341.22, 'sign': 'TAU', 'degrees': 11, 'minutes': 22, 'position_str': "11°22' TAU"},
-        7: {'longitude': 59.82, 'sign': 'TAU', 'degrees': 29, 'minutes': 49, 'position_str': "29°49' TAU"},
-        8: {'longitude': 91.95, 'sign': 'CAN', 'degrees': 1, 'minutes': 57, 'position_str': "01°57' CAN"},
-        9: {'longitude': 101.02, 'sign': 'LEO', 'degrees': 11, 'minutes': 2, 'position_str': "11°02' LEO"},
-        10: {'longitude': 108.54, 'sign': 'VIR', 'degrees': 18, 'minutes': 54, 'position_str': "18°54' VIR"},
-        11: {'longitude': 138.43, 'sign': 'LIB', 'degrees': 18, 'minutes': 43, 'position_str': "18°43' LIB"},
-        12: {'longitude': 161.22, 'sign': 'SCO', 'degrees': 11, 'minutes': 22, 'position_str': "11°22' SCO"}
-    }
 
 def calculate_aspects(chart_data):
     """Calculează aspectele astrologice"""
@@ -503,9 +317,7 @@ def data_input_form():
             if chart_data:
                 st.session_state.chart_data = chart_data
                 st.session_state.birth_data = birth_data
-                st.success("Chart calculated successfully!")
-                if chart_data.get('is_exact'):
-                    st.info("✅ Using exact calculations matching original Palm OS application")
+                st.success("✅ Chart calculated successfully using Swiss Ephemeris!")
             else:
                 st.error("Failed to calculate chart. Please check your input data.")
 
@@ -518,9 +330,6 @@ def display_chart():
     
     chart_data = st.session_state.chart_data
     birth_data = st.session_state.birth_data
-    
-    if chart_data.get('is_exact'):
-        st.success("✅ Exact calculations matching original Palm OS application")
     
     col_info = st.columns(3)
     with col_info[0]:
@@ -635,9 +444,6 @@ def display_interpretation():
     chart_data = st.session_state.chart_data
     birth_data = st.session_state.birth_data
     
-    if chart_data.get('is_exact'):
-        st.success("✅ Using exact interpretations from original application")
-    
     col1, col2 = st.columns(2)
     
     with col1:
@@ -676,33 +482,73 @@ def display_complete_interpretations(chart_data, interpretation_type):
     natal_interpretations = {
         "Sun": {
             "TAU": "Reliable, able, with powers of concentration, tenacity. Steadfast, a loving & affectionate \"family\" person. Honest, forthright. Learns readily from mistakes.",
+            "ARI": "Energetic, pioneering, courageous. Natural leader with strong initiative. Impulsive and direct.",
+            "GEM": "Clever, bright, quickwitted, communicative, able to do many different things at once, eager to learn new subjects. Openminded, adaptable, curious, restless, confident, seldom settling down.",
+            "CAN": "Nurturing, emotional, protective. Strong connection to home and family. Sensitive and caring.",
+            "LEO": "Confident, creative, generous. Natural performer and leader. Dramatic and warm-hearted.",
+            "VIR": "Analytical, practical, helpful. Attention to detail and service-oriented. Methodical and precise.",
+            "LIB": "Friendly, cordial, artistic, kind, considerate, loyal, alert, sociable, moderate, balanced in views, open-minded.",
+            "SCO": "Intense, passionate, transformative. Deep emotional understanding. Powerful and determined.",
+            "SAG": "Adventurous, philosophical, optimistic. Seeks truth and expansion. Freedom-loving and honest.",
+            "CAP": "Ambitious, disciplined, responsible. Builds lasting structures. Serious and determined.",
+            "AQU": "Innovative, independent, humanitarian. Forward-thinking and original. Unconventional and idealistic.",
+            "PIS": "Compassionate, intuitive, artistic. Connected to spiritual realms. Dreamy and empathetic."
         },
         "Moon": {
             "SCO": "Tenacious will, much energy & working power, passionate, often sensual. Honest.",
+            "ARI": "Energetic, ambitious, strongwilled, self-centred, impulsive, dominant & obstinate.",
+            "TAU": "Steady, patient, determined. Values comfort and security. Emotionally stable.",
+            "GEM": "Changeable, adaptable, curious. Needs mental stimulation. Restless emotions.",
+            "CAN": "Nurturing, sensitive, protective. Strong emotional connections. Home-oriented.",
+            "LEO": "Proud, dramatic, generous. Needs recognition and appreciation. Warm emotions.",
+            "VIR": "Practical, analytical, helpful. Attention to emotional details. Service-oriented.",
+            "LIB": "Harmonious, diplomatic, social. Seeks emotional balance. Relationship-focused.",
+            "SAG": "Adventurous, optimistic, freedom-loving. Needs emotional expansion. Philosophical.",
+            "CAP": "Responsible, disciplined, reserved. Controls emotions carefully. Ambitious.",
+            "AQU": "Independent, unconventional, detached. Unique emotional expression. Progressive.",
+            "PIS": "Compassionate, intuitive, dreamy. Sensitive emotional nature. Spiritual."
         },
         "Mercury": {
             "TAU": "Thorough, persevering. Good at working with the hands. Inflexible, steady, obstinate, self-opinionated, conventional, limited in interests.",
+            "ARI": "Quick-thinking, direct, innovative. Expresses ideas boldly and spontaneously.",
+            "GEM": "Versatile, communicative, curious. Learns quickly and shares knowledge.",
+            "CAN": "Intuitive, emotional, memory-oriented. Thinks with heart and nostalgia.",
+            "LEO": "Confident, dramatic, creative. Expresses ideas with flair and authority.",
+            "VIR": "Analytical, precise, detail-oriented. Excellent at critical thinking.",
+            "LIB": "Diplomatic, balanced, artistic. Seeks harmony in communication.",
+            "SCO": "Penetrating, investigative, profound. Seeks hidden truths.",
+            "SAG": "Philosophical, broad-minded, honest. Thinks in big pictures.",
+            "CAP": "Practical, organized, ambitious. Strategic and disciplined thinking.",
+            "AQU": "Innovative, original, detached. Thinks outside conventional boxes.",
+            "PIS": "Intuitive, imaginative, compassionate. Thinks with psychic sensitivity."
         },
         "Venus": {
             "GEM": "Flirtatious. Makes friends very easily. Has multifaceted relationships.",
+            "ARI": "Direct, passionate, impulsive in love. Attracted to challenge and excitement.",
+            "TAU": "Sensual, loyal, comfort-seeking. Values stability and physical pleasure.",
+            "CAN": "Nurturing, protective, home-oriented. Seeks emotional security.",
+            "LEO": "Dramatic, generous, proud. Loves romance and admiration.",
+            "VIR": "Practical, helpful, discerning. Shows love through service.",
+            "LIB": "Harmonious, diplomatic, artistic. Seeks balance and partnership.",
+            "SCO": "Intense, passionate, possessive. Seeks deep emotional bonds.",
+            "SAG": "Adventurous, freedom-loving, honest. Values independence in relationships.",
+            "CAP": "Serious, responsible, ambitious. Seeks stability and commitment.",
+            "AQU": "Unconventional, friendly, detached. Values friendship and independence.",
+            "PIS": "Romantic, compassionate, dreamy. Seeks spiritual connection."
         },
         "Mars": {
             "AQU": "Strong reasoning powers. Often interested in science. Fond of freedom & independence.",
-        },
-        "Jupiter": {
-            "LEO": "Has a talent for organizing & leading. Open & ready to help anyone in need - magnanimous & affectionate.",
-        },
-        "Saturn": {
-            "SAG": "Upright, open, courageous, honourable, grave, dignified, very capable.",
-        },
-        "Uranus": {
-            "CAN": "Rather passive, compassionate, sensitive, impressionable, intuitive.",
-        },
-        "Neptune": {
-            "LIB": "Idealistic, often a bit out of touch with reality. Has only a hazy view & understanding of real life & the world.",
-        },
-        "Pluto": {
-            "LEO": "Strong creative desires. Uncontrollable sexual appetite. Determined to win.",
+            "ARI": "Energetic, competitive, pioneering. Direct and assertive action.",
+            "TAU": "Persistent, determined, practical. Slow but steady approach.",
+            "GEM": "Versatile, quick, communicative. Action through words and ideas.",
+            "CAN": "Protective, emotional, defensive. Actions driven by feelings.",
+            "LEO": "Confident, dramatic, creative. Actions with flair and leadership.",
+            "VIR": "Precise, analytical, efficient. Methodical and careful action.",
+            "LIB": "Diplomatic, balanced, cooperative. Seeks harmony in action.",
+            "SCO": "Intense, determined, transformative. Powerful and secretive action.",
+            "SAG": "Adventurous, optimistic, freedom-loving. Action with purpose.",
+            "CAP": "Ambitious, disciplined, patient. Strategic and persistent action.",
+            "PIS": "Compassionate, intuitive, adaptable. Action through inspiration."
         }
     }
 
@@ -721,21 +567,6 @@ def display_complete_interpretations(chart_data, interpretation_type):
         },
         "Mars": {
             2: "Ambitious, energetic, competitive, tenacious, practical, financially competent, obstinate, persistent & fearless.",
-        },
-        "Jupiter": {
-            9: "Good-natured, upright, frequently talented in languages & law.",
-        },
-        "Saturn": {
-            1: "Subject to constraints & uncertainties. Serious by nature. Slow but persistent & unchanging.",
-        },
-        "Uranus": {
-            8: "Trouble through a legacy or through the money of a partnership. Has unusual views on sexuality.",
-        },
-        "Neptune": {
-            11: "Prefers artistic friends. Idealistic but quite practical.",
-        },
-        "Pluto": {
-            9: "Attracted by far away places.",
         }
     }
 
@@ -751,21 +582,6 @@ def display_complete_interpretations(chart_data, interpretation_type):
         },
         "Mars": {
             2: "Ambitious, energetic, competitive, tenacious, practical, financially competent, obstinate, persistent & fearless.",
-        },
-        "Jupiter": {
-            9: "Good-natured, upright, frequently talented in languages & law.",
-        },
-        "Saturn": {
-            1: "Subject to constraints & uncertainties. Serious by nature. Slow but persistent & unchanging.",
-        },
-        "Uranus": {
-            8: "Trouble through a legacy or through the money of a partnership. Has unusual views on sexuality.",
-        },
-        "Neptune": {
-            11: "Prefers artistic friends. Idealistic but quite practical.",
-        },
-        "Pluto": {
-            9: "Attracted by far away places.",
         }
     }
 
@@ -810,15 +626,14 @@ def display_about():
     RAD  
     
     **Features**  
-    - Professional astrological calculations
-    - Exact planetary positions matching original Palm OS application for specific examples
+    - Professional astrological calculations using Swiss Ephemeris
+    - Accurate planetary positions with professional ephemeris files
     - Natal chart calculations with Placidus houses
     - Complete planetary aspects calculations
     - Comprehensive interpretations for signs, degrees and houses
     
-    **Note:** For the specific example (Danko, 25 April 1956, 21:00), 
-    the application uses exact data from the original Palm OS application.
-    For other dates, it uses manual calculations.
+    **Technical:** Built with Streamlit and Swiss Ephemeris (pyswisseph) 
+    using professional ephemeris files from Swiss Ephemeris repository.
     """)
 
 if __name__ == "__main__":
