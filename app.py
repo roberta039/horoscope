@@ -243,7 +243,7 @@ def create_chart_wheel(chart_data, birth_data):
         planet_radius = 3.0
         
         # Culori
-        background_color = '#41b3f1'
+        background_color = 'white'
         circle_color = '#262730'
         text_color = 'black'
         house_color = 'black'
