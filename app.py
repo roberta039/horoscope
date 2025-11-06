@@ -709,18 +709,34 @@ def data_input_form():
         
         col2a, col2b = st.columns(2)
         with col2a:
-            longitude_deg = st.number_input("Longitude (°)", min_value=0.0, max_value=180.0, value=16.0, step=0.1)
-            longitude_dir = st.selectbox("Longitude Direction", ["East", "West"], index=0)
+            # Longitude cu grade și minute
+            st.write("**Longitude**")
+            col_lon_deg, col_lon_min = st.columns(2)
+            with col_lon_deg:
+                longitude_deg = st.number_input("Longitude (°)", min_value=0.0, max_value=180.0, value=16.0, step=1.0, key="lon_deg")
+            with col_lon_min:
+                longitude_min = st.number_input("Longitude (')", min_value=0.0, max_value=59.9, value=0.0, step=1.0, key="lon_min")
+            longitude_dir = st.selectbox("Longitude Direction", ["East", "West"], index=0, key="lon_dir")
+            
         with col2b:
-            latitude_deg = st.number_input("Latitude (°)", min_value=0.0, max_value=90.0, value=45.0, step=0.1)
-            latitude_min = st.number_input("Latitude (')", min_value=0.0, max_value=59.9, value=51.0, step=0.1)
-            latitude_dir = st.selectbox("Latitude Direction", ["North", "South"], index=0)
+            # Latitude cu grade și minute
+            st.write("**Latitude**")
+            col_lat_deg, col_lat_min = st.columns(2)
+            with col_lat_deg:
+                latitude_deg = st.number_input("Latitude (°)", min_value=0.0, max_value=90.0, value=45.0, step=1.0, key="lat_deg")
+            with col_lat_min:
+                latitude_min = st.number_input("Latitude (')", min_value=0.0, max_value=59.9, value=51.0, step=1.0, key="lat_min")
+            latitude_dir = st.selectbox("Latitude Direction", ["North", "South"], index=0, key="lat_dir")
         
-        lon = longitude_deg if longitude_dir == "East" else -longitude_deg
+        # Calcul coordonate finale
+        lon = longitude_deg + (longitude_min / 60.0)
+        lon = lon if longitude_dir == "East" else -lon
+        
         lat = latitude_deg + (latitude_min / 60.0)
         lat = lat if latitude_dir == "North" else -lat
         
-        st.write(f"**Coordinates:** {lat:.2f}°N, {lon:.2f}°E")
+        st.write(f"**Coordinates:** {abs(lat):.2f}°{latitude_dir[0]}, {abs(lon):.2f}°{longitude_dir[0]}")
+        st.write(f"**Decimal:** {lat:.6f}°N, {lon:.6f}°E")
     
     st.markdown("---")
     
@@ -734,7 +750,7 @@ def data_input_form():
                 'lat_deg': lat,
                 'lon_deg': lon,
                 'lat_display': f"{latitude_deg}°{latitude_min:.0f}'{latitude_dir}",
-                'lon_display': f"{longitude_deg}°{longitude_dir}"
+                'lon_display': f"{longitude_deg}°{longitude_min:.0f}'{longitude_dir}"
             }
             
             chart_data = calculate_chart_cached(birth_data)
