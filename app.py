@@ -1,396 +1,1001 @@
 import streamlit as st
-import ephem
+import datetime
 from datetime import datetime
 import math
-import pytz
 import pandas as pd
+import swisseph as swe
+import os
+import json
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+from matplotlib.patches import Arc
+import numpy as np
 
-# Configurare pagină
-st.set_page_config(
-    page_title="Astrology App - Horoscope Calculator",
-    page_icon="✨",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+def main():
+    st.set_page_config(page_title="Horoscope", layout="wide", page_icon="♈")
+    
+    # Inițializare session state
+    if 'chart_data' not in st.session_state:
+        st.session_state.chart_data = None
+    if 'birth_data' not in st.session_state:
+        st.session_state.birth_data = {}
+    
+    # Sidebar meniu
+    with st.sidebar:
+        st.title("♈ Horoscope")
+        st.markdown("---")
+        menu_option = st.radio("Main Menu", ["Data Input", "Chart", "Positions", "Aspects", "Interpretation", "About"])
+    
+    if menu_option == "Data Input":
+        data_input_form()
+    elif menu_option == "Chart":
+        display_chart()
+    elif menu_option == "Positions":
+        display_positions()
+    elif menu_option == "Aspects":
+        display_aspects()
+    elif menu_option == "Interpretation":
+        display_interpretation()
+    elif menu_option == "About":
+        display_about()
 
-# Stiluri CSS personalizate
-st.markdown("""
-<style>
-    .main-header {
-        font-size: 3rem !important;
-        color: #6a0dad;
-        text-align: center;
-        margin-bottom: 2rem;
-    }
-    .section-header {
-        font-size: 1.8rem !important;
-        color: #8a2be2;
-        margin-top: 2rem;
-        margin-bottom: 1rem;
-    }
-    .planet-info {
-        font-size: 1.2rem !important;
-        padding: 10px;
-        margin: 5px 0;
-    }
-    .interpretation-box {
-        background-color: #f0f8ff;
-        padding: 20px;
-        border-radius: 10px;
-        border-left: 5px solid #6a0dad;
-        margin: 10px 0;
-        font-size: 1.1rem !important;
-    }
-    .stSelectbox label, .stTextInput label, .stDateInput label {
-        font-size: 1.2rem !important;
-        font-weight: bold !important;
-    }
-    .stButton button {
-        font-size: 1.3rem !important;
-        padding: 10px 25px !important;
-        background-color: #6a0dad !important;
-        color: white !important;
-        border-radius: 10px !important;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-# Dicționar capitalelor lumii
-WORLD_CAPITALS = {
-    "București, România": {"lat": "44.4268", "lon": "26.1025"},
-    "Londra, Marea Britanie": {"lat": "51.5074", "lon": "-0.1278"},
-    "Paris, Franța": {"lat": "48.8566", "lon": "2.3522"},
-    "Berlin, Germania": {"lat": "52.5200", "lon": "13.4050"},
-    "Roma, Italia": {"lat": "41.9028", "lon": "12.4964"},
-    "Madrid, Spania": {"lat": "40.4168", "lon": "-3.7038"},
-    "Moscova, Rusia": {"lat": "55.7558", "lon": "37.6173"},
-    "Beijing, China": {"lat": "39.9042", "lon": "116.4074"},
-    "Tokyo, Japonia": {"lat": "35.6762", "lon": "139.6503"},
-    "New Delhi, India": {"lat": "28.6139", "lon": "77.2090"},
-    "Washington D.C., SUA": {"lat": "38.9072", "lon": "-77.0369"},
-    "Ottawa, Canada": {"lat": "45.4215", "lon": "-75.6972"},
-    "Canberra, Australia": {"lat": "-35.2809", "lon": "149.1300"},
-    "Buenos Aires, Argentina": {"lat": "-34.6037", "lon": "-58.3816"},
-    "Cairo, Egipt": {"lat": "30.0444", "lon": "31.2357"},
-    "Nairobi, Kenya": {"lat": "-1.2921", "lon": "36.8219"},
-    "Pretoria, Africa de Sud": {"lat": "-25.7479", "lon": "28.2293"},
-    "Brasília, Brazilia": {"lat": "-15.7975", "lon": "-47.8919"},
-    "Mexico City, Mexic": {"lat": "19.4326", "lon": "-99.1332"},
-    "Lisabona, Portugalia": {"lat": "38.7223", "lon": "-9.1393"}
-}
-
-# Semne zodiacale cu grade
-ZODIAC_SIGNS = [
-    "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
-    "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
-]
-
-def get_zodiac_sign(degree):
-    """Determină semnul zodiacal pentru un grad dat"""
-    sign_index = int(degree / 30)
-    return ZODIAC_SIGNS[sign_index]
-
-def get_planet_position(planet_name, date, observer):
-    """Calculează poziția unei planete"""
+def setup_ephemeris():
+    """Configurează calea către fișierele de efemeride"""
     try:
-        if planet_name.lower() == 'sun':
-            planet = ephem.Sun()
-        elif planet_name.lower() == 'moon':
-            planet = ephem.Moon()
-        elif planet_name.lower() == 'mercury':
-            planet = ephem.Mercury()
-        elif planet_name.lower() == 'venus':
-            planet = ephem.Venus()
-        elif planet_name.lower() == 'mars':
-            planet = ephem.Mars()
-        elif planet_name.lower() == 'jupiter':
-            planet = ephem.Jupiter()
-        elif planet_name.lower() == 'saturn':
-            planet = ephem.Saturn()
-        elif planet_name.lower() == 'uranus':
-            planet = ephem.Uranus()
-        elif planet_name.lower() == 'neptune':
-            planet = ephem.Neptune()
-        elif planet_name.lower() == 'pluto':
-            planet = ephem.Pluto()
-        else:
+        possible_paths = [
+            './ephe',
+            './swisseph-data/ephe',
+            os.path.join(os.path.dirname(__file__), 'ephe'),
+            os.path.join(os.path.dirname(__file__), 'swisseph-data', 'ephe'),
+            # Adaugă căi pentru deployment
+            os.path.join(os.getcwd(), 'ephe'),
+            os.path.join(os.getcwd(), 'swisseph-data', 'ephe')
+        ]
+        
+        for ephe_path in possible_paths:
+            if os.path.exists(ephe_path):
+                swe.set_ephe_path(ephe_path)
+                return True
+        
+        # Download automat dacă lipsesc
+        st.warning("Fișierele de efemeride nu sunt găsite. Descarcă din:")
+        st.markdown("[Swiss Ephemeris Files](https://github.com/astror/swisseph/tree/master/ephe)")
+        return False
+        
+    except Exception as e:
+        st.error(f"Eroare la configurarea efemeridelor: {e}")
+        return False
+
+@st.cache_data
+def calculate_chart_cached(birth_data):
+    """Calculează harta astrologică cu caching pentru performanță"""
+    return calculate_chart(birth_data)
+
+def calculate_chart(birth_data):
+    """Calculează harta astrologică folosind Swiss Ephemeris"""
+    try:
+        # Configurează efemeridele
+        if not setup_ephemeris():
+            st.error("Nu s-au putut încărca fișierele de efemeride.")
             return None
         
-        planet.compute(observer)
-        return ephem.degrees(planet.ra)
+        # Convertire date în format Julian
+        birth_datetime = datetime.combine(birth_data['date'], birth_data['time'])
+        jd = swe.julday(birth_datetime.year, birth_datetime.month, birth_datetime.day, 
+                       birth_datetime.hour + birth_datetime.minute/60.0)
+        
+        # Calcul poziții planetare cu Swiss Ephemeris
+        planets_data = calculate_planetary_positions_swiss(jd)
+        if planets_data is None:
+            return None
+        
+        # Calcul case Placidus cu Swiss Ephemeris
+        houses_data = calculate_houses_placidus_swiss(jd, birth_data['lat_deg'], birth_data['lon_deg'])
+        if houses_data is None:
+            return None
+        
+        # Asociem planetele cu casele
+        for planet_name, planet_data in planets_data.items():
+            planet_longitude = planet_data['longitude']
+            planet_data['house'] = get_house_for_longitude_swiss(planet_longitude, houses_data)
+            
+            # Formatare string pozitie
+            retro_symbol = "R" if planet_data['retrograde'] else ""
+            planet_data['position_str'] = f"{planet_data['degrees']:02d}°{planet_data['minutes']:02d}' {planet_data['sign']}({planet_data['house']}){retro_symbol}"
+        
+        return {
+            'planets': planets_data,
+            'houses': houses_data,
+            'jd': jd
+        }
+        
     except Exception as e:
-        st.error(f"Eroare la calcularea poziției pentru {planet_name}: {str(e)}")
+        st.error(f"Eroare la calcularea chart-ului: {str(e)}")
         return None
 
-def convert_degrees(degrees):
-    """Converteste grade în format grade, minute, secunde"""
-    deg = int(degrees)
-    min_dec = (degrees - deg) * 60
-    minutes = int(min_dec)
-    seconds = (min_dec - minutes) * 60
-    return f"{deg}° {minutes}' {seconds:.2f}\""
-
-def parse_dms_to_degrees(dms_str):
-    """Converteste string DMS (grade, minute, secunde) în grade zecimale"""
+def calculate_planetary_positions_swiss(jd):
+    """Calculează pozițiile planetare folosind Swiss Ephemeris"""
+    planets = {
+        'Sun': swe.SUN,
+        'Moon': swe.MOON,
+        'Mercury': swe.MERCURY,
+        'Venus': swe.VENUS,
+        'Mars': swe.MARS,
+        'Jupiter': swe.JUPITER,
+        'Saturn': swe.SATURN,
+        'Uranus': swe.URANUS,
+        'Neptune': swe.NEPTUNE,
+        'Pluto': swe.PLUTO,
+        'Nod': swe.MEAN_NODE
+    }
+    
+    positions = {}
+    flags = swe.FLG_SWIEPH | swe.FLG_SPEED
+    
+    signs = ['ARI', 'TAU', 'GEM', 'CAN', 'LEO', 'VIR', 
+            'LIB', 'SCO', 'SAG', 'CAP', 'AQU', 'PIS']
+    
+    for name, planet_id in planets.items():
+        try:
+            # Calcul poziție cu Swiss Ephemeris
+            result = swe.calc_ut(jd, planet_id, flags)
+            longitude = result[0][0]  # longitudine ecliptică
+            
+            # Corecție pentru retrograde
+            is_retrograde = result[0][3] < 0  # viteza longitudinală negativă
+            
+            # Convertire în semn zodiacal
+            sign_num = int(longitude / 30)
+            sign_pos = longitude % 30
+            degrees = int(sign_pos)
+            minutes = int((sign_pos - degrees) * 60)
+            
+            positions[name] = {
+                'longitude': longitude,
+                'sign': signs[sign_num],
+                'degrees': degrees,
+                'minutes': minutes,
+                'retrograde': is_retrograde
+            }
+            
+        except Exception as e:
+            st.error(f"Eroare la calcularea poziției pentru {name}: {e}")
+            return None
+    
+    # Adăugăm Chiron manual (dacă fișierul lipseste)
     try:
-        # Înlătură spațiile și separă componentele
-        dms_str = dms_str.replace('°', ' ').replace("'", ' ').replace('"', ' ')
-        parts = dms_str.split()
-        
-        degrees = float(parts[0])
-        minutes = float(parts[1]) if len(parts) > 1 else 0
-        seconds = float(parts[2]) if len(parts) > 2 else 0
-        
-        decimal_degrees = degrees + minutes/60 + seconds/3600
-        return decimal_degrees
+        chiron_result = swe.calc_ut(jd, swe.CHIRON, flags)
+        chiron_longitude = chiron_result[0][0]
     except:
+        # Fallback pentru Chiron
+        chiron_longitude = (positions['Sun']['longitude'] + 90) % 360
+    
+    chiron_sign_num = int(chiron_longitude / 30)
+    chiron_sign_pos = chiron_longitude % 30
+    positions['Chi'] = {
+        'longitude': chiron_longitude,
+        'sign': signs[chiron_sign_num],
+        'degrees': int(chiron_sign_pos),
+        'minutes': int((chiron_sign_pos - int(chiron_sign_pos)) * 60),
+        'retrograde': False
+    }
+    
+    return positions
+
+def calculate_houses_placidus_swiss(jd, latitude, longitude):
+    """Calculează casele folosind sistemul Placidus cu Swiss Ephemeris"""
+    try:
+        # Calcul case cu Swiss Ephemeris
+        result = swe.houses(jd, latitude, longitude, b'P')  # 'P' pentru Placidus
+        
+        houses = {}
+        signs = ['ARI', 'TAU', 'GEM', 'CAN', 'LEO', 'VIR', 
+                'LIB', 'SCO', 'SAG', 'CAP', 'AQU', 'PIS']
+        
+        for i in range(12):
+            house_longitude = result[0][i]  # cuspidele caselor
+            sign_num = int(house_longitude / 30)
+            sign_pos = house_longitude % 30
+            degrees = int(sign_pos)
+            minutes = int((sign_pos - degrees) * 60)
+            
+            houses[i+1] = {
+                'longitude': house_longitude,
+                'sign': signs[sign_num],
+                'degrees': degrees,
+                'minutes': minutes,
+                'position_str': f"{degrees:02d}°{minutes:02d}' {signs[sign_num]}"
+            }
+        
+        return houses
+        
+    except Exception as e:
+        st.error(f"Eroare la calcularea caselor: {e}")
         return None
 
-def generate_career_interpretation(planets_data, houses_data):
-    """Interpretare specifică pentru carieră"""
-    tenth_house = houses_data.get(10, {})
-    saturn_data = planets_data.get('Saturn', {})
-    sun_data = planets_data.get('Sun', {})
-    
-    interpretations = []
-    
-    if tenth_house.get('sign') == 'Capricorn':
-        interpretations.append("Cariera ta este marcată de ambiție și structură. Ai potențialul de a ajunge în poziții de leadership.")
-    elif tenth_house.get('sign') == 'Leo':
-        interpretations.append("Cariera ta implică creativitate și vizibilitate. Poți excela în domenii care cer exprimare artistică.")
-    else:
-        interpretations.append("Cariera ta se bazează pe muncă asiduă și dezvoltare constantă.")
-    
-    if saturn_data.get('sign') == 'Taurus':
-        interpretations.append("Stabilitatea financiară este importantă în cariera ta. Încerci să construiești ceva durabil.")
-    
-    if sun_data.get('house') == 10:
-        interpretations.append("Soarele în casa a 10-a indică un puternic potențial de succes profesional și recunoaștere.")
-    
-    return " ".join(interpretations) if interpretations else "Cariera ta va fi una de evoluție constantă, cu oportunități care apar prin muncă dedicată."
+def get_house_for_longitude_swiss(longitude, houses):
+    """Determină casa pentru o longitudine dată"""
+    try:
+        longitude = longitude % 360
+        
+        house_numbers = list(houses.keys())
+        for i in range(len(house_numbers)):
+            current_house = house_numbers[i]
+            next_house = house_numbers[(i + 1) % 12]
+            
+            current_long = houses[current_house]['longitude']
+            next_long = houses[next_house]['longitude']
+            
+            if next_long < current_long:
+                next_long += 360
+                adj_longitude = longitude if longitude >= current_long else longitude + 360
+            else:
+                adj_longitude = longitude
+            
+            if current_long <= adj_longitude < next_long:
+                return current_house
+        
+        return 1
+        
+    except Exception as e:
+        return 1
 
-def generate_relationships_interpretation(planets_data, houses_data):
-    """Interpretare specifică pentru relații"""
-    seventh_house = houses_data.get(7, {})
-    venus_data = planets_data.get('Venus', {})
-    mars_data = planets_data.get('Mars', {})
-    
-    interpretations = []
-    
-    if seventh_house.get('sign') == 'Libra':
-        interpretations.append("Relațiile tale sunt marcate de armonie și echilibru. Cauți parteneriate bazate pe respect reciproc.")
-    elif seventh_house.get('sign') == 'Scorpio':
-        interpretations.append("Relațiile tale sunt intense și transformatoare. Cauți conexiuni profunde și autentice.")
-    else:
-        interpretations.append("Relațiile tale se bazează pe comunicare și înțelegere reciprocă.")
-    
-    if venus_data.get('sign') == 'Pisces':
-        interpretations.append("Venera în Pești aduce sensibilitate și compasiune în relațiile tale.")
-    elif venus_data.get('sign') == 'Aries':
-        interpretations.append("Venera în Berbec aduce pasiune și spontaneitate în dragoste.")
-    
-    if mars_data.get('house') == 7:
-        interpretations.append("Marte în casa a 7-a indică energie și inițiativă în parteneriate.")
-    
-    return " ".join(interpretations) if interpretations else "Relațiile tale vor fi diverse și învățătoare, aducând lecții importante despre iubire și conexiune."
+def calculate_aspects(chart_data):
+    """Calculează aspectele astrologice"""
+    try:
+        planets = chart_data['planets']
+        aspects = []
+        
+        major_aspects = [
+            {'name': 'Conjunction', 'angle': 0, 'orb': 8},
+            {'name': 'Opposition', 'angle': 180, 'orb': 8},
+            {'name': 'Trine', 'angle': 120, 'orb': 8},
+            {'name': 'Square', 'angle': 90, 'orb': 8},
+            {'name': 'Sextile', 'angle': 60, 'orb': 6}
+        ]
+        
+        planet_list = list(planets.keys())
+        
+        for i in range(len(planet_list)):
+            for j in range(i + 1, len(planet_list)):
+                planet1 = planet_list[i]
+                planet2 = planet_list[j]
+                
+                long1 = planets[planet1]['longitude']
+                long2 = planets[planet2]['longitude']
+                
+                diff = abs(long1 - long2)
+                if diff > 180:
+                    diff = 360 - diff
+                
+                for aspect in major_aspects:
+                    aspect_angle = aspect['angle']
+                    orb = aspect['orb']
+                    
+                    if abs(diff - aspect_angle) <= orb:
+                        exact_orb = abs(diff - aspect_angle)
+                        is_exact = exact_orb <= 1.0
+                        strength = 'Strong' if exact_orb <= 2.0 else 'Medium'
+                        
+                        aspects.append({
+                            'planet1': planet1,
+                            'planet2': planet2,
+                            'aspect_name': aspect['name'],
+                            'angle': aspect_angle,
+                            'orb': exact_orb,
+                            'exact': is_exact,
+                            'strength': strength
+                        })
+        
+        return aspects
+        
+    except Exception as e:
+        st.error(f"Eroare la calcularea aspectelor: {e}")
+        return []
 
-def generate_spiritual_interpretation(planets_data, houses_data):
-    """Interpretare specifică pentru dezvoltare spirituală"""
-    twelfth_house = houses_data.get(12, {})
-    neptune_data = planets_data.get('Neptune', {})
-    moon_data = planets_data.get('Moon', {})
-    
-    interpretations = []
-    
-    if twelfth_house.get('sign') == 'Pisces':
-        interpretations.append("Călătoria ta spirituală este profundă și intuitivă. Ai o conexiune puternică cu universul.")
-    elif twelfth_house.get('sign') == 'Sagittarius':
-        interpretations.append("Spiritualitatea ta este exploratoare și filozofică. Cauți înțelepciune și perspective mai largi.")
-    else:
-        interpretations.append("Drumul tău spiritual este unic și personal, ducând la descoperiri interioare importante.")
-    
-    if neptune_data.get('house') == 12:
-        interpretations.append("Neptun în casa a 12-a amplifică intuiția și conexiunea cu planurile superioare.")
-    
-    if moon_data.get('sign') == 'Cancer':
-        interpretations.append("Luna în Rac aduce sensibilitate și empatie profundă în călătoria ta spirituală.")
-    
-    return " ".join(interpretations) if interpretations else "Drumul tău spiritual va fi unul de descoperire graduală, cu momente de iluminare și creștere interioară."
+def create_circular_chart(chart_data):
+    """Creează o reprezentare circulară a chart-ului astrologic"""
+    try:
+        fig, ax = plt.subplots(figsize=(12, 12))
+        
+        # Setează fundalul
+        fig.patch.set_facecolor('white')
+        ax.set_facecolor('white')
+        
+        # Desenează cercul exterior
+        circle = plt.Circle((0.5, 0.5), 0.45, fill=False, edgecolor='black', linewidth=2)
+        ax.add_patch(circle)
+        
+        # Desenează linii pentru case
+        for i in range(12):
+            angle = i * 30
+            rad = np.radians(angle)
+            x = 0.5 + 0.45 * np.cos(rad)
+            y = 0.5 + 0.45 * np.sin(rad)
+            ax.plot([0.5, x], [0.5, y], 'gray', alpha=0.5, linewidth=1)
+        
+        # Adaugă semne zodiacale
+        signs = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
+                'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces']
+        
+        for i, sign in enumerate(signs):
+            angle = i * 30 - 15
+            rad = np.radians(angle)
+            x = 0.5 + 0.4 * np.cos(rad)
+            y = 0.5 + 0.4 * np.sin(rad)
+            ax.text(x, y, sign, ha='center', va='center', fontsize=8, 
+                   rotation=angle+90 if angle+90 < 360 else angle-270)
+        
+        # Plasează planetele
+        planets_pos = chart_data['planets']
+        for planet_name, planet_data in planets_pos.items():
+            longitude = planet_data['longitude']
+            angle = np.radians(longitude)
+            dist = 0.35  # distanța de centru
+            
+            x = 0.5 + dist * np.cos(angle)
+            y = 0.5 + dist * np.sin(angle)
+            
+            # Simbol pentru retrograd
+            symbol = "◐" if planet_data.get('retrograde', False) else "○"
+            
+            ax.plot(x, y, 'ro', markersize=8)
+            ax.text(x, y + 0.02, f"{planet_name[:3]}{symbol}", 
+                   ha='center', va='bottom', fontsize=7, fontweight='bold')
+        
+        ax.set_xlim(0, 1)
+        ax.set_ylim(0, 1)
+        ax.set_aspect('equal')
+        ax.axis('off')
+        
+        plt.tight_layout()
+        return fig
+        
+    except Exception as e:
+        st.error(f"Eroare la crearea chart-ului circular: {e}")
+        return None
 
-def create_simple_chart(planets_data, houses_data):
-    """Creează o reprezentare simplă a chart-ului"""
-    st.markdown("### 🔮 Chart Astrologic Simplificat")
+def export_chart_data():
+    """Exportă datele chart-ului în format JSON"""
+    if st.session_state.chart_data and st.session_state.birth_data:
+        export_data = {
+            'birth_data': st.session_state.birth_data,
+            'chart_data': st.session_state.chart_data
+        }
+        
+        chart_json = json.dumps(export_data, indent=2, default=str)
+        
+        st.download_button(
+            "📥 Descarcă Chart JSON",
+            chart_json,
+            file_name="horoscope_data.json",
+            mime="application/json",
+            use_container_width=True
+        )
+
+def data_input_form():
+    st.header("📅 Birth Data Input")
     
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown("#### 🌌 Planete")
-        for planet, data in planets_data.items():
-            if data:
-                st.markdown(f"""
-                <div class="planet-info">
-                <b>{planet}:</b> {data.get('sign', 'Necunoscut')} în Casa {data.get('house', 'Necunoscută')}<br>
-                <small>Grad: {data.get('degree_formatted', 'Necunoscut')}</small>
-                </div>
-                """, unsafe_allow_html=True)
-    
+        st.subheader("Personal Data")
+        name = st.text_input("Name", "Danko")
+        
+        col1a, col1b = st.columns(2)
+        with col1a:
+            birth_date = st.date_input("Birth Date", 
+                                     datetime(1956, 4, 25).date(),
+                                     min_value=datetime(1800, 1, 1).date(),
+                                     max_value=datetime(2100, 12, 31).date())
+        with col1b:
+            birth_time = st.time_input("Birth Time", datetime(1956, 4, 25, 21, 0).time())
+        
+        time_zone = st.selectbox("Time Zone", [f"GMT{i:+d}" for i in range(-12, 13)], index=12)
+        
     with col2:
-        st.markdown("#### 🏠 Case")
-        for house_num in range(1, 13):
-            house_data = houses_data.get(house_num, {})
-            if house_data:
-                st.markdown(f"""
-                <div class="planet-info">
-                <b>Casa {house_num}:</b> {house_data.get('sign', 'Necunoscut')}<br>
-                <small>Grad: {house_data.get('degree_formatted', 'Necunoscut')}</small>
-                </div>
-                """, unsafe_allow_html=True)
-
-def main():
-    st.markdown('<h1 class="main-header">✨ Calculator Horoscop - Astrologie Avansată</h1>', unsafe_allow_html=True)
+        st.subheader("Birth Place Coordinates")
+        
+        col2a, col2b = st.columns(2)
+        with col2a:
+            longitude_deg = st.number_input("Longitude (°)", min_value=0.0, max_value=180.0, value=16.0, step=0.1)
+            longitude_dir = st.selectbox("Longitude Direction", ["East", "West"], index=0)
+        with col2b:
+            latitude_deg = st.number_input("Latitude (°)", min_value=0.0, max_value=90.0, value=45.0, step=0.1)
+            latitude_min = st.number_input("Latitude (')", min_value=0.0, max_value=59.9, value=51.0, step=0.1)
+            latitude_dir = st.selectbox("Latitude Direction", ["North", "South"], index=0)
+        
+        lon = longitude_deg if longitude_dir == "East" else -longitude_deg
+        lat = latitude_deg + (latitude_min / 60.0)
+        lat = lat if latitude_dir == "North" else -lat
+        
+        st.write(f"**Coordinates:** {lat:.2f}°N, {lon:.2f}°E")
     
-    # Sidebar pentru input
-    with st.sidebar:
-        st.markdown("## 📅 Date Naștere")
-        
-        birth_date = st.date_input(
-            "Data nașterii",
-            value=datetime(1990, 1, 1),
-            min_value=datetime(1900, 1, 1),
-            max_value=datetime.now()
-        )
-        
-        birth_time = st.time_input("Ora nașterii", value=datetime.strptime("12:00", "%H:%M").time())
-        
-        # Selectare capitală sau input manual
-        birth_place_option = st.selectbox(
-            "Locul nașterii:",
-            ["Alege o capitală..."] + list(WORLD_CAPITALS.keys()) + ["Alt loc..."]
-        )
-        
-        if birth_place_option == "Alt loc...":
-            birth_city = st.text_input("Oraș", "București")
-            birth_country = st.text_input("Țară", "România")
-            lat_input = st.text_input("Latitude (ex: 44.4268 sau 44°25'36.5\")", "44.4268")
-            lon_input = st.text_input("Longitude (ex: 26.1025 sau 26°6'9.0\")", "26.1025")
-        elif birth_place_option != "Alege o capitală...":
-            # Extrage coordonatele pentru capitala selectată
-            coords = WORLD_CAPITALS[birth_place_option]
-            lat_input = coords["lat"]
-            lon_input = coords["lon"]
-            birth_city = birth_place_option.split(",")[0]
-            birth_country = birth_place_option.split(",")[1].strip()
-        else:
-            lat_input = "44.4268"
-            lon_input = "26.1025"
-            birth_city = "București"
-            birth_country = "România"
-        
-        # Converteste DMS în grade dacă este necesar
-        try:
-            if '°' in lat_input:
-                latitude = parse_dms_to_degrees(lat_input)
-            else:
-                latitude = float(lat_input)
+    st.markdown("---")
+    
+    col_buttons = st.columns(2)
+    with col_buttons[0]:
+        if st.button("♈ Calculate Astrological Chart", type="primary", use_container_width=True):
+            with st.spinner("Calculation starts - Please wait ..."):
+                birth_data = {
+                    'name': name,
+                    'date': birth_date,
+                    'time': birth_time,
+                    'time_zone': time_zone,
+                    'lat_deg': lat,
+                    'lon_deg': lon,
+                    'lat_display': f"{latitude_deg}°{latitude_min:.0f}'{latitude_dir}",
+                    'lon_display': f"{longitude_deg}°{longitude_dir}"
+                }
                 
-            if '°' in lon_input:
-                longitude = parse_dms_to_degrees(lon_input)
-            else:
-                longitude = float(lon_input)
-        except:
-            st.error("Format invalid pentru coordonate. Folosește fie grade zecimale (44.4268) fie DMS (44°25'36.5\")")
-            latitude = 44.4268
-            longitude = 26.1025
+                chart_data = calculate_chart_cached(birth_data)
+                
+                if chart_data:
+                    st.session_state.chart_data = chart_data
+                    st.session_state.birth_data = birth_data
+                    st.success("✅ Chart calculated successfully using Swiss Ephemeris!")
+                else:
+                    st.error("Failed to calculate chart. Please check your input data.")
     
-    # Buton de calcul
-    if st.button("🔮 Calculează Horoscopul", use_container_width=True):
-        calculate_horoscope(birth_date, birth_time, latitude, longitude, birth_city, birth_country)
+    with col_buttons[1]:
+        export_chart_data()
 
-def calculate_horoscope(birth_date, birth_time, latitude, longitude, birth_city, birth_country):
-    """Calculează horoscopul complet"""
+def display_chart():
+    st.header("♈ Astrological Chart")
     
-    # Creează observer pentru ephem
-    observer = ephem.Observer()
-    observer.lat = str(latitude)
-    observer.lon = str(longitude)
+    if st.session_state.chart_data is None:
+        st.warning("Please enter birth data and calculate chart first!")
+        return
     
-    # Combina data și ora
-    birth_datetime = datetime.combine(birth_date, birth_time)
-    observer.date = birth_datetime.strftime('%Y/%m/%d %H:%M:%S')
+    chart_data = st.session_state.chart_data
+    birth_data = st.session_state.birth_data
     
-    # Planete de calculat
-    planets = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 
-               'Saturn', 'Uranus', 'Neptune', 'Pluto']
+    # Informații de bază
+    col_info = st.columns(4)
+    with col_info[0]:
+        st.write(f"**Name:** {birth_data['name']}")
+    with col_info[1]:
+        st.write(f"**Date:** {birth_data['date']}")
+    with col_info[2]:
+        st.write(f"**Time:** {birth_data['time']}")
+    with col_info[3]:
+        st.write(f"**Location:** {birth_data['lat_display']}, {birth_data['lon_display']}")
     
-    planets_data = {}
-    houses_data = {}
+    st.markdown("---")
     
-    # Calculează pozițiile planetelor
-    for planet in planets:
-        position = get_planet_position(planet, birth_datetime, observer)
-        if position:
-            degrees = math.degrees(float(position))
-            sign = get_zodiac_sign(degrees)
-            house = (int(degrees / 30) % 12) + 1
-            degree_in_sign = degrees % 30
-            
-            planets_data[planet] = {
-                'degrees': degrees,
-                'degree_formatted': convert_degrees(degree_in_sign),
-                'sign': sign,
-                'house': house
-            }
+    # Chart circular și date
+    col1, col2 = st.columns([2, 1])
     
-    # Calculează casele (simplificat)
-    for house_num in range(1, 13):
-        house_degree = (house_num - 1) * 30
-        house_sign = get_zodiac_sign(house_degree)
+    with col1:
+        st.subheader("🔄 Circular Chart")
+        circular_fig = create_circular_chart(chart_data)
+        if circular_fig:
+            st.pyplot(circular_fig)
+        else:
+            st.info("Chart circular indisponibil momentan")
+    
+    with col2:
+        st.subheader("📊 Quick Overview")
         
-        houses_data[house_num] = {
-            'degrees': house_degree,
-            'degree_formatted': convert_degrees(house_degree % 30),
-            'sign': house_sign
+        # Planete importante
+        important_planets = ['Sun', 'Moon', 'Ascendant', 'Mercury', 'Venus', 'Mars']
+        for planet in ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars']:
+            if planet in chart_data['planets']:
+                planet_data = chart_data['planets'][planet]
+                st.write(f"**{planet}:** {planet_data['position_str']}")
+        
+        st.markdown("---")
+        st.subheader("📥 Export")
+        export_chart_data()
+    
+    st.markdown("---")
+    
+    # Detalii complete
+    col3, col4 = st.columns(2)
+    
+    with col3:
+        st.subheader("🌍 Planetary Positions")
+        display_order = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 
+                        'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Nod', 'Chi']
+        
+        for planet_name in display_order:
+            if planet_name in chart_data['planets']:
+                planet_data = chart_data['planets'][planet_name]
+                st.write(f"**{planet_name}** {planet_data['position_str']}")
+    
+    with col4:
+        st.subheader("🏠 Houses (Placidus)")
+        for house_num in range(1, 13):
+            if house_num in chart_data['houses']:
+                house_data = chart_data['houses'][house_num]
+                st.write(f"**{house_num}** {house_data['position_str']}")
+    
+    st.markdown("---")
+    
+    # Butoane de navigare rapidă
+    col_nav = st.columns(5)
+    with col_nav[0]:
+        if st.button("📊 Chart", use_container_width=True):
+            pass
+    with col_nav[1]:
+        if st.button("🔄 Aspects", use_container_width=True):
+            st.session_state.menu_option = "Aspects"
+    with col_nav[2]:
+        if st.button("📍 Positions", use_container_width=True):
+            st.session_state.menu_option = "Positions"
+    with col_nav[3]:
+        if st.button("📖 Interpretation", use_container_width=True):
+            st.session_state.menu_option = "Interpretation"
+    with col_nav[4]:
+        if st.button("✏️ Data", use_container_width=True):
+            st.session_state.menu_option = "Data Input"
+
+def display_positions():
+    st.header("📍 Planetary Positions")
+    
+    if st.session_state.chart_data is None:
+        st.warning("Please calculate chart first!")
+        return
+    
+    chart_data = st.session_state.chart_data
+    
+    # Tabel detaliat
+    positions_data = []
+    display_order = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 
+                    'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Nod', 'Chi']
+    
+    for planet_name in display_order:
+        if planet_name in chart_data['planets']:
+            planet_data = chart_data['planets'][planet_name]
+            positions_data.append({
+                'Planet': planet_name,
+                'Position': planet_data['position_str'],
+                'Longitude': f"{planet_data['longitude']:.6f}°",
+                'Sign': planet_data['sign'],
+                'Degrees': f"{planet_data['degrees']:02d}°{planet_data['minutes']:02d}'",
+                'House': planet_data.get('house', 'N/A'),
+                'Retrograde': 'Yes' if planet_data.get('retrograde', False) else 'No'
+            })
+    
+    df = pd.DataFrame(positions_data)
+    st.dataframe(df, use_container_width=True, hide_index=True)
+    
+    # Buton export
+    export_chart_data()
+
+def display_aspects():
+    st.header("🔄 Astrological Aspects")
+    
+    if st.session_state.chart_data is None:
+        st.warning("Please calculate chart first!")
+        return
+    
+    chart_data = st.session_state.chart_data
+    
+    aspects = calculate_aspects(chart_data)
+    
+    if aspects:
+        # Sort aspects by orb (most exact first)
+        aspects.sort(key=lambda x: x['orb'])
+        
+        aspect_data = []
+        for i, aspect in enumerate(aspects, 1):
+            aspect_data.append({
+                "#": f"{i:02d}",
+                "Planet 1": aspect['planet1'],
+                "Planet 2": aspect['planet2'], 
+                "Aspect": aspect['aspect_name'],
+                "Angle": f"{aspect['angle']}°",
+                "Orb": f"{aspect['orb']:.2f}°",
+                "Exact": "⭐" if aspect['exact'] else "No",
+                "Strength": aspect['strength']
+            })
+        
+        df = pd.DataFrame(aspect_data)
+        st.dataframe(df, use_container_width=True, hide_index=True)
+        
+        # Statistici
+        col_stats = st.columns(4)
+        with col_stats[0]:
+            st.metric("Total Aspects", len(aspects))
+        with col_stats[1]:
+            exact_count = sum(1 for a in aspects if a['exact'])
+            st.metric("Exact Aspects", exact_count)
+        with col_stats[2]:
+            strong_count = sum(1 for a in aspects if a['strength'] == 'Strong')
+            st.metric("Strong Aspects", strong_count)
+        with col_stats[3]:
+            st.metric("Aspect Types", len(set(a['aspect_name'] for a in aspects)))
+        
+    else:
+        st.info("No significant aspects found within allowed orb.")
+    
+    st.markdown("---")
+    export_chart_data()
+
+def display_interpretation():
+    st.header("📖 Interpretation Center")
+    
+    if st.session_state.chart_data is None:
+        st.warning("Please calculate chart first!")
+        return
+    
+    chart_data = st.session_state.chart_data
+    birth_data = st.session_state.birth_data
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("Data")
+        st.write(f"**Name:** {birth_data['name']}")
+        st.write(f"**Date:** {birth_data['date']}")
+        st.write(f"**Time:** {birth_data['time']}")
+        st.write(f"**Position:** {birth_data['lon_display']} {birth_data['lat_display']}")
+    
+    with col2:
+        st.subheader("Planets")
+        display_order = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 
+                        'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Nod', 'Chi']
+        
+        for planet_name in display_order:
+            if planet_name in chart_data['planets']:
+                planet_data = chart_data['planets'][planet_name]
+                abbrev = planet_name[:3] if planet_name not in ['Sun', 'Moon'] else planet_name
+                st.write(f"{abbrev} {planet_data['position_str']}")
+    
+    st.markdown("---")
+    
+    interpretation_type = st.selectbox(
+        "Type of interpretation",
+        ["Natal", "Sexual", "Career", "Relationships", "Spiritual"]
+    )
+    
+    st.markdown("---")
+    st.subheader(f"Interpretation: {interpretation_type}")
+    
+    display_complete_interpretations(chart_data, interpretation_type)
+    
+    st.markdown("---")
+    export_chart_data()
+
+def display_complete_interpretations(chart_data, interpretation_type):
+    """Afișează interpretări complete pentru toate planetele și gradele"""
+    
+    # INTERPRETĂRI COMPLETE PENTRU SEMNE
+    natal_interpretations = {
+        "Sun": {
+            "TAU": "Reliable, able, with powers of concentration, tenacity. Steadfast, a loving & affectionate \"family\" person. Honest, forthright. Learns readily from mistakes.",
+            "ARI": "Energetic, pioneering, courageous. Natural leader with strong initiative. Impulsive and direct.",
+            "GEM": "Clever, bright, quickwitted, communicative, able to do many different things at once, eager to learn new subjects. Openminded, adaptable, curious, restless, confident, seldom settling down.",
+            "CAN": "Nurturing, emotional, protective. Strong connection to home and family. Sensitive and caring.",
+            "LEO": "Confident, creative, generous. Natural performer and leader. Dramatic and warm-hearted.",
+            "VIR": "Analytical, practical, helpful. Attention to detail and service-oriented. Methodical and precise.",
+            "LIB": "Friendly, cordial, artistic, kind, considerate, loyal, alert, sociable, moderate, balanced in views, open-minded.",
+            "SCO": "Intense, passionate, transformative. Deep emotional understanding. Powerful and determined.",
+            "SAG": "Adventurous, philosophical, optimistic. Seeks truth and expansion. Freedom-loving and honest.",
+            "CAP": "Ambitious, disciplined, responsible. Builds lasting structures. Serious and determined.",
+            "AQU": "Innovative, independent, humanitarian. Forward-thinking and original. Unconventional and idealistic.",
+            "PIS": "Compassionate, intuitive, artistic. Connected to spiritual realms. Dreamy and empathetic."
+        },
+        "Moon": {
+            "SCO": "Tenacious will, much energy & working power, passionate, often sensual. Honest.",
+            "ARI": "Energetic, ambitious, strongwilled, self-centred, impulsive, dominant & obstinate.",
+            "TAU": "Steady, patient, determined. Values comfort and security. Emotionally stable.",
+            "GEM": "Changeable, adaptable, curious. Needs mental stimulation. Restless emotions.",
+            "CAN": "Nurturing, sensitive, protective. Strong emotional connections. Home-oriented.",
+            "LEO": "Proud, dramatic, generous. Needs recognition and appreciation. Warm emotions.",
+            "VIR": "Practical, analytical, helpful. Attention to emotional details. Service-oriented.",
+            "LIB": "Harmonious, diplomatic, social. Seeks emotional balance. Relationship-focused.",
+            "SAG": "Adventurous, optimistic, freedom-loving. Needs emotional expansion. Philosophical.",
+            "CAP": "Responsible, disciplined, reserved. Controls emotions carefully. Ambitious.",
+            "AQU": "Independent, unconventional, detached. Unique emotional expression. Progressive.",
+            "PIS": "Compassionate, intuitive, dreamy. Sensitive emotional nature. Spiritual."
+        },
+        "Mercury": {
+            "TAU": "Thorough, persevering. Good at working with the hands. Inflexible, steady, obstinate, self-opinionated, conventional, limited in interests.",
+            "ARI": "Quick-thinking, direct, innovative. Expresses ideas boldly and spontaneously.",
+            "GEM": "Versatile, communicative, curious. Learns quickly and shares knowledge.",
+            "CAN": "Intuitive, emotional, memory-oriented. Thinks with heart and nostalgia.",
+            "LEO": "Confident, dramatic, creative. Expresses ideas with flair and authority.",
+            "VIR": "Analytical, precise, detail-oriented. Excellent at critical thinking.",
+            "LIB": "Diplomatic, balanced, artistic. Seeks harmony in communication.",
+            "SCO": "Penetrating, investigative, profound. Seeks hidden truths.",
+            "SAG": "Philosophical, broad-minded, honest. Thinks in big pictures.",
+            "CAP": "Practical, organized, ambitious. Strategic and disciplined thinking.",
+            "AQU": "Innovative, original, detached. Thinks outside conventional boxes.",
+            "PIS": "Intuitive, imaginative, compassionate. Thinks with psychic sensitivity."
+        },
+        "Venus": {
+            "GEM": "Flirtatious. Makes friends very easily. Has multifaceted relationships.",
+            "ARI": "Direct, passionate, impulsive in love. Attracted to challenge and excitement.",
+            "TAU": "Sensual, loyal, comfort-seeking. Values stability and physical pleasure.",
+            "CAN": "Nurturing, protective, home-oriented. Seeks emotional security.",
+            "LEO": "Dramatic, generous, proud. Loves romance and admiration.",
+            "VIR": "Practical, helpful, discerning. Shows love through service.",
+            "LIB": "Harmonious, diplomatic, artistic. Seeks balance and partnership.",
+            "SCO": "Intense, passionate, possessive. Seeks deep emotional bonds.",
+            "SAG": "Adventurous, freedom-loving, honest. Values independence in relationships.",
+            "CAP": "Serious, responsible, ambitious. Seeks stability and commitment.",
+            "AQU": "Unconventional, friendly, detached. Values friendship and independence.",
+            "PIS": "Romantic, compassionate, dreamy. Seeks spiritual connection."
+        },
+        "Mars": {
+            "AQU": "Strong reasoning powers. Often interested in science. Fond of freedom & independence.",
+            "ARI": "Energetic, competitive, pioneering. Direct and assertive action.",
+            "TAU": "Persistent, determined, practical. Slow but steady approach.",
+            "GEM": "Versatile, quick, communicative. Action through words and ideas.",
+            "CAN": "Protective, emotional, defensive. Actions driven by feelings.",
+            "LEO": "Confident, dramatic, creative. Actions with flair and leadership.",
+            "VIR": "Precise, analytical, efficient. Methodical and careful action.",
+            "LIB": "Diplomatic, balanced, cooperative. Seeks harmony in action.",
+            "SCO": "Intense, determined, transformative. Powerful and secretive action.",
+            "SAG": "Adventurous, optimistic, freedom-loving. Action with purpose.",
+            "CAP": "Ambitious, disciplined, patient. Strategic and persistent action.",
+            "PIS": "Compassionate, intuitive, adaptable. Action through inspiration."
+        },
+        "Jupiter": {
+            "LEO": "Has a talent for organizing & leading. Open & ready to help anyone in need - magnanimous & affectionate.",
+            "ARI": "Enthusiastic, confident, generous. Natural leadership abilities.",
+            "TAU": "Practical, steady growth. Values material security and comfort.",
+            "GEM": "Curious, communicative, versatile. Expands through learning and connections.",
+            "CAN": "Nurturing, protective growth. Expands family and home life.",
+            "VIR": "Analytical, service-oriented growth. Improves through attention to detail.",
+            "LIB": "Harmonious, diplomatic expansion. Grows through relationships and beauty.",
+            "SCO": "Intense, transformative growth. Expands through deep investigation.",
+            "SAG": "Philosophical, adventurous expansion. Seeks truth and meaning.",
+            "CAP": "Ambitious, disciplined growth. Builds lasting structures and authority.",
+            "AQU": "Innovative, humanitarian expansion. Progress through originality.",
+            "PIS": "Compassionate, spiritual growth. Expands through intuition and service."
+        },
+        "Saturn": {
+            "SAG": "Upright, open, courageous, honourable, grave, dignified, very capable.",
+            "ARI": "Ambitious, disciplined pioneer. Builds structures with initiative.",
+            "TAU": "Practical, patient builder. Creates lasting material security.",
+            "GEM": "Serious, organized communicator. Structures thinking and learning.",
+            "CAN": "Responsible, protective authority. Builds family traditions.",
+            "LEO": "Dignified, authoritative leader. Structures creative expression.",
+            "VIR": "Precise, efficient organizer. Creates order through service.",
+            "LIB": "Balanced, diplomatic judge. Structures relationships fairly.",
+            "SCO": "Intense, transformative discipline. Builds through deep investigation.",
+            "CAP": "Ambitious, responsible builder. Creates lasting institutions.",
+            "AQU": "Innovative, disciplined reformer. Structures progressive ideas.",
+            "PIS": "Compassionate, spiritual discipline. Builds through faith."
+        },
+        "Uranus": {
+            "CAN": "Rather passive, compassionate, sensitive, impressionable, intuitive.",
+            "ARI": "Innovative, independent pioneer. Sudden changes and breakthroughs.",
+            "TAU": "Unconventional values and financial ideas. Slow but revolutionary change.",
+            "GEM": "Revolutionary thinking and communication. Sudden insights.",
+            "LEO": "Creative innovation and dramatic self-expression.",
+            "VIR": "Unconventional approaches to health and service.",
+            "LIB": "Revolutionary relationships and artistic expression.",
+            "SCO": "Transformative insights and psychological breakthroughs.",
+            "SAG": "Philosophical innovation and expansion of consciousness.",
+            "CAP": "Structural reforms and institutional changes.",
+            "AQU": "Humanitarian vision and technological innovation.",
+            "PIS": "Spiritual insights and mystical revelations."
+        },
+        "Neptune": {
+            "LIB": "Idealistic, often a bit out of touch with reality. Has only a hazy view & understanding of real life & the world.",
+            "ARI": "Spiritual pioneering and inspired action.",
+            "TAU": "Dreamy values and idealized security.",
+            "GEM": "Imaginative communication and inspired ideas.",
+            "CAN": "Mystical home life and spiritual nurturing.",
+            "LEO": "Creative inspiration and dramatic spirituality.",
+            "VIR": "Service through inspiration and healing.",
+            "SCO": "Deep spiritual transformation and psychic sensitivity.",
+            "SAG": "Philosophical idealism and spiritual expansion.",
+            "CAP": "Structured spirituality and institutional faith.",
+            "AQU": "Collective ideals and humanitarian dreams.",
+            "PIS": "Spiritual connection and mystical understanding."
+        },
+        "Pluto": {
+            "LEO": "Strong creative desires. Uncontrollable sexual appetite. Determined to win.",
+            "ARI": "Transformative initiative and rebirth through action.",
+            "TAU": "Deep financial transformation and value regeneration.",
+            "GEM": "Psychological communication and mental transformation.",
+            "CAN": "Emotional rebirth and family transformation.",
+            "VIR": "Service transformation and health regeneration.",
+            "LIB": "Relationship transformation and artistic rebirth.",
+            "SCO": "Deep psychological transformation and rebirth.",
+            "SAG": "Philosophical transformation and belief regeneration.",
+            "CAP": "Structural transformation and power rebirth.",
+            "AQU": "Collective transformation and social regeneration.",
+            "PIS": "Spiritual transformation and mystical rebirth."
         }
+    }
+
+    # INTERPRETĂRI PENTRU GRADE
+    degree_interpretations = {
+        "Sun": {
+            1: "Usually warmhearted & lovable but also vain, hedonistic & flirtatious.",
+            5: "As a child energetic, noisy, overactive, fond of taking risks.",
+            9: "Has very wide-ranging interests.",
+            15: "Strong sense of personal identity and purpose.",
+            18: "Creative talents and artistic abilities.",
+            22: "Strong leadership qualities and determination.",
+            25: "Mature understanding of life's purpose and direction.",
+            29: "Transformative experiences and spiritual growth."
+        },
+        "Moon": {
+            1: "Strong emotional needs and sensitivity.",
+            6: "Conscientious & easily influenced. Moody. Ready to help others. Illnesses of the nervous system.",
+            12: "Sentimental, moody, shy, very impressionable & hypersensitive.",
+            18: "Strong emotional intuition and sensitivity to others.",
+            22: "Practical emotional expression and nurturing abilities.",
+            27: "Deep emotional wisdom and understanding of cycles."
+        },
+        "Mercury": {
+            1: "Quick thinking and mental agility.",
+            6: "Anxious about health - may travel for health reasons.",
+            8: "Systematic, capable of concentrated thinking & planning. Feels things very deeply.",
+            12: "Excellent memory and learning abilities.",
+            17: "Analytical mind with good problem-solving skills.",
+            22: "Mature communication skills and wisdom in expression.",
+            27: "Philosophical thinking and deep understanding."
+        },
+        "Venus": {
+            1: "Charming and attractive personality.",
+            7: "Loves a cheerful, relaxed atmosphere. Fond of music, art & beautiful houses.",
+            8: "Strong desire to possess another person. Strongly erotic.",
+            15: "Artistic talents and appreciation for beauty.",
+            21: "Harmonious relationships and social grace.",
+            27: "Spiritual understanding of love and relationships."
+        },
+        "Mars": {
+            1: "Energetic and competitive nature.",
+            2: "Ambitious, energetic, competitive, tenacious, practical, financially competent, obstinate, persistent & fearless.",
+            9: "Adventurous spirit and love for exploration.",
+            15: "Strong willpower and determination.",
+            21: "Leadership abilities and strategic thinking.",
+            27: "Transformative energy and spiritual power."
+        },
+        "Jupiter": {
+            1: "Optimistic and expansive nature.",
+            5: "Generous and philosophical mindset.",
+            9: "Good-natured, upright, frequently talented in languages & law.",
+            14: "Spiritual growth and wisdom.",
+            19: "Success through higher education and travel.",
+            25: "Mature wisdom and spiritual understanding."
+        },
+        "Saturn": {
+            1: "Subject to constraints & uncertainties. Serious by nature. Slow but persistent & unchanging.",
+            7: "Responsibility in relationships and partnerships.",
+            13: "Discipline and structure in daily work.",
+            19: "Career achievements through hard work.",
+            25: "Mature understanding of limitations and spiritual discipline."
+        }
+    }
+
+    # INTERPRETĂRI PENTRU CASE
+    house_interpretations = {
+        "Sun": {
+            1: "Strong personality and leadership qualities.",
+            5: "Creative self-expression and romantic nature.",
+            9: "Philosophical mind and love for travel.",
+            10: "Ambitious and career-oriented."
+        },
+        "Moon": {
+            1: "Emotional and sensitive personality.",
+            4: "Strong connection to home and family.",
+            7: "Emotional needs in relationships.",
+            10: "Public emotional expression.",
+            12: "Sentimental, moody, shy, very impressionable & hypersensitive."
+        },
+        "Mercury": {
+            3: "Communicative and curious mind.",
+            6: "Anxious about health - may travel for health reasons.",
+            9: "Philosophical and higher thinking.",
+            11: "Social communication and networking."
+        },
+        "Venus": {
+            2: "Artistic values and financial harmony.",
+            5: "Romantic and creative expression.",
+            7: "Loves a cheerful, relaxed atmosphere. Fond of music, art & beautiful houses.",
+            11: "Social grace and friendship networks."
+        },
+        "Mars": {
+            1: "Energetic and assertive personality.",
+            2: "Ambitious, energetic, competitive, tenacious, practical, financially competent, obstinate, persistent & fearless.",
+            6: "Hardworking and health-conscious.",
+            10: "Ambitious career drive."
+        },
+        "Jupiter": {
+            2: "Financial expansion and prosperity.",
+            5: "Creative and romantic expansion.",
+            7: "Beneficial partnerships.",
+            9: "Good-natured, upright, frequently talented in languages & law.",
+            11: "Social success and humanitarian interests."
+        },
+        "Saturn": {
+            1: "Subject to constraints & uncertainties. Serious by nature. Slow but persistent & unchanging.",
+            4: "Responsibility towards family and home.",
+            7: "Serious relationships and partnerships.",
+            10: "Career responsibilities and achievements."
+        },
+        "Uranus": {
+            1: "Independent and innovative personality.",
+            5: "Unconcreative creativity and romance.",
+            7: "Unconventional relationships.",
+            11: "Progressive social networks."
+        },
+        "Neptune": {
+            1: "Dreamy and spiritual personality.",
+            4: "Mystical home environment.",
+            7: "Idealistic relationships.",
+            12: "Spiritual and psychic sensitivity."
+        },
+        "Pluto": {
+            1: "Transformative personality.",
+            4: "Family transformations.",
+            8: "Deep psychological insights.",
+            12: "Spiritual transformation."
+        }
+    }
+
+    planets_to_display = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"]
     
-    # Afișează rezultatele
-    st.markdown(f'<h2 class="section-header">📊 Rezultate Horoscop pentru {birth_city}, {birth_country}</h2>', unsafe_allow_html=True)
+    for planet_name in planets_to_display:
+        if planet_name in chart_data['planets']:
+            planet_data = chart_data['planets'][planet_name]
+            planet_sign = planet_data['sign']
+            planet_degrees = planet_data['degrees']
+            planet_house = planet_data.get('house', 0)
+            
+            # Afișează interpretarea pentru semn
+            if (planet_name in natal_interpretations and 
+                planet_sign in natal_interpretations[planet_name]):
+                
+                st.write(f"****  {planet_name} in {planet_sign}")
+                st.write(natal_interpretations[planet_name][planet_sign])
+                st.write("")
+
+            # Afișează interpretarea pentru grad
+            if (interpretation_type == "Natal" and 
+                planet_name in degree_interpretations and 
+                planet_degrees in degree_interpretations[planet_name]):
+                
+                st.write(f"****  {planet_name} at {planet_degrees:02d}°")
+                st.write(degree_interpretations[planet_name][planet_degrees])
+                st.write("")
+
+            # Afișează interpretarea pentru casă
+            if (interpretation_type == "Natal" and 
+                planet_name in house_interpretations and 
+                planet_house in house_interpretations[planet_name]):
+                
+                st.write(f"****  {planet_name} in House {planet_house}")
+                st.write(house_interpretations[planet_name][planet_house])
+                st.write("")
+
+def display_about():
+    st.header("ℹ️ About Horoscope")
+    st.markdown("""
+    ### Horoscope ver. 1.0 (Streamlit Edition)
     
-    # Informații despre naștere
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.metric("Data nașterii", birth_datetime.strftime('%d %B %Y'))
-    with col2:
-        st.metric("Ora nașterii", birth_datetime.strftime('%H:%M'))
-    with col3:
-        st.metric("Coordonate", f"Lat: {latitude}, Lon: {longitude}")
+    **Copyright © 2025**  
+    RAD  
     
-    # Chart simplificat
-    create_simple_chart(planets_data, houses_data)
+    **Features**  
+    - Professional astrological calculations using Swiss Ephemeris
+    - Accurate planetary positions with professional ephemeris files
+    - Natal chart calculations with Placidus houses
+    - Complete planetary aspects calculations
+    - Comprehensive interpretations for signs, degrees and houses
+    - Circular chart visualization
+    - Data export functionality
     
-    # Interpretări
-    st.markdown('<h2 class="section-header">📖 Interpretări</h2>', unsafe_allow_html=True)
+    **Technical:** Built with Streamlit and Swiss Ephemeris (pyswisseph) 
+    using professional ephemeris files from Swiss Ephemeris repository.
     
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        st.markdown("#### 💼 Career")
-        career_text = generate_career_interpretation(planets_data, houses_data)
-        st.markdown(f'<div class="interpretation-box">{career_text}</div>', unsafe_allow_html=True)
-    
-    with col2:
-        st.markdown("#### 💖 Relationships")
-        relationships_text = generate_relationships_interpretation(planets_data, houses_data)
-        st.markdown(f'<div class="interpretation-box">{relationships_text}</div>', unsafe_allow_html=True)
-    
-    with col3:
-        st.markdown("#### 🌟 Spiritual")
-        spiritual_text = generate_spiritual_interpretation(planets_data, houses_data)
-        st.markdown(f'<div class="interpretation-box">{spiritual_text}</div>', unsafe_allow_html=True)
-    
-    # Detalii tehnice
-    with st.expander("🔍 Detalii Tehnice Complete"):
-        st.write("**Planete:**", planets_data)
-        st.write("**Case:**", houses_data)
+    **Latest Improvements:**
+    - Enhanced ephemeris path management
+    - Caching for better performance
+    - Circular chart visualization
+    - JSON export functionality
+    - Improved user interface
+    - Better error handling
+    """)
 
 if __name__ == "__main__":
     main()
