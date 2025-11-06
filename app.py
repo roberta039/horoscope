@@ -261,7 +261,7 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart"):
         # Setări pentru cercul principal
         center_x, center_y = 0, 0
         outer_radius = 4.5
-        inner_radius = 3.6
+        inner_radius = 3.8
         house_radius = 3.5
         planet_radius = 3.0
         
