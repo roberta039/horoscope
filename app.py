@@ -5,6 +5,10 @@ import math
 import pandas as pd
 import swisseph as swe
 import os
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.patches import Circle, Wedge
+import matplotlib.patches as patches
 
 def main():
     st.set_page_config(page_title="Horoscope", layout="wide", page_icon="♈")
@@ -225,6 +229,149 @@ def get_house_for_longitude_swiss(longitude, houses):
     except Exception as e:
         return 1
 
+def create_chart_wheel(chart_data, birth_data):
+    """Creează un grafic circular cu planetele în case"""
+    try:
+        fig, ax = plt.subplots(figsize=(12, 12))
+        ax.set_aspect('equal')
+        
+        # Setări pentru cercul principal
+        center_x, center_y = 0, 0
+        outer_radius = 5
+        inner_radius = 4
+        house_radius = 3.5
+        planet_radius = 3.0
+        
+        # Culori
+        background_color = '#0E1117'  # Fundal întunecat ca Streamlit
+        circle_color = '#262730'
+        text_color = 'white'
+        house_color = '#FAFAFA'
+        planet_colors = {
+            'Sun': '#FFD700', 'Moon': '#C0C0C0', 'Mercury': '#A9A9A9',
+            'Venus': '#FFB6C1', 'Mars': '#FF4500', 'Jupiter': '#FFA500',
+            'Saturn': '#DAA520', 'Uranus': '#40E0D0', 'Neptune': '#1E90FF',
+            'Pluto': '#8B008B', 'Nod': '#FF69B4', 'Chi': '#32CD32'
+        }
+        
+        # Setează fundalul
+        fig.patch.set_facecolor(background_color)
+        ax.set_facecolor(background_color)
+        
+        # Desenează cercurile principale
+        outer_circle = Circle((center_x, center_y), outer_radius, fill=True, color=circle_color, alpha=0.3)
+        inner_circle = Circle((center_x, center_y), inner_radius, fill=True, color=background_color)
+        ax.add_patch(outer_circle)
+        ax.add_patch(inner_circle)
+        
+        # Semnele zodiacale și simbolurile
+        signs = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
+        sign_names = ['ARI', 'TAU', 'GEM', 'CAN', 'LEO', 'VIR', 'LIB', 'SCO', 'SAG', 'CAP', 'AQU', 'PIS']
+        
+        # Desenează casele și semnele
+        for i in range(12):
+            angle = i * 30 - 90  # Începe de la 9 o'clock (Aries)
+            rad_angle = np.radians(angle)
+            
+            # Linii pentru case
+            x_outer = center_x + outer_radius * np.cos(rad_angle)
+            y_outer = center_y + outer_radius * np.sin(rad_angle)
+            x_inner = center_x + inner_radius * np.cos(rad_angle)
+            y_inner = center_y + inner_radius * np.sin(rad_angle)
+            
+            ax.plot([x_inner, x_outer], [y_inner, y_outer], color=house_color, linewidth=1, alpha=0.5)
+            
+            # Numerele caselor
+            house_text_angle = angle + 15  # Centrul casei
+            house_rad_angle = np.radians(house_text_angle)
+            x_house = center_x + house_radius * np.cos(house_rad_angle)
+            y_house = center_y + house_radius * np.sin(house_rad_angle)
+            
+            ax.text(x_house, y_house, str(i+1), ha='center', va='center', 
+                   color=house_color, fontsize=10, fontweight='bold')
+            
+            # Semnele zodiacale
+            sign_angle = i * 30 - 75  # Poziționare pentru semne
+            sign_rad_angle = np.radians(sign_angle)
+            x_sign = center_x + (outer_radius + 0.3) * np.cos(sign_rad_angle)
+            y_sign = center_y + (outer_radius + 0.3) * np.sin(sign_rad_angle)
+            
+            ax.text(x_sign, y_sign, signs[i], ha='center', va='center', 
+                   color=house_color, fontsize=14)
+            
+            # Numele semnului
+            x_name = center_x + (outer_radius + 0.7) * np.cos(sign_rad_angle)
+            y_name = center_y + (outer_radius + 0.7) * np.sin(sign_rad_angle)
+            
+            ax.text(x_name, y_name, sign_names[i], ha='center', va='center', 
+                   color=house_color, fontsize=8, rotation=angle+90)
+        
+        # Plasează planetele în chart
+        planets = chart_data['planets']
+        planet_symbols = {
+            'Sun': '☉', 'Moon': '☽', 'Mercury': '☿', 'Venus': '♀',
+            'Mars': '♂', 'Jupiter': '♃', 'Saturn': '♄', 'Uranus': '♅',
+            'Neptune': '♆', 'Pluto': '♇', 'Nod': '☊', 'Chi': '⚷'
+        }
+        
+        for planet_name, planet_data in planets.items():
+            longitude = planet_data['longitude']
+            house = planet_data.get('house', 1)
+            is_retrograde = planet_data.get('retrograde', False)
+            
+            # Calculează unghiul pentru planetă
+            planet_angle = longitude - 90  # Ajustare pentru a începe de la Aries
+            planet_rad_angle = np.radians(planet_angle)
+            
+            # Poziția planetei
+            x_planet = center_x + planet_radius * np.cos(planet_rad_angle)
+            y_planet = center_y + planet_radius * np.sin(planet_rad_angle)
+            
+            # Simbolul planetei
+            symbol = planet_symbols.get(planet_name, '•')
+            color = planet_colors.get(planet_name, 'white')
+            
+            # Afișează planeta
+            ax.text(x_planet, y_planet, symbol, ha='center', va='center', 
+                   color=color, fontsize=12, fontweight='bold')
+            
+            # Numele planetei (scurtat)
+            abbrev = planet_name[:3] if planet_name not in ['Sun', 'Moon'] else planet_name
+            if is_retrograde:
+                abbrev += " R"
+                
+            # Poziția pentru nume
+            name_angle = planet_angle + 5
+            name_rad_angle = np.radians(name_angle)
+            x_name = center_x + (planet_radius - 0.3) * np.cos(name_rad_angle)
+            y_name = center_y + (planet_radius - 0.3) * np.sin(name_rad_angle)
+            
+            ax.text(x_name, y_name, abbrev, ha='center', va='center', 
+                   color=color, fontsize=7, alpha=0.8)
+        
+        # Titlul chart-ului
+        name = birth_data.get('name', 'Natal Chart')
+        date_str = birth_data.get('date', '').strftime('%Y-%m-%d')
+        ax.set_title(f'{name} - {date_str}\nNatal Chart', 
+                    color=text_color, fontsize=16, pad=20)
+        
+        # Elimină axele
+        ax.set_xlim(-outer_radius-1, outer_radius+1)
+        ax.set_ylim(-outer_radius-1, outer_radius+1)
+        ax.axis('off')
+        
+        # Legenda
+        legend_text = "Planets in Houses - Placidus System"
+        ax.text(0, -outer_radius-0.8, legend_text, ha='center', va='center',
+               color=text_color, fontsize=10, style='italic')
+        
+        plt.tight_layout()
+        return fig
+        
+    except Exception as e:
+        st.error(f"Eroare la crearea graficului: {e}")
+        return None
+
 def calculate_aspects(chart_data):
     """Calculează aspectele astrologice"""
     try:
@@ -349,6 +496,14 @@ def display_chart():
     
     chart_data = st.session_state.chart_data
     birth_data = st.session_state.birth_data
+    
+    # Afișează graficul circular
+    st.subheader("🎯 Chart Wheel")
+    fig = create_chart_wheel(chart_data, birth_data)
+    if fig:
+        st.pyplot(fig)
+    else:
+        st.error("Could not generate chart wheel")
     
     col_info = st.columns(3)
     with col_info[0]:
@@ -815,13 +970,14 @@ def display_about():
     
     **Features**  
     - Professional astrological calculations using Swiss Ephemeris
+    - Interactive chart wheel visualization
     - Accurate planetary positions with professional ephemeris files
     - Natal chart calculations with Placidus houses
     - Complete planetary aspects calculations
     - Comprehensive interpretations for signs, degrees and houses
     
-    **Technical:** Built with Streamlit and Swiss Ephemeris (pyswisseph) 
-    using professional ephemeris files from Swiss Ephemeris repository.
+    **Technical:** Built with Streamlit, Swiss Ephemeris (pyswisseph), and Matplotlib
+    for professional astrological charting.
     """)
 
 if __name__ == "__main__":
