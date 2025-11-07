@@ -1094,7 +1094,7 @@ def display_interpretation():
     
     interpretation_type = st.selectbox(
         "Interpretation Focus",
-        ["Natal Chart", "Career & Vocation", "Relationships & Love", "Spiritual Growth", "Personality Analysis", "Life Purpose"]
+        ["Natal Chart", "Career & Vocation", "Relationships & Love", "Spiritual Growth", "Personality Analysis", "Life Purpose", "Sexual Nature"]
     )
     
     st.markdown("---")
@@ -1848,6 +1848,882 @@ Your Mars in Pisces gives you compassionate, intuitive action and spiritual ener
 
 **Growth Opportunity**: Learning focused action while maintaining your compassionate, intuitive approach.
 """
+        },
+        "Jupiter": {
+            "Aries": """
+**Expansive Pioneer**
+Your Jupiter in Aries expands your courage, initiative, and leadership qualities. You have an optimistic approach to new beginnings and enjoy pioneering new philosophical or spiritual territories. Your faith in yourself helps you undertake ambitious projects.
+
+**Areas of Expansion:**
+- Confidence in personal initiatives
+- Philosophical courage
+- Leadership opportunities
+- Independent ventures
+
+**Wisdom Lesson**: Learning to balance your expansive initiatives with consideration for collective needs while maintaining your pioneering spirit.
+""",
+            "Taurus": """
+**Abundant Builder**
+Your Jupiter in Taurus expands your practical wisdom, material resources, and sensual appreciation. You have faith in gradual growth and find abundance through steady, reliable methods. Your optimism is grounded in tangible reality.
+
+**Areas of Expansion:**
+- Material abundance and security
+- Practical skills development
+- Sensual enjoyment of life
+- Financial growth opportunities
+
+**Wisdom Lesson**: Learning to balance material expansion with spiritual values while maintaining your practical approach to abundance.
+""",
+            "Gemini": """
+**Knowledge Seeker**
+Your Jupiter in Gemini expands your intellectual curiosity, communication skills, and social connections. You find wisdom through learning, teaching, and exchanging ideas. Your optimism comes from mental stimulation and variety.
+
+**Areas of Expansion:**
+- Intellectual knowledge
+- Communication abilities
+- Social networking
+- Learning opportunities
+
+**Wisdom Lesson**: Learning to balance breadth of knowledge with depth of understanding while maintaining your curious nature.
+""",
+            "Cancer": """
+**Nurturing Growth**
+Your Jupiter in Cancer expands your emotional intelligence, nurturing capacity, and family connections. You find abundance through emotional security and creating comfortable environments. Your optimism is deeply connected to home and family.
+
+**Areas of Expansion:**
+- Emotional security
+- Family blessings
+- Nurturing opportunities
+- Home and real estate
+
+**Wisdom Lesson**: Learning to balance emotional expansion with healthy boundaries while maintaining your nurturing nature.
+""",
+            "Leo": """
+**Creative Abundance**
+Your Jupiter in Leo expands your creative expression, leadership abilities, and generous spirit. You find abundance through self-expression and inspiring others. Your optimism is dramatic and warm-hearted.
+
+**Areas of Expansion:**
+- Creative self-expression
+- Leadership opportunities
+- Recognition and appreciation
+- Generous giving and receiving
+
+**Wisdom Lesson**: Learning to balance self-expression with consideration for others while maintaining your generous spirit.
+""",
+            "Virgo": """
+**Service Expansion**
+Your Jupiter in Virgo expands your analytical abilities, service orientation, and practical skills. You find abundance through being useful and improving systems. Your optimism comes from practical accomplishments and helpfulness.
+
+**Areas of Expansion:**
+- Service opportunities
+- Health and wellness knowledge
+- Analytical skills development
+- Practical problem-solving
+
+**Wisdom Lesson**: Learning to balance perfectionism with acceptance while maintaining your helpful nature.
+""",
+            "Libra": """
+**Harmonious Growth**
+Your Jupiter in Libra expands your diplomatic skills, aesthetic appreciation, and relationship opportunities. You find abundance through partnership, beauty, and creating harmony. Your optimism is balanced and fair-minded.
+
+**Areas of Expansion:**
+- Partnership blessings
+- Artistic opportunities
+- Social grace development
+- Balanced growth
+
+**Wisdom Lesson**: Learning to balance partnership needs with personal identity while maintaining your harmonious approach.
+""",
+            "Scorpio": """
+**Transformative Expansion**
+Your Jupiter in Scorpio expands your psychological insight, transformative power, and resource management. You find abundance through deep investigation and personal transformation. Your optimism is intense and regenerative.
+
+**Areas of Expansion:**
+- Psychological understanding
+- Transformative opportunities
+- Resource management skills
+- Investigative abilities
+
+**Wisdom Lesson**: Learning to balance intensity with lightness while maintaining your transformative power.
+""",
+            "Sagittarius": """
+**Philosophical Explorer**
+Your Jupiter in Sagittarius expands your philosophical understanding, adventurous spirit, and teaching abilities. You find abundance through exploration, learning, and seeking truth. Your optimism is natural and expansive.
+
+**Areas of Expansion:**
+- Philosophical wisdom
+- Travel opportunities
+- Teaching abilities
+- Cultural understanding
+
+**Wisdom Lesson**: Learning to balance freedom with responsibility while maintaining your adventurous spirit.
+""",
+            "Capricorn": """
+**Structured Growth**
+Your Jupiter in Capricorn expands your ambition, discipline, and organizational abilities. You find abundance through careful planning and long-term building. Your optimism is practical and achievement-oriented.
+
+**Areas of Expansion:**
+- Career advancement
+- Organizational skills
+- Ambitious projects
+- Traditional wisdom
+
+**Wisdom Lesson**: Learning to balance ambition with emotional fulfillment while maintaining your disciplined approach.
+""",
+            "Aquarius": """
+**Innovative Expansion**
+Your Jupiter in Aquarius expands your innovative thinking, humanitarian vision, and group connections. You find abundance through progressive ideas and social change. Your optimism is futuristic and original.
+
+**Areas of Expansion:**
+- Innovative ideas
+- Group affiliations
+- Humanitarian opportunities
+- Technological advancement
+
+**Wisdom Lesson**: Learning to balance innovation with practical implementation while maintaining your visionary approach.
+""",
+            "Pisces": """
+**Spiritual Abundance**
+Your Jupiter in Pisces expands your compassion, intuition, and spiritual connection. You find abundance through service, creativity, and universal love. Your optimism is compassionate and spiritually oriented.
+
+**Areas of Expansion:**
+- Spiritual understanding
+- Creative inspiration
+- Compassionate service
+- Universal connection
+
+**Wisdom Lesson**: Learning to balance spiritual ideals with practical reality while maintaining your compassionate nature.
+"""
+        },
+        "Saturn": {
+            "Aries": """
+**Disciplined Pioneer**
+Your Saturn in Aries teaches lessons about responsible initiative and disciplined action. You're learning to balance your desire for immediate action with thoughtful consideration. Your challenges often involve learning patience in pursuing your goals.
+
+**Life Lessons:**
+- Responsible leadership
+- Patient pursuit of goals
+- Balancing independence with cooperation
+- Disciplined use of personal power
+
+**Mastery Path**: Learning to initiate action that serves long-term structures while maintaining your courageous approach to challenges.
+""",
+            "Taurus": """
+**Practical Builder**
+Your Saturn in Taurus teaches lessons about material responsibility and practical stability. You're learning to build security through reliable methods and patient accumulation. Your challenges involve developing financial discipline.
+
+**Life Lessons:**
+- Financial responsibility
+- Practical skill development
+- Patient value building
+- Material discipline
+
+**Mastery Path**: Learning to create lasting security while maintaining flexibility in the face of change.
+""",
+            "Gemini": """
+**Organized Communicator**
+Your Saturn in Gemini teaches lessons about responsible communication and mental discipline. You're learning to express ideas clearly and reliably. Your challenges involve developing consistent thinking patterns.
+
+**Life Lessons:**
+- Responsible communication
+- Mental organization
+- Reliable learning methods
+- Practical knowledge application
+
+**Mastery Path**: Learning to balance intellectual versatility with focused expertise while maintaining your communicative gifts.
+""",
+            "Cancer": """
+**Emotional Responsibility**
+Your Saturn in Cancer teaches lessons about emotional maturity and family responsibility. You're learning to create emotional security through reliable nurturing. Your challenges involve developing healthy emotional boundaries.
+
+**Life Lessons:**
+- Emotional discipline
+- Family responsibility
+- Creating secure foundations
+- Balanced nurturing
+
+**Mastery Path**: Learning to provide emotional security while maintaining personal emotional health.
+""",
+            "Leo": """
+**Responsible Leader**
+Your Saturn in Leo teaches lessons about creative responsibility and dignified leadership. You're learning to express yourself authentically while considering others' needs. Your challenges involve balancing self-expression with responsibility.
+
+**Life Lessons:**
+- Responsible self-expression
+- Dignified leadership
+- Creative discipline
+- Generous authority
+
+**Mastery Path**: Learning to lead with heart while maintaining appropriate boundaries and responsibilities.
+""",
+            "Virgo": """
+**Efficient Organizer**
+Your Saturn in Virgo teaches lessons about practical service and systematic improvement. You're learning to be useful in organized, reliable ways. Your challenges involve balancing perfectionism with practical reality.
+
+**Life Lessons:**
+- Practical service discipline
+- Health responsibility
+- Systematic organization
+- Efficient problem-solving
+
+**Mastery Path**: Learning to improve systems while accepting necessary imperfections in the process.
+""",
+            "Libra": """
+**Diplomatic Responsibility**
+Your Saturn in Libra teaches lessons about partnership commitment and balanced justice. You're learning to create fair, lasting relationships. Your challenges involve making firm decisions within partnerships.
+
+**Life Lessons:**
+- Partnership commitment
+- Balanced decision-making
+- Artistic discipline
+- Fair relationship structures
+
+**Mastery Path**: Learning to create harmonious structures while maintaining personal integrity within relationships.
+""",
+            "Scorpio": """
+**Transformative Discipline**
+Your Saturn in Scorpio teaches lessons about psychological depth and responsible power. You're learning to handle intensity with wisdom and integrity. Your challenges involve transforming limitations into strengths.
+
+**Life Lessons:**
+- Psychological discipline
+- Responsible power use
+- Transformative patience
+- Emotional intensity management
+
+**Mastery Path**: Learning to work with deep psychological forces while maintaining ethical boundaries and personal integrity.
+""",
+            "Sagittarius": """
+**Philosophical Structure**
+Your Saturn in Sagittarius teaches lessons about philosophical integrity and responsible expansion. You're learning to ground your beliefs in practical reality. Your challenges involve balancing freedom with commitment.
+
+**Life Lessons:**
+- Philosophical discipline
+- Responsible teaching
+- Structured expansion
+- Ethical exploration
+
+**Mastery Path**: Learning to expand horizons while maintaining philosophical integrity and practical grounding.
+""",
+            "Capricorn": """
+**Natural Authority**
+Your Saturn in Capricorn gives you natural understanding of structure, discipline, and long-term planning. You're here to master the art of building lasting institutions. Your challenges involve balancing ambition with humanity.
+
+**Life Lessons:**
+- Natural leadership responsibility
+- Institutional building
+- Long-term achievement
+- Traditional wisdom mastery
+
+**Mastery Path**: Learning to create enduring structures while maintaining compassion and human connection.
+""",
+            "Aquarius": """
+**Innovative Responsibility**
+Your Saturn in Aquarius teaches lessons about progressive structures and group responsibility. You're learning to implement innovative ideas in practical ways. Your challenges involve balancing individuality with group needs.
+
+**Life Lessons:**
+- Innovative discipline
+- Group responsibility
+- Progressive structures
+- Humanitarian commitment
+
+**Mastery Path**: Learning to create future-oriented structures while maintaining connection to practical present needs.
+""",
+            "Pisces": """
+**Compassionate Discipline**
+Your Saturn in Pisces teaches lessons about spiritual responsibility and compassionate boundaries. You're learning to serve with wisdom while maintaining healthy limits. Your challenges involve balancing idealism with reality.
+
+**Life Lessons:**
+- Spiritual discipline
+- Compassionate service
+- Creative structure
+- Boundary development
+
+**Mastery Path**: Learning to serve spiritually while maintaining practical effectiveness and personal boundaries.
+"""
+        },
+        "Uranus": {
+            "Aries": """
+**Revolutionary Pioneer**
+Your Uranus in Aries brings sudden insights and innovative approaches to personal initiative. You have original ideas about leadership and courage, and you may pioneer new forms of independent action. Your approach to life is uniquely your own.
+
+**Innovation Areas:**
+- New forms of leadership
+- Innovative approaches to challenges
+- Revolutionary personal expression
+- Independent technological uses
+
+**Evolutionary Task**: Grounding your innovative ideas in practical reality while maintaining your revolutionary spirit.
+""",
+            "Taurus": """
+**Innovative Values**
+Your Uranus in Taurus brings revolutionary changes to values, resources, and material security. You have innovative ideas about money, possessions, and environmental sustainability. Your approach to security is unconventional.
+
+**Innovation Areas:**
+- Alternative economic systems
+- Sustainable resource use
+- Unconventional values
+- Technological agriculture
+
+**Evolutionary Task**: Integrating innovative values with practical stability while maintaining your progressive vision.
+""",
+            "Gemini": """
+**Communication Revolution**
+Your Uranus in Gemini brings revolutionary changes to communication, learning, and information exchange. You have innovative ideas about education, technology, and social networking. Your thinking is ahead of its time.
+
+**Innovation Areas:**
+- Revolutionary communication methods
+- Alternative education systems
+- Information technology advances
+- Social networking innovation
+
+**Evolutionary Task**: Channeling your communicative innovations toward constructive purposes while maintaining mental balance.
+""",
+            "Cancer": """
+**Emotional Innovation**
+Your Uranus in Cancer brings revolutionary changes to family, home, and emotional security. You have innovative ideas about nurturing, parenting, and domestic life. Your approach to emotional security is unconventional.
+
+**Innovation Areas:**
+- Alternative family structures
+- Innovative home environments
+- Emotional freedom expression
+- Nurturing technology
+
+**Evolutionary Task**: Balancing emotional innovation with emotional security needs while maintaining your progressive vision.
+""",
+            "Leo": """
+**Creative Revolution**
+Your Uranus in Leo brings revolutionary changes to creativity, self-expression, and leadership. You have innovative ideas about art, entertainment, and personal power. Your approach to creativity is uniquely original.
+
+**Innovation Areas:**
+- Revolutionary art forms
+- Innovative entertainment
+- Alternative leadership styles
+- Creative technology
+
+**Evolutionary Task**: Expressing your creative innovations while maintaining connection with audience understanding.
+""",
+            "Virgo": """
+**Service Innovation**
+Your Uranus in Virgo brings revolutionary changes to health, service, and practical efficiency. You have innovative ideas about healing, work methods, and environmental health. Your approach to service is technologically advanced.
+
+**Innovation Areas:**
+- Alternative health systems
+- Innovative work methods
+- Environmental technology
+- Service automation
+
+**Evolutionary Task**: Implementing practical innovations while maintaining human touch and service quality.
+""",
+            "Libra": """
+**Relationship Revolution**
+Your Uranus in Libra brings revolutionary changes to relationships, partnership, and social harmony. You have innovative ideas about marriage, diplomacy, and artistic collaboration. Your approach to relationships is unconventional.
+
+**Innovation Areas:**
+- Alternative relationship models
+- Innovative partnership structures
+- Revolutionary art collaborations
+- Social harmony technology
+
+**Evolutionary Task**: Creating relationship innovations while maintaining balance and mutual respect.
+""",
+            "Scorpio": """
+**Transformative Innovation**
+Your Uranus in Scorpio brings revolutionary changes to psychology, transformation, and shared resources. You have innovative ideas about intimacy, power, and regeneration. Your approach to transformation is technologically advanced.
+
+**Innovation Areas:**
+- Psychological innovation
+- Transformative technology
+- Alternative power structures
+- Regenerative systems
+
+**Evolutionary Task**: Directing transformative innovations toward healing purposes while maintaining ethical boundaries.
+""",
+            "Sagittarius": """
+**Philosophical Revolution**
+Your Uranus in Sagittarius brings revolutionary changes to philosophy, education, and cultural expansion. You have innovative ideas about religion, travel, and higher learning. Your approach to truth-seeking is unconventional.
+
+**Innovation Areas:**
+- Alternative philosophical systems
+- Revolutionary education methods
+- Cultural exchange innovation
+- Spiritual technology
+
+**Evolutionary Task**: Expanding philosophical horizons while maintaining practical wisdom and cultural sensitivity.
+""",
+            "Capricorn": """
+**Structural Revolution**
+Your Uranus in Capricorn brings revolutionary changes to authority, government, and social structures. You have innovative ideas about business, tradition, and institutional reform. Your approach to building is futuristic.
+
+**Innovation Areas:**
+- Government innovation
+- Business revolution
+- Structural reform
+- Traditional institution updates
+
+**Evolutionary Task**: Implementing structural changes while maintaining stability and practical effectiveness.
+""",
+            "Aquarius": """
+**Natural Innovator**
+Your Uranus in Aquarius operates at home, bringing natural genius for innovation, technology, and social progress. You have visionary ideas that can transform society. Your thinking is radically original and future-oriented.
+
+**Innovation Areas:**
+- Technological breakthroughs
+- Social system innovation
+- Humanitarian advancement
+- Future vision implementation
+
+**Evolutionary Task**: Grounding your visionary ideas in practical reality while maintaining your progressive spirit.
+""",
+            "Pisces": """
+**Spiritual Innovation**
+Your Uranus in Pisces brings revolutionary changes to spirituality, compassion, and universal connection. You have innovative ideas about healing, art, and spiritual practice. Your approach to mysticism is technologically informed.
+
+**Innovation Areas:**
+- Spiritual technology
+- Healing innovation
+- Artistic revolution
+- Compassionate systems
+
+**Evolutionary Task**: Integrating spiritual innovations with practical compassion while maintaining mystical depth.
+"""
+        },
+        "Neptune": {
+            "Aries": """
+**Visionary Pioneer**
+Your Neptune in Aries gives you spiritual ideals about courage and initiative. You may have dreams of heroic service or spiritual leadership. Your compassion expresses through courageous action, and you inspire others with your visionary approach.
+
+**Spiritual Ideals:**
+- Idealistic leadership
+- Compassionate action
+- Spiritual courage
+- Inspirational initiatives
+
+**Transcendence Path**: Learning to manifest your spiritual ideals in practical actions while maintaining your visionary inspiration.
+""",
+            "Taurus": """
+**Mystical Values**
+Your Neptune in Taurus gives you spiritual ideals about beauty, security, and material abundance. You may dream of creating earthly paradise or manifesting spiritual values in physical form. Your compassion expresses through practical care.
+
+**Spiritual Ideals:**
+- Beautiful spiritual environments
+- Material spirituality
+- Sensual mysticism
+- Abundant compassion
+
+**Transcendence Path**: Learning to balance spiritual ideals with practical reality while maintaining your mystical appreciation.
+""",
+            "Gemini": """
+**Inspired Communication**
+Your Neptune in Gemini gives you spiritual ideals about communication, learning, and mental connection. You may receive inspired messages or dream of universal understanding. Your compassion expresses through teaching and sharing ideas.
+
+**Spiritual Ideals:**
+- Inspired communication
+- Universal knowledge
+- Spiritual networking
+- Compassionate teaching
+
+**Transcendence Path**: Learning to ground inspired communications in practical understanding while maintaining your visionary thinking.
+""",
+            "Cancer": """
+**Mystical Nurturing**
+Your Neptune in Cancer gives you spiritual ideals about family, home, and emotional security. You may dream of ideal family relationships or spiritual parenting. Your compassion expresses through emotional healing and nurturing.
+
+**Spiritual Ideals:**
+- Spiritual family
+- Emotional healing
+- Nurturing mysticism
+- Compassionate home
+
+**Transcendence Path**: Learning to balance spiritual nurturing with practical emotional boundaries while maintaining your compassionate nature.
+""",
+            "Leo": """
+**Inspired Creativity**
+Your Neptune in Leo gives you spiritual ideals about creativity, self-expression, and leadership. You may dream of inspirational art or spiritual performance. Your compassion expresses through dramatic healing and generous inspiration.
+
+**Spiritual Ideals:**
+- Inspired creativity
+- Spiritual leadership
+- Dramatic compassion
+- Generous inspiration
+
+**Transcendence Path**: Learning to channel creative inspiration practically while maintaining your spiritual vision.
+""",
+            "Virgo": """
+**Healing Service**
+Your Neptune in Virgo gives you spiritual ideals about service, health, and practical improvement. You may dream of perfect health systems or inspired service organizations. Your compassion expresses through practical healing and helpfulness.
+
+**Spiritual Ideals:**
+- Healing service
+- Spiritual health
+- Inspired organization
+- Compassionate improvement
+
+**Transcendence Path**: Learning to implement spiritual service in practical ways while maintaining your healing vision.
+""",
+            "Libra": """
+**Harmonious Ideals**
+Your Neptune in Libra gives you spiritual ideals about relationships, beauty, and social harmony. You may dream of perfect partnerships or spiritually inspired art. Your compassion expresses through creating beauty and balance.
+
+**Spiritual Ideals:**
+- Spiritual partnerships
+- Inspired beauty
+- Harmonious compassion
+- Balanced ideals
+
+**Transcendence Path**: Learning to manifest spiritual harmony in practical relationships while maintaining your idealistic vision.
+""",
+            "Scorpio": """
+**Mystical Transformation**
+Your Neptune in Scorpio gives you spiritual ideals about transformation, psychology, and shared resources. You may dream of spiritual regeneration or mystical intimacy. Your compassion expresses through deep healing and transformation.
+
+**Spiritual Ideals:**
+- Transformative compassion
+- Psychological spirituality
+- Mystical intimacy
+- Regenerative ideals
+
+**Transcendence Path**: Learning to channel transformative spiritual energy constructively while maintaining your mystical depth.
+""",
+            "Sagittarius": """
+**Visionary Philosophy**
+Your Neptune in Sagittarius gives you spiritual ideals about philosophy, travel, and cultural understanding. You may dream of universal religion or spiritual exploration. Your compassion expresses through inspirational teaching and cultural healing.
+
+**Spiritual Ideals:**
+- Universal philosophy
+- Spiritual exploration
+- Inspirational teaching
+- Cultural compassion
+
+**Transcendence Path**: Learning to ground spiritual philosophy in practical understanding while maintaining your visionary expansion.
+""",
+            "Capricorn": """
+**Spiritual Structure**
+Your Neptune in Capricorn gives you spiritual ideals about authority, structure, and social responsibility. You may dream of spiritually informed institutions or compassionate governments. Your compassion expresses through responsible service and structural healing.
+
+**Spiritual Ideals:**
+- Spiritual authority
+- Compassionate structures
+- Responsible ideals
+- Institutional healing
+
+**Transcendence Path**: Learning to build spiritual structures practically while maintaining your compassionate vision.
+""",
+            "Aquarius": """
+**Universal Ideals**
+Your Neptune in Aquarius gives you spiritual ideals about innovation, groups, and humanitarian progress. You may dream of spiritual technology or universal brotherhood. Your compassion expresses through progressive healing and group inspiration.
+
+**Spiritual Ideals:**
+- Universal compassion
+- Spiritual innovation
+- Group healing
+- Progressive ideals
+
+**Transcendence Path**: Learning to implement universal ideals in practical group contexts while maintaining your spiritual vision.
+""",
+            "Pisces": """
+**Natural Mystic**
+Your Neptune in Pisces operates at home, giving you natural spiritual connection, compassion, and artistic inspiration. You easily access mystical states and have profound empathy. Your compassion is all-encompassing and spiritually informed.
+
+**Spiritual Ideals:**
+- Universal compassion
+- Mystical connection
+- Inspired art
+- Spiritual service
+
+**Transcendence Path**: Learning to channel spiritual inspiration practically while maintaining healthy boundaries and mystical connection.
+"""
+        },
+        "Pluto": {
+            "Aries": """
+**Transformative Power**
+Your Pluto in Aries gives you tremendous power to transform through direct action. You have deep resources of courage and the ability to completely reinvent yourself. Your transformative process often involves learning about the right use of personal power.
+
+**Transformation Areas:**
+- Personal identity reinvention
+- Courageous facing of shadows
+- Powerful new beginnings
+- Deep psychological courage
+
+**Evolutionary Journey**: Learning to use your transformative power for collective healing while maintaining your personal authenticity.
+""",
+            "Taurus": """
+**Value Transformation**
+Your Pluto in Taurus gives you power to transform values, resources, and material security. You experience deep changes in what you consider important and how you handle resources. Your transformation involves learning about true security.
+
+**Transformation Areas:**
+- Value system revolution
+- Financial transformation
+- Environmental regeneration
+- Security understanding
+
+**Evolutionary Journey**: Learning to transform material reality while maintaining spiritual values and practical stability.
+""",
+            "Gemini": """
+**Mental Regeneration**
+Your Pluto in Gemini gives you power to transform thinking, communication, and learning processes. You experience deep changes in how you process information and communicate. Your transformation involves learning about true knowledge.
+
+**Transformation Areas:**
+- Mental process transformation
+- Communication power
+- Learning regeneration
+- Information revolution
+
+**Evolutionary Journey**: Learning to transform thinking patterns while maintaining practical communication and mental balance.
+""",
+            "Cancer": """
+**Emotional Regeneration**
+Your Pluto in Cancer gives you power to transform emotions, family patterns, and security needs. You experience deep emotional healing and family transformation. Your process involves learning about true emotional security.
+
+**Transformation Areas:**
+- Emotional pattern transformation
+- Family healing
+- Security regeneration
+- Nurturing power
+
+**Evolutionary Journey**: Learning to transform emotional foundations while maintaining healthy boundaries and emotional stability.
+""",
+            "Leo": """
+**Creative Power**
+Your Pluto in Leo gives you power to transform creativity, self-expression, and personal power. You experience deep changes in how you express yourself and use your influence. Your transformation involves learning about authentic power.
+
+**Transformation Areas:**
+- Creative transformation
+- Power use regeneration
+- Self-expression revolution
+- Leadership transformation
+
+**Evolutionary Journey**: Learning to transform creative expression while maintaining heart connection and generous leadership.
+""",
+            "Virgo": """
+**Service Transformation**
+Your Pluto in Virgo gives you power to transform service, health, and practical efficiency. You experience deep changes in how you serve and maintain well-being. Your transformation involves learning about true service.
+
+**Transformation Areas:**
+- Service method transformation
+- Health regeneration
+- Practical efficiency revolution
+- Analytical power
+
+**Evolutionary Journey**: Learning to transform service approaches while maintaining practical effectiveness and compassionate help.
+""",
+            "Libra": """
+**Relationship Power**
+Your Pluto in Libra gives you power to transform relationships, partnership, and social harmony. You experience deep changes in how you relate and create balance. Your transformation involves learning about true partnership.
+
+**Transformation Areas:**
+- Relationship pattern transformation
+- Partnership regeneration
+- Social harmony revolution
+- Artistic power
+
+**Evolutionary Journey**: Learning to transform relationships while maintaining balance, fairness, and mutual respect.
+""",
+            "Scorpio": """
+**Natural Transformer**
+Your Pluto in Scorpio operates at home, giving you natural power for deep transformation, psychological insight, and regenerative ability. You easily access profound changes and understand life-death-rebirth cycles. Your transformative power is immense.
+
+**Transformation Areas:**
+- Psychological transformation
+- Regenerative power
+- Intimate revolution
+- Resource mastery
+
+**Evolutionary Journey**: Learning to channel transformative power for healing purposes while maintaining ethical boundaries and personal integration.
+""",
+            "Sagittarius": """
+**Philosophical Revolution**
+Your Pluto in Sagittarius gives you power to transform beliefs, philosophy, and cultural understanding. You experience deep changes in what you consider true and how you explore. Your transformation involves learning about ultimate truth.
+
+**Transformation Areas:**
+- Belief system transformation
+- Philosophical regeneration
+- Cultural revolution
+- Exploratory power
+
+**Evolutionary Journey**: Learning to transform philosophical understanding while maintaining practical wisdom and cultural sensitivity.
+""",
+            "Capricorn": """
+**Structural Power**
+Your Pluto in Capricorn gives you power to transform structures, authority, and social systems. You experience deep changes in how you build and maintain institutions. Your transformation involves learning about true authority.
+
+**Transformation Areas:**
+- Structural transformation
+- Authority regeneration
+- Institutional revolution
+- Building power
+
+**Evolutionary Journey**: Learning to transform structures while maintaining stability, responsibility, and compassionate leadership.
+""",
+            "Aquarius": """
+**Collective Transformation**
+Your Pluto in Aquarius gives you power to transform groups, innovation, and social progress. You experience deep changes in how you participate in collective evolution. Your transformation involves learning about true freedom.
+
+**Transformation Areas:**
+- Group transformation
+- Innovative regeneration
+- Social revolution
+- Collective power
+
+**Evolutionary Journey**: Learning to transform collective structures while maintaining individual freedom and progressive vision.
+""",
+            "Pisces": """
+**Spiritual Alchemy**
+Your Pluto in Pisces gives you power to transform spirituality, compassion, and universal connection. You experience deep changes in how you connect with the divine and serve humanity. Your transformation involves learning about ultimate surrender.
+
+**Transformation Areas:**
+- Spiritual transformation
+- Compassionate regeneration
+- Universal revolution
+- Mystical power
+
+**Evolutionary Journey**: Learning to transform spiritual understanding while maintaining practical compassion and healthy boundaries.
+"""
+        },
+        "North Node": {
+            "Aries": """
+**Soul Mission: Courageous Independence**
+Your North Node in Aries calls you to develop courage, initiative, and independent action. Your soul's growth comes through learning to trust your own instincts and take bold steps forward. You're learning to balance consideration for others with healthy self-assertion.
+
+**Growth Areas:**
+- Developing personal courage
+- Learning independent decision-making
+- Taking initiative in life
+- Trusting your inner guidance
+
+**Karmic Release**: Releasing over-dependence on others' opinions and learning to stand confidently in your own truth.
+""",
+            "Taurus": """
+**Soul Mission: Practical Mastery**
+Your North Node in Taurus calls you to develop stability, practical skills, and material security. Your soul's growth comes through learning to build lasting value and appreciate simple pleasures. You're learning to balance spiritual ideals with earthly reality.
+
+**Growth Areas:**
+- Developing financial wisdom
+- Learning practical skills
+- Creating stable foundations
+- Appreciating physical beauty
+
+**Karmic Release**: Releasing restless seeking and learning to find contentment in present moment reality.
+""",
+            "Gemini": """
+**Soul Mission: Intellectual Connection**
+Your North Node in Gemini calls you to develop communication skills, intellectual curiosity, and social connections. Your soul's growth comes through learning, teaching, and exchanging ideas. You're learning to balance depth with variety.
+
+**Growth Areas:**
+- Developing communication ability
+- Learning from diverse sources
+- Building social networks
+- Sharing knowledge generously
+
+**Karmic Release**: Releasing narrow perspectives and learning to appreciate multiple viewpoints.
+""",
+            "Cancer": """
+**Soul Mission: Emotional Security**
+Your North Node in Cancer calls you to develop emotional intelligence, nurturing ability, and family connections. Your soul's growth comes through creating emotional security and caring for others. You're learning to balance independence with emotional connection.
+
+**Growth Areas:**
+- Developing emotional awareness
+- Learning nurturing skills
+- Creating home security
+- Building family traditions
+
+**Karmic Release**: Releasing emotional detachment and learning to trust intimate connections.
+""",
+            "Leo": """
+**Soul Mission: Creative Self-Expression**
+Your North Node in Leo calls you to develop creativity, self-confidence, and leadership ability. Your soul's growth comes through authentic self-expression and inspiring others. You're learning to balance humility with self-recognition.
+
+**Growth Areas:**
+- Developing creative talents
+- Learning confident self-expression
+- Taking leadership roles
+- Sharing joy generously
+
+**Karmic Release**: Releasing self-doubt and learning to recognize your inherent worth.
+""",
+            "Virgo": """
+**Soul Mission: Service and Improvement**
+Your North Node in Virgo calls you to develop practical service, analytical skills, and health awareness. Your soul's growth comes through being useful and improving systems. You're learning to balance perfectionism with acceptance.
+
+**Growth Areas:**
+- Developing service orientation
+- Learning analytical thinking
+- Improving health habits
+- Creating efficient systems
+
+**Karmic Release**: Releasing criticism of self and others and learning constructive improvement methods.
+""",
+            "Libra": """
+**Soul Mission: Harmonious Relationships**
+Your North Node in Libra calls you to develop diplomacy, partnership skills, and aesthetic appreciation. Your soul's growth comes through creating balance and beauty in relationships. You're learning to balance independence with cooperation.
+
+**Growth Areas:**
+- Developing diplomatic skills
+- Learning partnership balance
+- Creating beauty in life
+- Practicing fair decision-making
+
+**Karmic Release**: Releasing people-pleasing and learning authentic relationship harmony.
+""",
+            "Scorpio": """
+**Soul Mission: Transformative Depth**
+Your North Node in Scorpio calls you to develop psychological insight, emotional depth, and transformative power. Your soul's growth comes through facing shadows and facilitating healing. You're learning to balance intensity with compassion.
+
+**Growth Areas:**
+- Developing psychological understanding
+- Learning emotional authenticity
+- Practicing transformation
+- Managing power wisely
+
+**Karmic Release**: Releasing superficiality and learning to engage life's depths courageously.
+""",
+            "Sagittarius": """
+**Soul Mission: Philosophical Expansion**
+Your North Node in Sagittarius calls you to develop philosophical understanding, adventurous spirit, and teaching ability. Your soul's growth comes through seeking truth and expanding horizons. You're learning to balance freedom with responsibility.
+
+**Growth Areas:**
+- Developing philosophical wisdom
+- Learning through adventure
+- Teaching and inspiring others
+- Expanding cultural understanding
+
+**Karmic Release**: Releasing narrow beliefs and learning universal perspectives.
+""",
+            "Capricorn": """
+**Soul Mission: Structural Achievement**
+Your North Node in Capricorn calls you to develop ambition, discipline, and organizational ability. Your soul's growth comes through building lasting structures and assuming responsibility. You're learning to balance achievement with humanity.
+
+**Growth Areas:**
+- Developing career mastery
+- Learning disciplined action
+- Building enduring institutions
+- Practicing responsible leadership
+
+**Karmic Release**: Releasing irresponsibility and learning to embrace mature achievement.
+""",
+            "Aquarius": """
+**Soul Mission: Innovative Contribution**
+Your North Node in Aquarius calls you to develop innovative thinking, group participation, and humanitarian vision. Your soul's growth comes through progressive ideas and social contribution. You're learning to balance individuality with group needs.
+
+**Growth Areas:**
+- Developing innovative ideas
+- Learning group cooperation
+- Contributing to social progress
+- Practicing futuristic thinking
+
+**Karmic Release**: Releasing conventional thinking and learning to express unique vision.
+""",
+            "Pisces": """
+**Soul Mission: Compassionate Service**
+Your North Node in Pisces calls you to develop compassion, intuition, and spiritual connection. Your soul's growth comes through selfless service and artistic inspiration. You're learning to balance practical reality with spiritual ideals.
+
+**Growth Areas:**
+- Developing compassionate understanding
+- Learning intuitive wisdom
+- Practicing spiritual service
+- Expressing creative inspiration
+
+**Karmic Release**: Releasing boundaries that separate and learning universal connection.
+"""
         }
     }
 
@@ -2187,6 +3063,484 @@ Your Pisces Sun approaches relationships with compassion, romance, and spiritual
         }
     }
 
+    # EXTENSIVE SEXUAL INTERPRETATIONS
+    sexual_interpretations = {
+        "Sun": {
+            "Aries": """
+**Sexual Style: The Passionate Pioneer**
+Your Aries Sun brings fiery passion and adventurous exploration to your sexual nature. You approach intimacy with enthusiasm and courage, enjoying the thrill of new experiences and spontaneous encounters. Your sexual energy is direct, passionate, and full of life force.
+
+**What Turns You On:**
+- Spontaneous, passionate encounters
+- Partners who match your intensity
+- New sexual experiences and techniques
+- Physical challenge and playfulness
+- Direct, honest sexual communication
+
+**Sexual Growth**: Learning to balance your passionate intensity with emotional connection and consideration for your partner's pace and preferences.
+""",
+            "Taurus": """
+**Sexual Style: The Sensual Lover**
+Your Taurus Sun brings deep sensuality and physical appreciation to your sexual nature. You value slow, deliberate intimacy that engages all the senses. Your sexual energy is grounded, patient, and profoundly connected to physical pleasure.
+
+**What Turns You On:**
+- Slow, sensual lovemaking
+- Beautiful, comfortable environments
+- Physical touch and massage
+- Sensory experiences (scents, textures)
+- Reliability and trust in partnership
+
+**Sexual Growth**: Learning to incorporate variety and spontaneity while maintaining the sensual depth that nourishes you.
+""",
+            "Gemini": """
+**Sexual Style: The Playful Communicator**
+Your Gemini Sun brings mental stimulation and playful variety to your sexual nature. You enjoy sexual experimentation and intellectual connection during intimacy. Your sexual energy is curious, adaptable, and verbally expressive.
+
+**What Turns You On:**
+- Intellectual foreplay and conversation
+- Variety and new techniques
+- Playful, lighthearted encounters
+- Partners who can keep up mentally
+- Sexual learning and exploration
+
+**Sexual Growth**: Learning to connect emotionally and physically beyond mental stimulation, developing deeper sensual presence.
+""",
+            "Cancer": """
+**Sexual Style: The Emotional Nurturer**
+Your Cancer Sun brings deep emotional connection and nurturing care to your sexual nature. You experience sex as soulful merging and emotional bonding. Your sexual energy is protective, intuitive, and deeply feeling.
+
+**What Turns You On:**
+- Emotional intimacy and trust
+- Nurturing, caring touch
+- Home-like, comfortable settings
+- Emotional vulnerability shared
+- Long-term commitment and security
+
+**Sexual Growth**: Learning to maintain healthy emotional boundaries while enjoying deep intimate connection.
+""",
+            "Leo": """
+**Sexual Style: The Dramatic Performer**
+Your Leo Sun brings dramatic expression and generous warmth to your sexual nature. You enjoy being admired and appreciated during intimacy, and you give passionately in return. Your sexual energy is confident, expressive, and heart-centered.
+
+**What Turns You On:**
+- Appreciation and admiration
+- Romantic, dramatic settings
+- Creative sexual expression
+- Partners who match your enthusiasm
+- Generous mutual giving
+
+**Sexual Growth**: Learning equal partnership in intimacy, balancing self-expression with attentive listening to your partner's needs.
+""",
+            "Virgo": """
+**Sexual Style: The Attentive Perfectionist**
+Your Virgo Sun brings careful attention and service orientation to your sexual nature. You notice details and aim to please your partner through thoughtful technique. Your sexual energy is precise, health-conscious, and improvement-oriented.
+
+**What Turns You On:**
+- Clean, orderly environments
+- Attention to technique and detail
+- Health and wellness connection
+- Practical expressions of care
+- Mutual improvement and learning
+
+**Sexual Growth**: Learning to relax perfectionism and embrace spontaneous, imperfect intimacy as equally valuable.
+""",
+            "Libra": """
+**Sexual Style: The Harmonious Artist**
+Your Libra Sun brings aesthetic appreciation and balanced partnership to your sexual nature. You value beauty, harmony, and mutual satisfaction in intimate experiences. Your sexual energy is graceful, romantic, and relationship-focused.
+
+**What Turns You On:**
+- Beautiful, romantic settings
+- Balanced give-and-take
+- Artistic, graceful lovemaking
+- Partnership harmony
+- Aesthetic appreciation of partner
+
+**Sexual Growth**: Learning to express your own sexual needs clearly while maintaining the harmony you value.
+""",
+            "Scorpio": """
+**Sexual Style: The Intense Transformer**
+Your Scorpio Sun brings profound intensity and transformative power to your sexual nature. You experience sex as soul-level merging and psychological revelation. Your sexual energy is powerful, investigative, and regenerating.
+
+**What Turns You On:**
+- Deep emotional and psychological connection
+- Intensity and passion
+- Sexual mysteries and taboos
+- Complete trust and vulnerability
+- Transformative intimate experiences
+
+**Sexual Growth**: Learning to balance intense intimacy with lightness and play, maintaining healthy boundaries in profound connection.
+""",
+            "Sagittarius": """
+**Sexual Style: The Adventurous Explorer**
+Your Sagittarius Sun brings optimistic adventure and philosophical connection to your sexual nature. You enjoy sexual freedom and view intimacy as joyful exploration. Your sexual energy is enthusiastic, honest, and freedom-loving.
+
+**What Turns You On:**
+- Adventure and new experiences
+- Philosophical connection
+- Honest, direct communication
+- Freedom within commitment
+- Optimistic, joyful encounters
+
+**Sexual Growth**: Learning to balance freedom with emotional commitment, developing consistency within adventurous exploration.
+""",
+            "Capricorn": """
+**Sexual Style: The Responsible Master**
+Your Capricorn Sun brings seriousness and disciplined mastery to your sexual nature. You approach intimacy with responsibility and long-term commitment in mind. Your sexual energy is controlled, enduring, and achievement-oriented.
+
+**What Turns You On:**
+- Long-term commitment
+- Traditional romantic gestures
+- Slow, building passion
+- Achievement of intimate goals
+- Reliability and responsibility
+
+**Sexual Growth**: Learning to incorporate spontaneity and emotional vulnerability within your serious approach to intimacy.
+""",
+            "Aquarius": """
+**Sexual Style: The Innovative Experimenter**
+Your Aquarius Sun brings originality and intellectual freedom to your sexual nature. You enjoy unconventional approaches and view intimacy as creative experimentation. Your sexual energy is detached, innovative, and friendship-oriented.
+
+**What Turns You On:**
+- Unconventional techniques
+- Intellectual connection
+- Friendship foundation
+- Technological or innovative elements
+- Freedom and independence
+
+**Sexual Growth**: Learning to combine emotional intimacy with your innovative approach, developing heart connection alongside intellectual freedom.
+""",
+            "Pisces": """
+**Sexual Style: The Romantic Mystic**
+Your Pisces Sun brings spiritual connection and compassionate merging to your sexual nature. You experience sex as soulful union and spiritual transcendence. Your sexual energy is compassionate, imaginative, and boundary-dissolving.
+
+**What Turns You On:**
+- Spiritual connection
+- Romantic, idealistic settings
+- Compassionate understanding
+- Creative, imaginative play
+- Soul-level merging
+
+**Sexual Growth**: Learning to maintain healthy boundaries while enjoying deep spiritual and emotional connection in intimacy.
+"""
+        },
+        "Mars": {
+            "Aries": """
+**Sexual Energy: Fiery and Direct**
+Your Mars in Aries gives you passionate, immediate sexual energy. You approach desire with courage and enthusiasm, enjoying spontaneous encounters and direct expression. Your sexual style is pioneering and full of life force.
+
+**Turn-ons:**
+- Immediate, passionate encounters
+- Partners who match your intensity
+- Sexual challenges and conquests
+- Direct communication about desires
+- Physical activity and play
+
+**Growth Area**: Learning to balance immediate passion with emotional connection and consideration for your partner's timing.
+""",
+            "Taurus": """
+**Sexual Energy: Sensual and Enduring**
+Your Mars in Taurus gives you steady, sensual sexual energy. You approach desire with patience and physical appreciation, enjoying slow, deliberate intimacy. Your sexual style is reliable and deeply connected to sensory pleasure.
+
+**Turn-ons:**
+- Slow, sensual lovemaking
+- Physical comfort and beauty
+- Reliability and trust
+- Sensory exploration
+- Enduring passion
+
+**Growth Area**: Learning to incorporate variety while maintaining the sensual depth that satisfies you.
+""",
+            "Gemini": """
+**Sexual Energy: Playful and Versatile**
+Your Mars in Gemini gives you curious, adaptable sexual energy. You approach desire with mental stimulation and variety in mind, enjoying playful experimentation. Your sexual style is communicative and intellectually engaged.
+
+**Turn-ons:**
+- Intellectual foreplay
+- Variety and new techniques
+- Playful, light encounters
+- Verbal communication
+- Sexual learning
+
+**Growth Area**: Learning to connect physically beyond mental stimulation, developing deeper sensual presence.
+""",
+            "Cancer": """
+**Sexual Energy: Emotional and Protective**
+Your Mars in Cancer gives you emotionally connected sexual energy. You approach desire with nurturing care and emotional bonding in mind. Your sexual style is protective, intuitive, and deeply feeling.
+
+**Turn-ons:**
+- Emotional intimacy
+- Nurturing touch
+- Home-like settings
+- Emotional vulnerability
+- Long-term security
+
+**Growth Area**: Learning to maintain healthy emotional boundaries while enjoying deep connection.
+""",
+            "Leo": """
+**Sexual Energy: Dramatic and Generous**
+Your Mars in Leo gives you confident, expressive sexual energy. You approach desire with dramatic flair and generous giving, enjoying admiration and appreciation. Your sexual style is warm, enthusiastic, and heart-centered.
+
+**Turn-ons:**
+- Appreciation and admiration
+- Romantic settings
+- Creative expression
+- Mutual enthusiasm
+- Generous exchange
+
+**Growth Area**: Learning equal partnership, balancing self-expression with attentive listening to your partner.
+""",
+            "Virgo": """
+**Sexual Energy: Attentive and Improving**
+Your Mars in Virgo gives you precise, service-oriented sexual energy. You approach desire with attention to detail and aim to please through thoughtful technique. Your sexual style is health-conscious and improvement-focused.
+
+**Turn-ons:**
+- Clean, orderly environments
+- Attention to technique
+- Health connection
+- Practical care
+- Mutual improvement
+
+**Growth Area**: Learning to relax perfectionism and embrace spontaneous intimacy.
+""",
+            "Libra": """
+**Sexual Energy: Harmonious and Artistic**
+Your Mars in Libra gives you balanced, aesthetic sexual energy. You approach desire with harmony and mutual satisfaction in mind, valuing beauty and partnership. Your sexual style is graceful, romantic, and relationship-focused.
+
+**Turn-ons:**
+- Beautiful settings
+- Balanced partnership
+- Artistic lovemaking
+- Relationship harmony
+- Aesthetic appreciation
+
+**Growth Area**: Learning to express your own needs clearly while maintaining harmony.
+""",
+            "Scorpio": """
+**Sexual Energy: Intense and Transformative**
+Your Mars in Scorpio gives you powerful, investigative sexual energy. You approach desire with intensity and psychological depth, experiencing sex as soul-level merging. Your sexual style is passionate, secretive, and regenerating.
+
+**Turn-ons:**
+- Deep psychological connection
+- Intensity and passion
+- Sexual mysteries
+- Complete trust
+- Transformative experiences
+
+**Growth Area**: Learning to balance intensity with lightness and maintain healthy boundaries.
+""",
+            "Sagittarius": """
+**Sexual Energy: Adventurous and Honest**
+Your Mars in Sagittarius gives you optimistic, freedom-loving sexual energy. You approach desire with adventure and philosophical connection in mind, valuing honesty and exploration. Your sexual style is enthusiastic and expansive.
+
+**Turn-ons:**
+- Adventure and new experiences
+- Philosophical connection
+- Honest communication
+- Freedom within commitment
+- Joyful encounters
+
+**Growth Area**: Learning to balance freedom with emotional commitment.
+""",
+            "Capricorn": """
+**Sexual Energy: Disciplined and Masterful**
+Your Mars in Capricorn gives you controlled, ambitious sexual energy. You approach desire with responsibility and long-term goals in mind, valuing discipline and achievement. Your sexual style is enduring and achievement-oriented.
+
+**Turn-ons:**
+- Long-term commitment
+- Traditional romance
+- Slow-building passion
+- Intimate achievements
+- Reliability
+
+**Growth Area**: Learning to incorporate spontaneity and emotional vulnerability.
+""",
+            "Aquarius": """
+**Sexual Energy: Innovative and Detached**
+Your Mars in Aquarius gives you original, independent sexual energy. You approach desire with innovation and intellectual freedom in mind, enjoying unconventional approaches. Your sexual style is detached and experimental.
+
+**Turn-ons:**
+- Unconventional techniques
+- Intellectual connection
+- Friendship basis
+- Innovative elements
+- Freedom
+
+**Growth Area**: Learning to combine emotional intimacy with innovation.
+""",
+            "Pisces": """
+**Sexual Energy: Compassionate and Mystical**
+Your Mars in Pisces gives you spiritual, compassionate sexual energy. You approach desire with soulful connection and imaginative play in mind, experiencing sex as transcendent merging. Your sexual style is compassionate and boundary-dissolving.
+
+**Turn-ons:**
+- Spiritual connection
+- Romantic idealism
+- Compassionate understanding
+- Imaginative play
+- Soul merging
+
+**Growth Area**: Learning to maintain healthy boundaries while enjoying deep connection.
+"""
+        },
+        "Venus": {
+            "Aries": """
+**What You Find Sexy: Passion and Challenge**
+Your Venus in Aries is turned on by direct passion, confidence, and a bit of challenge. You appreciate partners who take initiative and match your enthusiastic approach to love and sex.
+
+**Sexual Attraction Factors:**
+- Confidence and courage
+- Spontaneous passion
+- Independent spirit
+- Direct communication
+- Playful competition
+
+**Ideal Sexual Partner**: Someone who maintains their own identity while enthusiastically joining your adventures.
+""",
+            "Taurus": """
+**What You Find Sexy: Sensuality and Reliability**
+Your Venus in Taurus is turned on by physical beauty, sensual appreciation, and reliable presence. You value partners who appreciate comfort and take time for thorough sensual exploration.
+
+**Sexual Attraction Factors:**
+- Physical beauty and grace
+- Sensual attentiveness
+- Reliability and consistency
+- Comfortable environments
+- Slow, deliberate pace
+
+**Ideal Sexual Partner**: Someone who values physical comfort and sensual pleasure as much as you do.
+""",
+            "Gemini": """
+**What You Find Sexy: Mental Stimulation and Variety**
+Your Venus in Gemini is turned on by intellectual connection, verbal play, and variety. You appreciate partners who can engage you mentally and keep things interesting.
+
+**Sexual Attraction Factors:**
+- Intellectual compatibility
+- Good communication
+- Playful variety
+- Social versatility
+- Learning together
+
+**Ideal Sexual Partner**: Someone who values mental connection and enjoys exploring new ideas together.
+""",
+            "Cancer": """
+**What You Find Sexy: Emotional Security and Nurturing**
+Your Venus in Cancer is turned on by emotional depth, nurturing care, and family feeling. You value partners who create emotional safety and understand your sensitive nature.
+
+**Sexual Attraction Factors:**
+- Emotional vulnerability
+- Nurturing behavior
+- Home and family orientation
+- Protective instincts
+- Long-term commitment
+
+**Ideal Sexual Partner**: Someone who values emotional intimacy and creates a sense of home together.
+""",
+            "Leo": """
+**What You Find Sexy: Appreciation and Generosity**
+Your Venus in Leo is turned on by admiration, generous expression, and dramatic romance. You appreciate partners who recognize your special qualities and match your warm-hearted approach.
+
+**Sexual Attraction Factors:**
+- Appreciation and admiration
+- Generous affection
+- Romantic gestures
+- Confidence and pride
+- Creative expression
+
+**Ideal Sexual Partner**: Someone who values mutual admiration and enjoys romantic expression.
+""",
+            "Virgo": """
+**What You Find Sexy: Practical Care and Improvement**
+Your Venus in Virgo is turned on by practical service, attention to detail, and health consciousness. You value partners who show care through helpful actions and shared improvement goals.
+
+**Sexual Attraction Factors:**
+- Practical helpfulness
+- Attention to details
+- Health awareness
+- Modest sincerity
+- Improvement orientation
+
+**Ideal Sexual Partner**: Someone who values practical care and shared growth.
+""",
+            "Libra": """
+**What You Find Sexy: Beauty and Harmony**
+Your Venus in Libra is turned on by aesthetic beauty, harmonious partnership, and diplomatic grace. You value partners who appreciate beauty and create balanced relationships.
+
+**Sexual Attraction Factors:**
+- Physical and aesthetic beauty
+- Diplomatic behavior
+- Partnership orientation
+- Social grace
+- Balanced approach
+
+**Ideal Sexual Partner**: Someone who values beauty and creates harmonious partnership.
+""",
+            "Scorpio": """
+**What You Find Sexy: Intensity and Depth**
+Your Venus in Scorpio is turned on by emotional intensity, psychological depth, and transformative power. You value partners who aren't afraid of deep connection and emotional truth.
+
+**Sexual Attraction Factors:**
+- Emotional intensity
+- Psychological insight
+- Loyal commitment
+- Transformative potential
+- Privacy respect
+
+**Ideal Sexual Partner**: Someone who values deep connection and emotional honesty.
+""",
+            "Sagittarius": """
+**What You Find Sexy: Freedom and Adventure**
+Your Venus in Sagittarius is turned on by philosophical connection, adventurous spirit, and honest expression. You value partners who respect your freedom and share your love of exploration.
+
+**Sexual Attraction Factors:**
+- Philosophical compatibility
+- Adventurous spirit
+- Honest communication
+- Freedom respect
+- Optimistic outlook
+
+**Ideal Sexual Partner**: Someone who values freedom and enjoys exploring life together.
+""",
+            "Capricorn": """
+**What You Find Sexy: Responsibility and Achievement**
+Your Venus in Capricorn is turned on by seriousness, responsibility, and long-term planning. You value partners who understand commitment and build steadily toward shared goals.
+
+**Sexual Attraction Factors:**
+- Responsible behavior
+- Ambitious nature
+- Traditional values
+- Reliability
+- Long-term orientation
+
+**Ideal Sexual Partner**: Someone who values commitment and builds lasting partnership.
+""",
+            "Aquarius": """
+**What You Find Sexy: Uniqueness and Innovation**
+Your Venus in Aquarius is turned on by originality, intellectual connection, and progressive thinking. You value partners who appreciate your uniqueness and share innovative ideas.
+
+**Sexual Attraction Factors:**
+- Unique individuality
+- Intellectual stimulation
+- Progressive values
+- Friendship basis
+- Unconventional approach
+
+**Ideal Sexual Partner**: Someone who values individuality and enjoys intellectual companionship.
+""",
+            "Pisces": """
+**What You Find Sexy: Compassion and Spirituality**
+Your Venus in Pisces is turned on by compassionate understanding, spiritual connection, and romantic idealism. You value partners who share your empathy and appreciate soulful connection.
+
+**Sexual Attraction Factors:**
+- Compassionate nature
+- Spiritual sensitivity
+- Romantic idealism
+- Creative expression
+- Healing orientation
+
+**Ideal Sexual Partner**: Someone who values spiritual connection and compassionate partnership.
+"""
+        }
+    }
+
     # Choose interpretation dictionary based on type
     if interpretation_type == "Career & Vocation":
         interpretations = career_interpretations
@@ -2194,6 +3548,9 @@ Your Pisces Sun approaches relationships with compassion, romance, and spiritual
     elif interpretation_type == "Relationships & Love":
         interpretations = relationship_interpretations
         focus_description = "relationship dynamics, love patterns, and partnership needs"
+    elif interpretation_type == "Sexual Nature":
+        interpretations = sexual_interpretations
+        focus_description = "sexual energy, attraction patterns, and intimate expression"
     elif interpretation_type == "Spiritual Growth":
         interpretations = natal_interpretations
         focus_description = "soul evolution, spiritual lessons, and higher purpose"
@@ -2208,7 +3565,7 @@ Your Pisces Sun approaches relationships with compassion, romance, and spiritual
         focus_description = "complete astrological profile and life patterns"
     
     # Display interpretation for each planet
-    planets_to_display = ["Sun", "Moon", "Mercury", "Venus", "Mars"]
+    planets_to_display = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto", "North Node"]
     
     for planet_name in planets_to_display:
         if planet_name in chart_data['planets']:
@@ -2262,7 +3619,7 @@ def display_about():
     - Detailed transit and progression analysis
     - Professional-grade aspect calculations
     - In-depth psychological and spiritual insights
-    - Career, relationship, and life purpose analysis
+    - Career, relationship, sexual nature, and life purpose analysis
     
     **Technical Specifications**  
     - Swiss Ephemeris for maximum astronomical accuracy
