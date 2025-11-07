@@ -3514,7 +3514,7 @@ Your Venus in Capricorn is turned on by seriousness, responsibility, and long-te
 """,
             "Aquarius": """
 **What You Find Sexy: Uniqueness and Innovation**
-Your Venus in Aquarius is turned on by originality, intellectual connection, and progressive thinking. You value partners who appreciate your uniqueness and share innovative ideas.
+Your Venus in Aquarius is turned on by originality, intellectual connection, and progressive thinking. You appreciate partners who appreciate your uniqueness and share innovative ideas.
 
 **Sexual Attraction Factors:**
 - Unique individuality
@@ -3564,7 +3564,7 @@ Your Venus in Pisces is turned on by compassionate understanding, spiritual conn
         interpretations = natal_interpretations
         focus_description = "complete astrological profile and life patterns"
     
-    # Display interpretation for each planet
+    # CORECTARE: Afișează TOATE planetele, nu doar primele 5
     planets_to_display = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto", "North Node"]
     
     for planet_name in planets_to_display:
@@ -3578,6 +3578,10 @@ Your Venus in Pisces is turned on by compassionate understanding, spiritual conn
                 
                 with st.expander(f"{planet_name} in {planet_sign}", expanded=True):
                     st.markdown(interpretations[planet_name][planet_sign])
+            else:
+                # Dacă nu găsește interpretarea, afișează un mesaj
+                with st.expander(f"{planet_name} in {planet_sign}", expanded=True):
+                    st.info(f"Detailed interpretation for {planet_name} in {planet_sign} is being developed. This placement influences {focus_description} in unique ways specific to your chart.")
     
     # Add house interpretations
     st.markdown("---")
