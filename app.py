@@ -11,9 +11,9 @@ from matplotlib.patches import Circle, Wedge
 import matplotlib.patches as patches
 
 def main():
-    st.set_page_config(page_title="Professional Astrology App", layout="wide", page_icon="♈")
+    st.set_page_config(page_title="Horoscope", layout="wide", page_icon="♈")
     
-    # Initialize session state
+    # Inițializare session state
     if 'chart_data' not in st.session_state:
         st.session_state.chart_data = None
     if 'birth_data' not in st.session_state:
@@ -23,9 +23,9 @@ def main():
     if 'progressed_data' not in st.session_state:
         st.session_state.progressed_data = None
     
-    # Sidebar menu
+    # Sidebar meniu
     with st.sidebar:
-        st.title("♈ Professional Astrology")
+        st.title("♈ Horoscope")
         st.markdown("---")
         menu_option = st.radio("Main Menu", [
             "Data Input", 
@@ -56,12 +56,13 @@ def main():
         display_about()
 
 def setup_ephemeris():
-    """Configure ephemeris file path"""
+    """Configurează calea către fișierele de efemeride"""
     try:
+        # Încearcă mai multe căi posibile
         possible_paths = [
-            './ephe',
-            './swisseph-data/ephe',
-            os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ephe'),
+            './ephe',                           # Cale relativă
+            './swisseph-data/ephe',             # Submodul
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ephe'),  # Cale absolută
             os.path.join(os.path.dirname(os.path.abspath(__file__)), 'swisseph-data', 'ephe')
         ]
         
@@ -73,43 +74,43 @@ def setup_ephemeris():
         return False
         
     except Exception as e:
-        st.error(f"Error configuring ephemeris: {e}")
+        st.error(f"Eroare la configurarea efemeridelor: {e}")
         return False
 
 @st.cache_data(ttl=3600, show_spinner="Calculating astrological chart...")
 def calculate_chart_cached(birth_data):
-    """Cached version of chart calculation"""
+    """Versiune cached a calculului chart-ului"""
     return calculate_chart(birth_data)
 
 def calculate_chart(birth_data):
-    """Calculate astrological chart using Swiss Ephemeris"""
+    """Calculează harta astrologică folosind Swiss Ephemeris"""
     try:
-        # Configure ephemeris
+        # Configurează efemeridele
         if not setup_ephemeris():
-            st.error("Could not load ephemeris files.")
+            st.error("Nu s-au putut încărca fișierele de efemeride.")
             return None
         
-        # Convert dates to Julian format
+        # Convertire date în format Julian
         birth_datetime = datetime.combine(birth_data['date'], birth_data['time'])
         jd = swe.julday(birth_datetime.year, birth_datetime.month, birth_datetime.day, 
                        birth_datetime.hour + birth_datetime.minute/60.0)
         
-        # Calculate planetary positions with Swiss Ephemeris
+        # Calcul poziții planetare cu Swiss Ephemeris
         planets_data = calculate_planetary_positions_swiss(jd)
         if planets_data is None:
             return None
         
-        # Calculate Placidus houses with Swiss Ephemeris
+        # Calcul case Placidus cu Swiss Ephemeris
         houses_data = calculate_houses_placidus_swiss(jd, birth_data['lat_deg'], birth_data['lon_deg'])
         if houses_data is None:
             return None
         
-        # Associate planets with houses
+        # Asociem planetele cu casele
         for planet_name, planet_data in planets_data.items():
             planet_longitude = planet_data['longitude']
             planet_data['house'] = get_house_for_longitude_swiss(planet_longitude, houses_data)
             
-            # Format position string
+            # Formatare string pozitie
             retro_symbol = "R" if planet_data['retrograde'] else ""
             planet_data['position_str'] = f"{planet_data['degrees']:02d}°{planet_data['minutes']:02d}' {planet_data['sign']}({planet_data['house']}){retro_symbol}"
         
@@ -121,11 +122,11 @@ def calculate_chart(birth_data):
         }
         
     except Exception as e:
-        st.error(f"Error calculating chart: {str(e)}")
+        st.error(f"Eroare la calcularea chart-ului: {str(e)}")
         return None
 
 def calculate_planetary_positions_swiss(jd):
-    """Calculate planetary positions using Swiss Ephemeris"""
+    """Calculează pozițiile planetare folosind Swiss Ephemeris"""
     planets = {
         'Sun': swe.SUN,
         'Moon': swe.MOON,
@@ -137,25 +138,25 @@ def calculate_planetary_positions_swiss(jd):
         'Uranus': swe.URANUS,
         'Neptune': swe.NEPTUNE,
         'Pluto': swe.PLUTO,
-        'North Node': swe.MEAN_NODE
+        'Nod': swe.MEAN_NODE
     }
     
     positions = {}
     flags = swe.FLG_SWIEPH | swe.FLG_SPEED
     
-    signs = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 
-            'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces']
+    signs = ['ARI', 'TAU', 'GEM', 'CAN', 'LEO', 'VIR', 
+            'LIB', 'SCO', 'SAG', 'CAP', 'AQU', 'PIS']
     
     for name, planet_id in planets.items():
         try:
-            # Calculate position with Swiss Ephemeris
+            # Calcul poziție cu Swiss Ephemeris
             result = swe.calc_ut(jd, planet_id, flags)
-            longitude = result[0][0]  # ecliptic longitude
+            longitude = result[0][0]  # longitudine ecliptică
             
-            # Retrograde correction
-            is_retrograde = result[0][3] < 0  # negative longitudinal speed
+            # Corecție pentru retrograde
+            is_retrograde = result[0][3] < 0  # viteza longitudinală negativă
             
-            # Convert to zodiac sign
+            # Convertire în semn zodiacal
             sign_num = int(longitude / 30)
             sign_pos = longitude % 30
             degrees = int(sign_pos)
@@ -170,20 +171,20 @@ def calculate_planetary_positions_swiss(jd):
             }
             
         except Exception as e:
-            st.error(f"Error calculating position for {name}: {e}")
+            st.error(f"Eroare la calcularea poziției pentru {name}: {e}")
             return None
     
-    # Add Chiron manually
+    # Adăugăm Chiron manual (dacă fișierul lipseste)
     try:
         chiron_result = swe.calc_ut(jd, swe.CHIRON, flags)
         chiron_longitude = chiron_result[0][0]
     except:
-        # Fallback for Chiron
+        # Fallback pentru Chiron
         chiron_longitude = (positions['Sun']['longitude'] + 90) % 360
     
     chiron_sign_num = int(chiron_longitude / 30)
     chiron_sign_pos = chiron_longitude % 30
-    positions['Chiron'] = {
+    positions['Chi'] = {
         'longitude': chiron_longitude,
         'sign': signs[chiron_sign_num],
         'degrees': int(chiron_sign_pos),
@@ -194,17 +195,17 @@ def calculate_planetary_positions_swiss(jd):
     return positions
 
 def calculate_houses_placidus_swiss(jd, latitude, longitude):
-    """Calculate houses using Placidus system with Swiss Ephemeris"""
+    """Calculează casele folosind sistemul Placidus cu Swiss Ephemeris"""
     try:
-        # Calculate houses with Swiss Ephemeris
-        result = swe.houses(jd, latitude, longitude, b'P')  # 'P' for Placidus
+        # Calcul case cu Swiss Ephemeris
+        result = swe.houses(jd, latitude, longitude, b'P')  # 'P' pentru Placidus
         
         houses = {}
-        signs = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 
-                'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces']
+        signs = ['ARI', 'TAU', 'GEM', 'CAN', 'LEO', 'VIR', 
+                'LIB', 'SCO', 'SAG', 'CAP', 'AQU', 'PIS']
         
         for i in range(12):
-            house_longitude = result[0][i]  # house cusps
+            house_longitude = result[0][i]  # cuspidele caselor
             sign_num = int(house_longitude / 30)
             sign_pos = house_longitude % 30
             degrees = int(sign_pos)
@@ -221,11 +222,11 @@ def calculate_houses_placidus_swiss(jd, latitude, longitude):
         return houses
         
     except Exception as e:
-        st.error(f"Error calculating houses: {e}")
+        st.error(f"Eroare la calcularea caselor: {e}")
         return None
 
 def get_house_for_longitude_swiss(longitude, houses):
-    """Determine house for a given longitude"""
+    """Determină casa pentru o longitudine dată"""
     try:
         longitude = longitude % 360
         
@@ -252,61 +253,61 @@ def get_house_for_longitude_swiss(longitude, houses):
         return 1
 
 def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_aspects=True):
-    """Create a circular chart with planets in houses and colored aspect lines"""
+    """Creează un grafic circular cu planetele în case și aspectele cu linii colorate"""
     try:
         fig, ax = plt.subplots(figsize=(6, 6))
         ax.set_aspect('equal')
         
-        # Settings for main circle
+        # Setări pentru cercul principal
         center_x, center_y = 0, 0
         outer_radius = 4.5
         inner_radius = 3.8
         house_radius = 3.5
         planet_radius = 3.0
-        aspect_radius = 2.5  # Radius for aspect lines
+        aspect_radius = 2.5  # Raza pentru liniile de aspect
         
-        # Colors
+        # Culori
         background_color = 'white'
         circle_color = '#262730'
         text_color = 'black'
         house_color = 'black'
         
-        # Colors for aspects
+        # Culori pentru aspecte
         aspect_colors = {
-            'Conjunction': '#FF6B6B',    # Red
-            'Opposition': '#4ECDC4',     # Turquoise
-            'Trine': '#45B7D1',          # Light blue
-            'Square': '#FFA500',         # Orange
-            'Sextile': '#96CEB4'         # Light green
+            'Conjunction': '#FF6B6B',    # Roșu
+            'Opposition': '#4ECDC4',     # Turcoaz
+            'Trine': '#45B7D1',          # Albastru deschis
+            'Square': '#FFA500',         # Portocaliu
+            'Sextile': '#96CEB4'         # Verde deschis
         }
         
         planet_colors = {
             'Sun': '#FFD700', 'Moon': '#C0C0C0', 'Mercury': '#A9A9A9',
             'Venus': '#FFB6C1', 'Mars': '#FF4500', 'Jupiter': '#FFA500',
             'Saturn': '#DAA520', 'Uranus': '#40E0D0', 'Neptune': '#1E90FF',
-            'Pluto': '#8B008B', 'North Node': '#FF69B4', 'Chiron': '#32CD32'
+            'Pluto': '#8B008B', 'Nod': '#FF69B4', 'Chi': '#32CD32'
         }
         
-        # Set background
+        # Setează fundalul
         fig.patch.set_facecolor(background_color)
         ax.set_facecolor(background_color)
         
-        # Draw main circles
+        # Desenează cercurile principale
         outer_circle = Circle((center_x, center_y), outer_radius, fill=True, color=circle_color, alpha=0.3)
         inner_circle = Circle((center_x, center_y), inner_radius, fill=True, color=background_color)
         ax.add_patch(outer_circle)
         ax.add_patch(inner_circle)
         
-        # Zodiac signs and symbols
+        # Semnele zodiacale și simbolurile
         signs = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
-        sign_names = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces']
+        sign_names = ['ARI', 'TAU', 'GEM', 'CAN', 'LEO', 'VIR', 'LIB', 'SCO', 'SAG', 'CAP', 'AQU', 'PIS']
         
-        # Draw houses and signs
+        # Desenează casele și semnele
         for i in range(12):
-            angle = i * 30 - 90  # Start from 9 o'clock (Aries)
+            angle = i * 30 - 90  # Începe de la 9 o'clock (Aries)
             rad_angle = np.radians(angle)
             
-            # Lines for houses
+            # Linii pentru case
             x_outer = center_x + outer_radius * np.cos(rad_angle)
             y_outer = center_y + outer_radius * np.sin(rad_angle)
             x_inner = center_x + inner_radius * np.cos(rad_angle)
@@ -314,8 +315,8 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
             
             ax.plot([x_inner, x_outer], [y_inner, y_outer], color=house_color, linewidth=1, alpha=0.5)
             
-            # House numbers
-            house_text_angle = angle + 15  # Center of house
+            # Numerele caselor
+            house_text_angle = angle + 15  # Centrul casei
             house_rad_angle = np.radians(house_text_angle)
             x_house = center_x + house_radius * np.cos(house_rad_angle)
             y_house = center_y + house_radius * np.sin(house_rad_angle)
@@ -323,8 +324,8 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
             ax.text(x_house, y_house, str(i+1), ha='center', va='center', 
                    color=house_color, fontsize=10, fontweight='bold')
             
-            # Zodiac signs
-            sign_angle = i * 30 - 75  # Positioning for signs
+            # Semnele zodiacale
+            sign_angle = i * 30 - 75  # Poziționare pentru semne
             sign_rad_angle = np.radians(sign_angle)
             x_sign = center_x + (outer_radius + 0.3) * np.cos(sign_rad_angle)
             y_sign = center_y + (outer_radius + 0.3) * np.sin(sign_rad_angle)
@@ -332,18 +333,18 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
             ax.text(x_sign, y_sign, signs[i], ha='center', va='center', 
                    color=house_color, fontsize=14)
             
-            # Sign names
+            # Numele semnului
             x_name = center_x + (outer_radius + 0.7) * np.cos(sign_rad_angle)
             y_name = center_y + (outer_radius + 0.7) * np.sin(sign_rad_angle)
             
-            ax.text(x_name, y_name, sign_names[i][:3], ha='center', va='center', 
+            ax.text(x_name, y_name, sign_names[i], ha='center', va='center', 
                    color=house_color, fontsize=8, rotation=angle+90)
         
-        # Calculate aspects if needed
+        # Calculează aspectele dacă este necesar
         if show_aspects:
             aspects = calculate_aspects(chart_data)
             
-            # Draw lines for aspects
+            # Desenează liniile pentru aspecte
             for aspect in aspects:
                 planet1 = aspect['planet1']
                 planet2 = aspect['planet2']
@@ -352,39 +353,39 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
                 if (planet1 in chart_data['planets'] and 
                     planet2 in chart_data['planets']):
                     
-                    # Planet coordinates
+                    # Coordonatele planetelor
                     long1 = chart_data['planets'][planet1]['longitude']
                     long2 = chart_data['planets'][planet2]['longitude']
                     
-                    # Calculate angles for planets
+                    # Calculează unghiurile pentru planete
                     angle1 = long1 - 90
                     angle2 = long2 - 90
                     
                     rad_angle1 = np.radians(angle1)
                     rad_angle2 = np.radians(angle2)
                     
-                    # Planet positions on circle
+                    # Pozițiile planetelor pe cerc
                     x1 = center_x + aspect_radius * np.cos(rad_angle1)
                     y1 = center_y + aspect_radius * np.sin(rad_angle1)
                     x2 = center_x + aspect_radius * np.cos(rad_angle2)
                     y2 = center_y + aspect_radius * np.sin(rad_angle2)
                     
-                    # Choose color for aspect
+                    # Alege culoarea pentru aspect
                     color = aspect_colors.get(aspect_name, '#888888')
                     
-                    # Line thickness based on aspect strength
+                    # Grosimea liniei în funcție de puterea aspectului
                     linewidth = 2.0 if aspect['strength'] == 'Strong' else 1.0
                     
-                    # Draw aspect line
+                    # Desenează linia aspectului
                     ax.plot([x1, x2], [y1, y2], color=color, linewidth=linewidth, 
                            alpha=0.7, linestyle='-')
         
-        # Place planets in chart
+        # Plasează planetele în chart
         planets = chart_data['planets']
         planet_symbols = {
             'Sun': '☉', 'Moon': '☽', 'Mercury': '☿', 'Venus': '♀',
             'Mars': '♂', 'Jupiter': '♃', 'Saturn': '♄', 'Uranus': '♅',
-            'Neptune': '♆', 'Pluto': '♇', 'North Node': '☊', 'Chiron': '⚷'
+            'Neptune': '♆', 'Pluto': '♇', 'Nod': '☊', 'Chi': '⚷'
         }
         
         for planet_name, planet_data in planets.items():
@@ -392,28 +393,28 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
             house = planet_data.get('house', 1)
             is_retrograde = planet_data.get('retrograde', False)
             
-            # Calculate angle for planet
-            planet_angle = longitude - 90  # Adjustment to start from Aries
+            # Calculează unghiul pentru planetă
+            planet_angle = longitude - 90  # Ajustare pentru a începe de la Aries
             planet_rad_angle = np.radians(planet_angle)
             
-            # Planet position
+            # Poziția planetei
             x_planet = center_x + planet_radius * np.cos(planet_rad_angle)
             y_planet = center_y + planet_radius * np.sin(planet_rad_angle)
             
-            # Planet symbol
+            # Simbolul planetei
             symbol = planet_symbols.get(planet_name, '•')
             color = planet_colors.get(planet_name, 'white')
             
-            # Display planet
+            # Afișează planeta
             ax.text(x_planet, y_planet, symbol, ha='center', va='center', 
                    color=color, fontsize=12, fontweight='bold')
             
-            # Planet name (abbreviated)
+            # Numele planetei (scurtat)
             abbrev = planet_name[:3] if planet_name not in ['Sun', 'Moon'] else planet_name
             if is_retrograde:
                 abbrev += " R"
                 
-            # Position for name
+            # Poziția pentru nume
             name_angle = planet_angle + 5
             name_rad_angle = np.radians(name_angle)
             x_name = center_x + (planet_radius - 0.3) * np.cos(name_rad_angle)
@@ -422,13 +423,13 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
             ax.text(x_name, y_name, abbrev, ha='center', va='center', 
                    color=color, fontsize=7, alpha=0.8)
         
-        # Chart title
+        # Titlul chart-ului
         name = birth_data.get('name', 'Natal Chart')
         date_str = birth_data.get('date', '').strftime('%Y-%m-%d')
         ax.set_title(f'{name} - {date_str}\n{title_suffix}', 
                     color=text_color, fontsize=16, pad=20)
         
-        # Legend for aspects (if displayed)
+        # Legenda pentru aspecte (dacă sunt afișate)
         if show_aspects and aspects:
             legend_elements = []
             for aspect_name, color in aspect_colors.items():
@@ -437,12 +438,12 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
             ax.legend(handles=legend_elements, loc='upper right', bbox_to_anchor=(1.1, 1), 
                      fontsize=8, framealpha=0.7)
         
-        # Remove axes
+        # Elimină axele
         ax.set_xlim(-outer_radius-1, outer_radius+1)
         ax.set_ylim(-outer_radius-1, outer_radius+1)
         ax.axis('off')
         
-        # Legend
+        # Legenda
         legend_text = "Planets in Houses - Placidus System"
         ax.text(0, -outer_radius-0.8, legend_text, ha='center', va='center',
                color=text_color, fontsize=10, style='italic')
@@ -451,11 +452,11 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
         return fig
         
     except Exception as e:
-        st.error(f"Error creating chart: {e}")
+        st.error(f"Eroare la crearea graficului: {e}")
         return None
 
 def calculate_aspects(chart_data):
-    """Calculate astrological aspects"""
+    """Calculează aspectele astrologice"""
     try:
         planets = chart_data['planets']
         aspects = []
@@ -504,24 +505,24 @@ def calculate_aspects(chart_data):
         return aspects
         
     except Exception as e:
-        st.error(f"Error calculating aspects: {e}")
+        st.error(f"Eroare la calcularea aspectelor: {e}")
         return []
 
 def calculate_transits(birth_jd, transit_date, birth_lat, birth_lon):
-    """Calculate transits for a specific date"""
+    """Calculează transitele pentru o dată specifică"""
     try:
-        # Convert transit date to Julian Day
+        # Converteste data de transit în Julian Day
         transit_datetime = datetime.combine(transit_date, datetime.min.time())
         transit_jd = swe.julday(transit_datetime.year, transit_datetime.month, 
-                               transit_datetime.day, 12.0)  # At noon
+                               transit_datetime.day, 12.0)  # La amiază
         
-        # Calculate planetary positions for transit date
+        # Calculează pozițiile planetare pentru data de transit
         transit_planets = calculate_planetary_positions_swiss(transit_jd)
         
-        # Calculate houses for transit date (using birth coordinates)
+        # Calculează casele pentru data de transit (folosind coordonatele natale)
         transit_houses = calculate_houses_placidus_swiss(transit_jd, birth_lat, birth_lon)
         
-        # Associate planets with houses
+        # Asociem planetele cu casele
         for planet_name, planet_data in transit_planets.items():
             planet_longitude = planet_data['longitude']
             planet_data['house'] = get_house_for_longitude_swiss(planet_longitude, transit_houses)
@@ -537,43 +538,43 @@ def calculate_transits(birth_jd, transit_date, birth_lat, birth_lon):
         }
         
     except Exception as e:
-        st.error(f"Error calculating transits: {e}")
+        st.error(f"Eroare la calcularea transitelor: {e}")
         return None
 
 def calculate_progressions(birth_data, progression_date, method='secondary'):
-    """Calculate progressions (Secondary/ Solar Arc)"""
+    """Calculează progresiile (Secondary/ Solar Arc)"""
     try:
         birth_datetime = datetime.combine(birth_data['date'], birth_data['time'])
         progression_datetime = datetime.combine(progression_date, datetime.min.time())
         
-        # Get natal JD from session_state
+        # Obține JD-ul natal din session_state
         if st.session_state.chart_data is None:
             st.error("Natal chart not calculated yet!")
             return None
             
         natal_jd = st.session_state.chart_data['jd']
         
-        # Calculation for Secondary Progression (1 day = 1 year)
+        # Calcul pentru Secondary Progression (1 zi = 1 an)
         if method == 'secondary':
             days_diff = (progression_datetime - birth_datetime).days
             progressed_jd = natal_jd + days_diff
             
-        # Calculation for Solar Arc
+        # Calcul pentru Solar Arc
         elif method == 'solar_arc':
-            # Progressed Sun position
+            # Poziția Soarelui progresat
             days_diff = (progression_datetime - birth_datetime).days
-            solar_arc = (days_diff / 365.25) * 0.9856  # Sun's average daily movement
+            solar_arc = (days_diff / 365.25) * 0.9856  # Mișcarea medie zilnică a Soarelui
             
-            # Calculate natal chart to apply Solar Arc
+            # Calculează harta natală pentru a aplica Solar Arc
             natal_chart = st.session_state.chart_data
             progressed_planets = {}
             
             for planet_name, planet_data in natal_chart['planets'].items():
                 progressed_longitude = (planet_data['longitude'] + solar_arc) % 360
                 
-                # Convert to zodiac sign
-                signs = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 
-                        'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces']
+                # Convertire în semn zodiacal
+                signs = ['ARI', 'TAU', 'GEM', 'CAN', 'LEO', 'VIR', 
+                        'LIB', 'SCO', 'SAG', 'CAP', 'AQU', 'PIS']
                 sign_num = int(progressed_longitude / 30)
                 sign_pos = progressed_longitude % 30
                 degrees = int(sign_pos)
@@ -590,13 +591,13 @@ def calculate_progressions(birth_data, progression_date, method='secondary'):
             
             return {
                 'planets': progressed_planets,
-                'houses': natal_chart['houses'],  # Houses remain the same
+                'houses': natal_chart['houses'],  # Casele rămân aceleași
                 'solar_arc': solar_arc,
                 'date': progression_date,
                 'method': 'Solar Arc'
             }
         
-        # For Secondary Progression, calculate actual positions
+        # Pentru Secondary Progression, calculează pozițiile reale
         progressed_planets = calculate_planetary_positions_swiss(progressed_jd)
         if progressed_planets is None:
             st.error("Failed to calculate progressed planetary positions")
@@ -609,7 +610,7 @@ def calculate_progressions(birth_data, progression_date, method='secondary'):
             st.error("Failed to calculate progressed houses")
             return None
         
-        # Associate planets with houses
+        # Asociem planetele cu casele
         for planet_name, planet_data in progressed_planets.items():
             planet_longitude = planet_data['longitude']
             planet_data['house'] = get_house_for_longitude_swiss(planet_longitude, progressed_houses)
@@ -626,11 +627,11 @@ def calculate_progressions(birth_data, progression_date, method='secondary'):
         }
         
     except Exception as e:
-        st.error(f"Error calculating progressions: {e}")
+        st.error(f"Eroare la calcularea progresiilor: {e}")
         return None
 
 def calculate_transit_aspects(natal_chart, transit_chart):
-    """Calculate aspects between natal and transit planets"""
+    """Calculează aspectele dintre planetele natale și cele în transit"""
     try:
         aspects = []
         
@@ -647,7 +648,7 @@ def calculate_transit_aspects(natal_chart, transit_chart):
         
         for natal_planet in natal_planets.keys():
             for transit_planet in transit_planets.keys():
-                # Avoid aspects between same planet (always conjunction)
+                # Evită aspectele între aceeași planetă (sunt mereu conjunctie)
                 if natal_planet == transit_planet:
                     continue
                 
@@ -680,7 +681,7 @@ def calculate_transit_aspects(natal_chart, transit_chart):
         return aspects
         
     except Exception as e:
-        st.error(f"Error calculating transit aspects: {e}")
+        st.error(f"Eroare la calcularea aspectelor de transit: {e}")
         return []
 
 def data_input_form():
@@ -708,7 +709,7 @@ def data_input_form():
         
         col2a, col2b = st.columns(2)
         with col2a:
-            # Longitude with degrees and minutes
+            # Longitude cu grade și minute
             st.write("**Longitude**")
             col_lon_deg, col_lon_min = st.columns(2)
             with col_lon_deg:
@@ -718,7 +719,7 @@ def data_input_form():
             longitude_dir = st.selectbox("Longitude Direction", ["East", "West"], index=0, key="lon_dir")
             
         with col2b:
-            # Latitude with degrees and minutes
+            # Latitude cu grade și minute
             st.write("**Latitude**")
             col_lat_deg, col_lat_min = st.columns(2)
             with col_lat_deg:
@@ -727,7 +728,7 @@ def data_input_form():
                 latitude_min = st.number_input("Latitude (')", min_value=0.0, max_value=59.9, value=51.0, step=1.0, key="lat_min")
             latitude_dir = st.selectbox("Latitude Direction", ["North", "South"], index=0, key="lat_dir")
         
-        # Calculate final coordinates
+        # Calcul coordonate finale
         lon = longitude_deg + (longitude_min / 60.0)
         lon = lon if longitude_dir == "East" else -lon
         
@@ -748,8 +749,8 @@ def data_input_form():
                 'time_zone': time_zone,
                 'lat_deg': lat,
                 'lon_deg': lon,
-                'lat_display': f"{latitude_deg}°{latitude_min:.0f}'{latitude_dir[0]}",
-                'lon_display': f"{longitude_deg}°{longitude_min:.0f}'{longitude_dir[0]}"
+                'lat_display': f"{latitude_deg}°{latitude_min:.0f}'{latitude_dir}",
+                'lon_display': f"{longitude_deg}°{longitude_min:.0f}'{longitude_dir}"
             }
             
             chart_data = calculate_chart_cached(birth_data)
@@ -771,13 +772,13 @@ def display_chart():
     chart_data = st.session_state.chart_data
     birth_data = st.session_state.birth_data
     
-    # Option for displaying aspects
+    # Opțiune pentru afișarea aspectelor
     col1, col2 = st.columns([3, 1])
     
     with col2:
         show_aspect_lines = st.checkbox("Show Aspect Lines", value=True, help="Display colored lines between planets showing astrological aspects")
     
-    # Display circular chart
+    # Afișează graficul circular
     st.subheader("🎯 Chart Wheel")
     fig = create_chart_wheel(chart_data, birth_data, "Natal Chart", show_aspect_lines)
     if fig:
@@ -800,7 +801,7 @@ def display_chart():
     with col1:
         st.subheader("🌍 Planetary Positions")
         display_order = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 
-                        'Saturn', 'Uranus', 'Neptune', 'Pluto', 'North Node', 'Chiron']
+                        'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Nod', 'Chi']
         
         for planet_name in display_order:
             if planet_name in chart_data['planets']:
@@ -813,6 +814,24 @@ def display_chart():
             if house_num in chart_data['houses']:
                 house_data = chart_data['houses'][house_num]
                 st.write(f"**{house_num}** {house_data['position_str']}")
+    
+    st.markdown("---")
+    col_buttons = st.columns(5)
+    with col_buttons[0]:
+        if st.button("📊 Chart", use_container_width=True):
+            pass
+    with col_buttons[1]:
+        if st.button("🔄 Aspects", use_container_width=True):
+            pass
+    with col_buttons[2]:
+        if st.button("📍 Positions", use_container_width=True):
+            pass
+    with col_buttons[3]:
+        if st.button("📖 Interpretation", use_container_width=True):
+            pass
+    with col_buttons[4]:
+        if st.button("✏️ Data", use_container_width=True):
+            pass
 
 def display_positions():
     st.header("📍 Planetary Positions")
@@ -825,7 +844,7 @@ def display_positions():
     
     positions_data = []
     display_order = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 
-                    'Saturn', 'Uranus', 'Neptune', 'Pluto', 'North Node', 'Chiron']
+                    'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Nod', 'Chi']
     
     for planet_name in display_order:
         if planet_name in chart_data['planets']:
@@ -915,7 +934,7 @@ def display_transits():
         st.markdown("---")
         st.subheader(f"Transits for {transit_data['date']}")
         
-        # Display transit chart
+        # Afișează graficul transitelor
         if show_chart:
             fig = create_chart_wheel(transit_data, birth_data, "Transit Chart", show_aspect_lines)
             if fig:
@@ -926,7 +945,7 @@ def display_transits():
         with col1:
             st.subheader("🌍 Transit Positions")
             display_order = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 
-                            'Saturn', 'Uranus', 'Neptune', 'Pluto', 'North Node', 'Chiron']
+                            'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Nod', 'Chi']
             
             for planet_name in display_order:
                 if planet_name in transit_data['planets']:
@@ -940,7 +959,7 @@ def display_transits():
                     house_data = transit_data['houses'][house_num]
                     st.write(f"**{house_num}** {house_data['position_str']}")
         
-        # Display aspects between transits and natal chart
+        # Afișează aspectele dintre transite și harta natală
         if show_aspects:
             st.markdown("---")
             st.subheader("🔗 Transit Aspects to Natal Chart")
@@ -1011,7 +1030,7 @@ def display_progressions():
         st.markdown("---")
         st.subheader(f"Progressed Chart - {progressed_data['method']}")
         
-        # Display progressed chart
+        # Afișează graficul progresat
         fig = create_chart_wheel(progressed_data, birth_data, f"Progressed Chart - {progressed_data['method']}", show_aspect_lines)
         if fig:
             st.pyplot(fig)
@@ -1021,7 +1040,7 @@ def display_progressions():
         with col1:
             st.subheader("🌍 Progressed Positions")
             display_order = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 
-                            'Saturn', 'Uranus', 'Neptune', 'Pluto', 'North Node', 'Chiron']
+                            'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Nod', 'Chi']
             
             for planet_name in display_order:
                 if planet_name in progressed_data['planets']:
@@ -1038,7 +1057,7 @@ def display_progressions():
                     house_data = progressed_data['houses'][house_num]
                     st.write(f"**{house_num}** {house_data['position_str']}")
         
-        # Display aspects between progressed and natal chart
+        # Afișează aspectele dintre harta progresată și natală
         st.markdown("---")
         st.subheader("🔗 Progressed Aspects to Natal Chart")
         
@@ -1062,7 +1081,7 @@ def display_progressions():
             st.info("No significant progressed aspects found.")
 
 def display_interpretation():
-    st.header("📖 Detailed Astrological Interpretation")
+    st.header("📖 Interpretation Center")
     
     if st.session_state.chart_data is None:
         st.warning("Please calculate chart first!")
@@ -1074,2569 +1093,805 @@ def display_interpretation():
     col1, col2 = st.columns(2)
     
     with col1:
-        st.subheader("Birth Data")
+        st.subheader("Data")
         st.write(f"**Name:** {birth_data['name']}")
         st.write(f"**Date:** {birth_data['date']}")
         st.write(f"**Time:** {birth_data['time']}")
-        st.write(f"**Location:** {birth_data['lat_display']}, {birth_data['lon_display']}")
+        st.write(f"**Position:** {birth_data['lon_display']} {birth_data['lat_display']}")
     
     with col2:
-        st.subheader("Planetary Positions")
+        st.subheader("Planets")
         display_order = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 
-                        'Saturn', 'Uranus', 'Neptune', 'Pluto', 'North Node', 'Chiron']
+                        'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Nod', 'Chi']
         
         for planet_name in display_order:
             if planet_name in chart_data['planets']:
                 planet_data = chart_data['planets'][planet_name]
-                st.write(f"**{planet_name}** {planet_data['position_str']}")
+                abbrev = planet_name[:3] if planet_name not in ['Sun', 'Moon'] else planet_name
+                st.write(f"{abbrev} {planet_data['position_str']}")
     
     st.markdown("---")
     
     interpretation_type = st.selectbox(
-        "Interpretation Focus",
-        ["Natal Chart", "Career & Vocation", "Relationships & Love", "Spiritual Growth", "Personality Analysis", "Life Purpose", "Sexual Nature"]
+        "Type of interpretation",
+        ["Natal", "Career", "Relationships", "Spiritual", "Sexual"]
     )
     
     st.markdown("---")
-    st.subheader(f"Detailed Interpretation: {interpretation_type}")
+    st.subheader(f"Interpretation: {interpretation_type}")
     
     display_complete_interpretations(chart_data, interpretation_type)
 
 def display_complete_interpretations(chart_data, interpretation_type):
-    """Display comprehensive interpretations for all planets and placements"""
+    """Afișează interpretări complete pentru toate planetele și gradele"""
     
-    # EXTENSIVE NATAL INTERPRETATIONS
+    # INTERPRETĂRI COMPLETE PENTRU SEMNE - NATAL (EXTINS)
     natal_interpretations = {
         "Sun": {
-            "Aries": """
-**The Pioneer and Leader**
-With your Sun in Aries, you embody the essence of initiation and courage. You are a natural-born leader with an entrepreneurial spirit that constantly seeks new challenges. Your approach to life is direct and enthusiastic - you see obstacles as opportunities to demonstrate your strength and capability.
-
-**Key Characteristics:**
-- **Initiating Energy**: You're always first to start projects and embrace new beginnings
-- **Courageous Spirit**: Fearlessness in facing challenges and speaking your truth
-- **Independent Nature**: Strong need for autonomy and self-determination
-- **Competitive Drive**: Thrive in situations where you can demonstrate your abilities
-- **Impulsive Tendencies**: Sometimes act before thinking through consequences
-
-**Life Purpose**: Your soul's journey involves learning to lead with consideration for others while maintaining your pioneering spirit. You're here to demonstrate courage and inspire action in those around you.
-""",
-            "Taurus": """
-**The Builder and Stabilizer**
-Your Sun in Taurus grounds you in practicality and sensuality. You possess an innate understanding of material reality and have a remarkable ability to create stability and beauty in your environment. Your steady, determined approach to life ensures that whatever you build will last.
-
-**Key Characteristics:**
-- **Practical Wisdom**: Exceptional common sense and realistic outlook
-- **Sensual Appreciation**: Deep connection to physical pleasures and beauty
-- **Financial Acumen**: Natural understanding of money and resources
-- **Reliable Nature**: People depend on your consistency and loyalty
-- **Resistance to Change**: Can become stuck in comfortable routines
-
-**Life Purpose**: You're here to master the material world while maintaining spiritual values. Your gift is creating security and beauty that nourishes the soul as well as the body.
-""",
-            "Gemini": """
-**The Communicator and Networker**
-With your Sun in Gemini, your mind is your greatest asset. You process information rapidly and excel at making connections between seemingly unrelated concepts. Your curiosity is insatiable, and you thrive on mental stimulation and variety.
-
-**Key Characteristics:**
-- **Intellectual Agility**: Quick thinking and adaptable mental processes
-- **Communication Skills**: Natural ability to express ideas clearly and persuasively
-- **Social Versatility**: Comfortable in diverse social situations
-- **Multitasking Ability**: Handle multiple projects and interests simultaneously
-- **Restless Energy**: Constant need for mental stimulation and new experiences
-
-**Life Purpose**: Your journey involves learning to focus your mental energies while using your communication gifts to bridge understanding between different perspectives.
-""",
-            "Cancer": """
-**The Nurturer and Protector**
-Your Sun in Cancer gives you deep emotional intelligence and strong protective instincts. You are the heart of your family and community, creating emotional security for those you care about. Your intuition is highly developed, and you often know what others need before they do.
-
-**Key Characteristics:**
-- **Emotional Depth**: Rich inner life and strong connection to feelings
-- **Nurturing Instinct**: Natural caregiver who supports others' growth
-- **Protective Nature**: Fierce defender of home and loved ones
-- **Intuitive Wisdom**: Strong gut feelings and psychic sensitivities
-- **Mood Fluctuations**: Emotions can shift like the tides
-
-**Life Purpose**: You're here to learn emotional mastery while providing the nurturing foundation that allows others to flourish. Your gift is creating emotional safety.
-""",
-            "Leo": """
-**The Creative and Leader**
-With your Sun in Leo, you radiate warmth, creativity, and self-expression. You have a natural dramatic flair and inspire others through your enthusiasm and generosity. Your presence commands attention, and you have a royal quality about you that draws people naturally.
-
-**Key Characteristics:**
-- **Creative Expression**: Natural artist and performer in some aspect of life
-- **Generous Spirit**: Big-hearted and willing to share resources and attention
-- **Leadership Ability**: Natural authority that people willingly follow
-- **Dramatic Flair**: Everything you do has an element of theater
-- **Need for Recognition**: Thrive on appreciation and acknowledgment
-
-**Life Purpose**: Your soul's journey involves learning humble leadership and using your creative gifts to uplift others rather than just seeking personal glory.
-""",
-            "Virgo": """
-**The Analyst and Healer**
-Your Sun in Virgo gives you exceptional analytical abilities and a desire to be of service. You notice details others miss and have a natural talent for improving systems and processes. Your humility and willingness to serve make you invaluable in any organization.
-
-**Key Characteristics:**
-- **Analytical Mind**: Exceptional attention to detail and critical thinking
-- **Service Orientation**: Find fulfillment in being useful and helpful
-- **Practical Skills**: Excellent at organizing and systematizing
-- **Health Consciousness**: Natural interest in wellness and bodily function
-- **Perfectionist Tendencies**: Can be overly critical of self and others
-
-**Life Purpose**: You're here to learn that true perfection comes through embracing imperfection while using your analytical gifts to heal and improve the world around you.
-""",
-            "Libra": """
-**The Diplomat and Artist**
-With your Sun in Libra, you are naturally diplomatic, charming, and aesthetically oriented. You have an innate sense of balance and harmony and excel at bringing people together. Your eye for beauty helps you create environments that uplift the spirit.
-
-**Key Characteristics:**
-- **Diplomatic Skills**: Natural peacemaker who sees all sides
-- **Aesthetic Sense**: Innate understanding of beauty and design
-- **Social Grace**: Charming and comfortable in social situations
-- **Partnership Focus**: Thrive in cooperative relationships
-- **Indecisiveness**: Can struggle with making firm decisions
-
-**Life Purpose**: Your journey involves learning to establish your own identity within relationships while using your diplomatic gifts to create harmony and beauty in the world.
-""",
-            "Scorpio": """
-**The Transformer and Investigator**
-Your Sun in Scorpio gives you tremendous emotional depth and psychological insight. You are drawn to life's mysteries and have a natural ability to transform challenging situations into opportunities for growth. Your intensity can be intimidating, but it comes from profound depth of feeling.
-
-**Key Characteristics:**
-- **Psychological Depth**: Natural understanding of human motivation
-- **Transformative Power**: Ability to reinvent yourself and situations
-- **Emotional Intensity**: Feelings run deep and powerful
-- **Investigative Nature**: Nothing escapes your perceptive gaze
-- **Secretive Tendencies**: Carefully guard your private thoughts
-
-**Life Purpose**: You're here to learn the alchemy of transforming pain into wisdom while using your penetrating insight to help others heal and transform.
-""",
-            "Sagittarius": """
-**The Philosopher and Explorer**
-With your Sun in Sagittarius, you are the eternal seeker of truth and meaning. Your optimistic nature and love of freedom propel you on constant journeys, both physical and philosophical. You have a natural teaching ability and inspire others with your vision.
-
-**Key Characteristics:**
-- **Philosophical Nature**: Constantly seeking larger meaning and truth
-- **Adventurous Spirit**: Love of travel and new experiences
-- **Optimistic Outlook**: Natural faith in positive outcomes
-- **Teaching Ability**: Gift for explaining complex concepts
-- **Tactlessness**: Sometimes speak truth without considering feelings
-
-**Life Purpose**: Your soul's journey involves grounding your philosophical insights in practical reality while using your inspirational nature to expand others' horizons.
-""",
-            "Capricorn": """
-**The Architect and Authority**
-Your Sun in Capricorn gives you ambition, discipline, and a profound understanding of structure and tradition. You are a natural builder who creates lasting institutions and systems. Your patience and perseverance ensure that whatever you build will stand the test of time.
-
-**Key Characteristics:**
-- **Ambitious Drive**: Clear vision of what you want to achieve
-- **Disciplined Approach**: Willing to work patiently toward long-term goals
-- **Practical Wisdom**: Understanding of how systems and institutions work
-- **Responsible Nature**: Take commitments and duties seriously
-- **Serious Demeanor**: Can become overly focused on work and status
-
-**Life Purpose**: You're here to learn balance between ambition and emotional fulfillment while using your organizational gifts to create structures that serve humanity.
-""",
-            "Aquarius": """
-**The Innovator and Humanitarian**
-With your Sun in Aquarius, you are forward-thinking, original, and deeply concerned with humanity's welfare. Your mind works in unique ways, and you have visionary ideas that can change society. Your detachment allows you to see the big picture clearly.
-
-**Key Characteristics:**
-- **Innovative Thinking**: Original ideas that challenge conventions
-- **Humanitarian Vision**: Concern for collective welfare and progress
-- **Independent Spirit**: March to the beat of your own drum
-- **Friendship Orientation**: Value intellectual companionship
-- **Emotional Detachment**: Can seem aloof or unemotional
-
-**Life Purpose**: Your journey involves learning to combine your brilliant ideas with practical implementation while using your visionary gifts to advance human consciousness.
-""",
-            "Pisces": """
-**The Mystic and Healer**
-Your Sun in Pisces gives you compassion, intuition, and connection to spiritual dimensions. You feel the suffering of others as your own and have a natural healing presence. Your creativity flows from deep spiritual sources, and you often serve as a channel for higher energies.
-
-**Key Characteristics:**
-- **Compassionate Nature**: Deep empathy for all living beings
-- **Intuitive Wisdom**: Strong connection to unconscious and spiritual realms
-- **Creative Talent**: Natural artist, musician, or poet
-- **Adaptive Quality**: Ability to flow with circumstances
-- **Boundary Issues**: Can absorb others' energies and emotions
-
-**Life Purpose**: You're here to learn spiritual discernment while using your compassionate nature to heal and inspire through artistic and spiritual channels.
-"""
+            "TAU": "Reliable, able, with powers of concentration, tenacity. Steadfast, a loving & affectionate \"family\" person. Honest, forthright. Learns readily from mistakes.",
+            "ARI": "Energetic, pioneering, courageous. Natural leader with strong initiative. Impulsive and direct.",
+            "GEM": "Clever, bright, quickwitted, communicative, able to do many different things at once, eager to learn new subjects. Openminded, adaptable, curious, restless, confident, seldom settling down.",
+            "CAN": "Nurturing, emotional, protective. Strong connection to home and family. Sensitive and caring.",
+            "LEO": "Confident, creative, generous. Natural performer and leader. Dramatic and warm-hearted.",
+            "VIR": "Analytical, practical, helpful. Attention to detail and service-oriented. Methodical and precise.",
+            "LIB": "Friendly, cordial, artistic, kind, considerate, loyal, alert, sociable, moderate, balanced in views, open-minded.",
+            "SCO": "Intense, passionate, transformative. Deep emotional understanding. Powerful and determined.",
+            "SAG": "Adventurous, philosophical, optimistic. Seeks truth and expansion. Freedom-loving and honest.",
+            "CAP": "Ambitious, disciplined, responsible. Builds lasting structures. Serious and determined.",
+            "AQU": "Innovative, independent, humanitarian. Forward-thinking and original. Unconventional and idealistic.",
+            "PIS": "Compassionate, intuitive, artistic. Connected to spiritual realms. Dreamy and empathetic."
         },
         "Moon": {
-            "Aries": """
-**Emotional Pioneer**
-Your Moon in Aries gives you emotionally direct and spontaneous responses. You feel things intensely and immediately, and your emotional needs center around independence and the freedom to pursue your own initiatives. You're emotionally courageous but can become impatient with slower emotional processes.
-
-**Emotional Needs:**
-- Need for immediate action on feelings
-- Independence in emotional expression
-- Recognition for your emotional bravery
-- Freedom from emotional constraints
-
-**Healing Approach**: Learning emotional patience and consideration of others' timing while honoring your need for authentic emotional expression.
-""",
-            "Taurus": """
-**Emotional Stabilizer**
-Your Moon in Taurus provides emotional consistency and a deep need for security. You find comfort in routine, beauty, and physical pleasures. Your emotional responses are steady and predictable, and you have a calming effect on those around you.
-
-**Emotional Needs:**
-- Financial and material security
-- Physical comfort and sensual pleasures
-- Stable, predictable environments
-- Time to process emotions slowly
-
-**Healing Approach**: Learning flexibility in the face of change while maintaining your grounding presence and appreciation for life's comforts.
-""",
-            "Gemini": """
-**Emotional Communicator**
-Your Moon in Gemini processes emotions through communication and intellectual understanding. You need to talk about your feelings and understand them mentally. Your emotional state can change rapidly as new information comes in.
-
-**Emotional Needs:**
-- Mental stimulation and variety
-- Freedom to communicate feelings
-- Social interaction and networking
-- Learning new emotional perspectives
-
-**Healing Approach**: Learning to connect with the deeper, non-verbal aspects of emotion while honoring your need for emotional expression through words.
-""",
-            "Cancer": """
-**Emotional Nurturer**
-Your Moon in Cancer gives you deep emotional sensitivity and strong nurturing instincts. You're deeply connected to family, home, and tradition. Your emotions flow like the tides - sometimes calm, sometimes stormy, but always powerful.
-
-**Emotional Needs:**
-- Emotional security and safety
-- Strong family connections
-- Comfortable home environment
-- Time for emotional processing
-
-**Healing Approach**: Learning to establish healthy emotional boundaries while maintaining your profound capacity for empathy and care.
-""",
-            "Leo": """
-**Emotional Performer**
-Your Moon in Leo needs emotional recognition and appreciation. You express feelings dramatically and generously, and you thrive when your emotional expressions are acknowledged. Your warmth and loyalty make you a fiercely protective friend and partner.
-
-**Emotional Needs:**
-- Recognition for emotional contributions
-- Creative self-expression
-- Loyal, appreciative relationships
-- Opportunities to shine emotionally
-
-**Healing Approach**: Learning to find internal validation for your emotional worth while sharing your generous heart with the world.
-""",
-            "Virgo": """
-**Emotional Analyst**
-Your Moon in Virgo processes emotions through analysis and practical service. You feel most secure when you're being useful and when things are organized properly. Your emotional healing comes through helping others and creating order.
-
-**Emotional Needs:**
-- Practical ways to express care
-- Orderly, clean environments
-- Feeling useful and competent
-- Health and wellness routines
-
-**Healing Approach**: Learning to accept emotional imperfection in yourself and others while using your analytical gifts for healing rather than criticism.
-""",
-            "Libra": """
-**Emotional Diplomat**
-Your Moon in Libra seeks emotional harmony and beautiful relationships. You're naturally diplomatic and can see all sides of emotional situations. Your feelings are deeply influenced by your relationships and your aesthetic environment.
-
-**Emotional Needs:**
-- Harmonious relationships
-- Beautiful surroundings
-- Partnership and cooperation
-- Fairness and justice
-
-**Healing Approach**: Learning to honor your own emotional needs within relationships while maintaining your gift for creating emotional balance.
-""",
-            "Scorpio": """
-**Emotional Transformer**
-Your Moon in Scorpio gives you emotional intensity and psychological depth. You experience feelings with tremendous power and are drawn to emotional mysteries and transformations. Your emotional intuition is exceptionally strong.
-
-**Emotional Needs:**
-- Emotional honesty and depth
-- Psychological understanding
-- Transformative experiences
-- Privacy in emotional matters
-
-**Healing Approach**: Learning to transform emotional pain into wisdom while maintaining healthy boundaries with others' intense emotions.
-""",
-            "Sagittarius": """
-**Emotional Explorer**
-Your Moon in Sagittarius needs emotional freedom and philosophical understanding. You process feelings through adventure, learning, and seeking higher meaning. Your emotional nature is optimistic and freedom-loving.
-
-**Emotional Needs:**
-- Freedom to explore emotionally
-- Philosophical understanding of feelings
-- Adventure and new experiences
-- Honest emotional expression
-
-**Healing Approach**: Learning to ground your emotional explorations in practical reality while maintaining your optimistic emotional vision.
-""",
-            "Capricorn": """
-**Emotional Architect**
-Your Moon in Capricorn approaches emotions with seriousness and discipline. You have strong emotional control and build emotional security through achievement and responsibility. Your feelings are deep but carefully managed.
-
-**Emotional Needs:**
-- Emotional security through achievement
-- Respect for emotional boundaries
-- Structured emotional expression
-- Long-term emotional plans
-
-**Healing Approach**: Learning to allow vulnerability and emotional spontaneity while maintaining your emotional strength and responsibility.
-""",
-            "Aquarius": """
-**Emotional Innovator**
-Your Moon in Aquarius processes emotions through intellectual detachment and humanitarian concern. You have unique emotional responses and value emotional freedom and friendship. Your feelings are often connected to larger social issues.
-
-**Emotional Needs:**
-- Emotional independence
-- Intellectual companionship
-- Progressive emotional environments
-- Freedom from emotional convention
-
-**Healing Approach**: Learning to connect your innovative emotional understanding with practical emotional expression while honoring your need for emotional freedom.
-""",
-            "Pisces": """
-**Emotional Mystic**
-Your Moon in Pisces gives you profound emotional sensitivity and spiritual connection. You feel the emotions of others as your own and have deep compassion. Your emotional boundaries are fluid, allowing profound connection but requiring careful management.
-
-**Emotional Needs:**
-- Spiritual emotional connection
-- Creative emotional expression
-- Compassionate environments
-- Time for emotional retreat
-
-**Healing Approach**: Learning to establish healthy emotional boundaries while maintaining your profound capacity for empathy and spiritual connection.
-"""
+            "SCO": "Tenacious will, much energy & working power, passionate, often sensual. Honest.",
+            "ARI": "Energetic, ambitious, strongwilled, self-centred, impulsive, dominant & obstinate.",
+            "TAU": "Steady, patient, determined. Values comfort and security. Emotionally stable.",
+            "GEM": "Changeable, adaptable, curious. Needs mental stimulation. Restless emotions.",
+            "CAN": "Nurturing, sensitive, protective. Strong emotional connections. Home-oriented.",
+            "LEO": "Proud, dramatic, generous. Needs recognition and appreciation. Warm emotions.",
+            "VIR": "Practical, analytical, helpful. Attention to emotional details. Service-oriented.",
+            "LIB": "Harmonious, diplomatic, social. Seeks emotional balance. Relationship-focused.",
+            "SAG": "Adventurous, optimistic, freedom-loving. Needs emotional expansion. Philosophical.",
+            "CAP": "Responsible, disciplined, reserved. Controls emotions carefully. Ambitious.",
+            "AQU": "Independent, unconventional, detached. Unique emotional expression. Progressive.",
+            "PIS": "Compassionate, intuitive, dreamy. Sensitive emotional nature. Spiritual."
         },
         "Mercury": {
-            "Aries": """
-**Pioneering Intellect**
-Your Mercury in Aries gives you quick, original thinking and the ability to grasp concepts instantly. You're mentally courageous and enjoy intellectual challenges. Your thinking process is direct and you prefer to get straight to the point.
-
-**Mental Strengths:**
-- Rapid comprehension of new ideas
-- Courage in expressing opinions
-- Innovative problem-solving
-- Leadership in intellectual matters
-
-**Growth Area**: Learning to consider alternative viewpoints before reaching conclusions while maintaining your mental initiative.
-""",
-            "Taurus": """
-**Practical Thinker**
-Your Mercury in Taurus gives you steady, methodical thinking and excellent common sense. You process information thoroughly and remember what you learn. Your mental approach is practical and grounded in reality.
-
-**Mental Strengths:**
-- Practical problem-solving
-- Excellent memory retention
-- Steady, reliable thinking
-- Financial and material understanding
-
-**Growth Area**: Learning to be more mentally flexible when circumstances change while maintaining your practical wisdom.
-""",
-            "Gemini": """
-**Versatile Communicator**
-Your Mercury in Gemini gives you exceptional communication skills and mental versatility. You learn quickly and can handle multiple streams of information simultaneously. Your curiosity drives constant mental exploration.
-
-**Mental Strengths:**
-- Rapid learning ability
-- Excellent verbal skills
-- Mental adaptability
-- Networking and connecting ideas
-
-**Growth Area**: Learning to focus your mental energies on depth as well as breadth while maintaining your intellectual curiosity.
-""",
-            "Cancer": """
-**Intuitive Thinker**
-Your Mercury in Cancer gives you intuitive, emotionally-based thinking and excellent memory. You think with your heart as well as your mind, and you remember emotional details others forget. Your mental process is protective and nurturing.
-
-**Mental Strengths:**
-- Emotional intelligence
-- Strong memory, especially for feelings
-- Intuitive understanding
-- Protective communication
-
-**Growth Area**: Learning to balance emotional thinking with objective analysis while maintaining your intuitive gifts.
-""",
-            "Leo": """
-**Dramatic Communicator**
-Your Mercury in Leo gives you confident, expressive communication and creative thinking. You speak with authority and enjoy being the center of intellectual attention. Your mental process is generous and inspiring.
-
-**Mental Strengths:**
-- Confident self-expression
-- Creative problem-solving
-- Inspirational communication
-- Leadership in discussions
-
-**Growth Area**: Learning to listen as well as you speak while maintaining your confident self-expression.
-""",
-            "Virgo": """
-**Analytical Mind**
-Your Mercury in Virgo gives you exceptional analytical abilities and attention to detail. You notice what others miss and have a talent for improving systems. Your thinking is practical, organized, and service-oriented.
-
-**Mental Strengths:**
-- Critical analysis
-- Systematic thinking
-- Practical problem-solving
-- Health and service knowledge
-
-**Growth Area**: Learning to see the big picture while maintaining your valuable attention to detail.
-""",
-            "Libra": """
-**Diplomatic Thinker**
-Your Mercury in Libra gives you balanced, diplomatic thinking and aesthetic appreciation. You see all sides of issues and excel at finding harmonious solutions. Your mental process seeks beauty and fairness.
-
-**Mental Strengths:**
-- Diplomatic communication
-- Balanced decision-making
-- Artistic understanding
-- Partnership-oriented thinking
-
-**Growth Area**: Learning to make firm decisions when necessary while maintaining your diplomatic approach.
-""",
-            "Scorpio": """
-**Investigative Mind**
-Your Mercury in Scorpio gives you penetrating, investigative thinking and psychological insight. You see beneath surface appearances and understand hidden motivations. Your mental process is intense and transformative.
-
-**Mental Strengths:**
-- Psychological insight
-- Investigative ability
-- Strategic thinking
-- Understanding of mysteries
-
-**Growth Area**: Learning to share your insights with sensitivity while maintaining your penetrating understanding.
-""",
-            "Sagittarius": """
-**Philosophical Thinker**
-Your Mercury in Sagittarius gives you broad, philosophical thinking and honest communication. You seek the larger meaning in information and enjoy exploring big ideas. Your mental process is optimistic and expansive.
-
-**Mental Strengths:**
-- Philosophical understanding
-- Honest expression
-- Teaching ability
-- Cross-cultural thinking
-
-**Growth Area**: Learning to ground your philosophical insights in practical details while maintaining your expansive vision.
-""",
-            "Capricorn": """
-**Strategic Thinker**
-Your Mercury in Capricorn gives you organized, ambitious thinking and practical wisdom. You think in terms of long-term goals and structural integrity. Your mental process is disciplined and responsible.
-
-**Mental Strengths:**
-- Strategic planning
-- Organizational ability
-- Business acumen
-- Practical implementation
-
-**Growth Area**: Learning to incorporate innovation within structures while maintaining your practical wisdom.
-""",
-            "Aquarius": """
-**Innovative Thinker**
-Your Mercury in Aquarius gives you original, forward-thinking ideas and humanitarian vision. You think outside conventional boxes and have visionary insights. Your mental process is independent and progressive.
-
-**Mental Strengths:**
-- Innovative ideas
-- Technological understanding
-- Humanitarian thinking
-- Future-oriented vision
-
-**Growth Area**: Learning to implement your innovative ideas practically while maintaining your visionary thinking.
-""",
-            "Pisces": """
-**Intuitive Mind**
-Your Mercury in Pisces gives you imaginative, compassionate thinking and spiritual understanding. You think with intuition and empathy, often knowing things beyond logical explanation. Your mental process is creative and healing.
-
-**Mental Strengths:**
-- Intuitive understanding
-- Creative imagination
-- Compassionate communication
-- Spiritual insight
-
-**Growth Area**: Learning to ground your intuitive insights in practical reality while maintaining your imaginative gifts.
-"""
+            "TAU": "Thorough, persevering. Good at working with the hands. Inflexible, steady, obstinate, self-opinionated, conventional, limited in interests.",
+            "ARI": "Quick-thinking, direct, innovative. Expresses ideas boldly and spontaneously.",
+            "GEM": "Versatile, communicative, curious. Learns quickly and shares knowledge.",
+            "CAN": "Intuitive, emotional, memory-oriented. Thinks with heart and nostalgia.",
+            "LEO": "Confident, dramatic, creative. Expresses ideas with flair and authority.",
+            "VIR": "Analytical, precise, detail-oriented. Excellent at critical thinking.",
+            "LIB": "Diplomatic, balanced, artistic. Seeks harmony in communication.",
+            "SCO": "Penetrating, investigative, profound. Seeks hidden truths.",
+            "SAG": "Philosophical, broad-minded, honest. Thinks in big pictures.",
+            "CAP": "Practical, organized, ambitious. Strategic and disciplined thinking.",
+            "AQU": "Innovative, original, detached. Thinks outside conventional boxes.",
+            "PIS": "Intuitive, imaginative, compassionate. Thinks with psychic sensitivity."
         },
         "Venus": {
-            "Aries": """
-**Passionate Lover**
-Your Venus in Aries approaches love with enthusiasm, directness, and a pioneering spirit. You're attracted to challenge and enjoy the thrill of pursuit. In relationships, you need independence and admire partners who have their own strong identity.
-
-**Love Style:**
-- Direct expression of affection
-- Enjoyment of romantic challenges
-- Need for excitement in relationships
-- Appreciation of partners' independence
-
-**Relationship Lesson**: Learning patience and consideration in relationships while maintaining your passionate approach to love.
-""",
-            "Taurus": """
-**Sensual Partner**
-Your Venus in Taurus approaches love with loyalty, sensuality, and a need for security. You value stability, physical affection, and tangible expressions of love. Your approach to relationships is steady and deeply committed.
-
-**Love Style:**
-- Physical expressions of love
-- Loyalty and commitment
-- Appreciation of beauty and comfort
-- Slow, steady relationship building
-
-**Relationship Lesson**: Learning flexibility in love while maintaining the stability that nourishes you.
-""",
-            "Gemini": """
-**Playful Communicator**
-Your Venus in Gemini approaches love with curiosity, communication, and a need for mental stimulation. You enjoy playful relationships and need partners who can engage you intellectually. Your love style is lighthearted and versatile.
-
-**Love Style:**
-- Mental connection in relationships
-- Playful, flirtatious approach
-- Need for variety and stimulation
-- Communication as love expression
-
-**Relationship Lesson**: Learning emotional depth in relationships while maintaining your playful, communicative approach.
-""",
-            "Cancer": """
-**Nurturing Partner**
-Your Venus in Cancer approaches love with emotional depth, protectiveness, and strong family orientation. You need emotional security and create nurturing relationships. Your love is deeply loyal and emotionally rich.
-
-**Love Style:**
-- Emotional security needs
-- Family-oriented relationships
-- Nurturing expression of love
-- Strong protective instincts
-
-**Relationship Lesson**: Learning healthy emotional boundaries while maintaining your nurturing capacity.
-""",
-            "Leo": """
-**Generous Lover**
-Your Venus in Leo approaches love with generosity, drama, and a need for recognition. You express love grandly and need partners who appreciate your romantic gestures. Your love is warm, loyal, and expressive.
-
-**Love Style:**
-- Dramatic romantic expressions
-- Need for appreciation
-- Generous giving and receiving
-- Loyal, protective love
-
-**Relationship Lesson**: Learning humble love expression while maintaining your generous, warm approach.
-""",
-            "Virgo": """
-**Practical Partner**
-Your Venus in Virgo approaches love with practicality, service, and attention to detail. You show love through helpful actions and appreciate partners who are competent and reliable. Your love is modest and sincere.
-
-**Love Style:**
-- Practical expressions of care
-- Service as love language
-- Appreciation of competence
-- Modest, sincere affection
-
-**Relationship Lesson**: Learning to accept imperfection in love while maintaining your practical, caring approach.
-""",
-            "Libra": """
-**Harmonious Lover**
-Your Venus in Libra approaches love with diplomacy, beauty, and a need for partnership. You seek balanced, beautiful relationships and excel at creating romantic harmony. Your love is artistic and fair-minded.
-
-**Love Style:**
-- Need for partnership balance
-- Appreciation of beauty in relationships
-- Diplomatic approach to love
-- Romantic, idealistic nature
-
-**Relationship Lesson**: Learning to establish your own identity in relationships while maintaining your harmonious approach.
-""",
-            "Scorpio": """
-**Intense Partner**
-Your Venus in Scorpio approaches love with intensity, passion, and emotional depth. You seek transformative relationships and are drawn to emotional mysteries. Your love is powerful, loyal, and deeply emotional.
-
-**Love Style:**
-- Emotional intensity in love
-- Transformative relationships
-- Loyalty and commitment
-- Psychological connection needs
-
-**Relationship Lesson**: Learning trust and emotional openness while maintaining your passionate depth.
-""",
-            "Sagittarius": """
-**Adventurous Lover**
-Your Venus in Sagittarius approaches love with optimism, adventure, and a need for freedom. You're attracted to partners who share your love of exploration and learning. Your love is honest and expansive.
-
-**Love Style:**
-- Need for freedom in relationships
-- Honest, direct expression
-- Adventure-oriented love
-- Philosophical connection
-
-**Relationship Lesson**: Learning commitment within freedom while maintaining your adventurous spirit.
-""",
-            "Capricorn": """
-**Serious Partner**
-Your Venus in Capricorn approaches love with seriousness, responsibility, and long-term planning. You value stability and build relationships carefully over time. Your love is loyal, practical, and enduring.
-
-**Love Style:**
-- Serious approach to love
-- Long-term relationship focus
-- Practical expressions of care
-- Loyal, committed nature
-
-**Relationship Lesson**: Learning emotional expression within responsibility while maintaining your serious approach.
-""",
-            "Aquarius": """
-**Unconventional Lover**
-Your Venus in Aquarius approaches love with originality, friendship, and humanitarian concern. You value intellectual connection and need freedom in relationships. Your love is friendly, progressive, and unique.
-
-**Love Style:**
-- Friendship as love foundation
-- Need for independence
-- Unconventional relationships
-- Humanitarian love expression
-
-**Relationship Lesson**: Learning emotional connection within freedom while maintaining your unique approach.
-""",
-            "Pisces": """
-**Romantic Dreamer**
-Your Venus in Pisces approaches love with compassion, romance, and spiritual connection. You seek soulmate relationships and have deep empathy for partners. Your love is idealistic, compassionate, and spiritually oriented.
-
-**Love Style:**
-- Romantic, idealistic nature
-- Compassionate love expression
-- Spiritual connection needs
-- Empathic understanding
-
-**Relationship Lesson**: Learning practical boundaries in love while maintaining your compassionate, romantic nature.
-"""
+            "GEM": "Flirtatious. Makes friends very easily. Has multifaceted relationships.",
+            "ARI": "Direct, passionate, impulsive in love. Attracted to challenge and excitement.",
+            "TAU": "Sensual, loyal, comfort-seeking. Values stability and physical pleasure.",
+            "CAN": "Nurturing, protective, home-oriented. Seeks emotional security.",
+            "LEO": "Dramatic, generous, proud. Loves romance and admiration.",
+            "VIR": "Practical, helpful, discerning. Shows love through service.",
+            "LIB": "Harmonious, diplomatic, artistic. Seeks balance and partnership.",
+            "SCO": "Intense, passionate, possessive. Seeks deep emotional bonds.",
+            "SAG": "Adventurous, freedom-loving, honest. Values independence in relationships.",
+            "CAP": "Serious, responsible, ambitious. Seeks stability and commitment.",
+            "AQU": "Unconventional, friendly, detached. Values friendship and independence.",
+            "PIS": "Romantic, compassionate, dreamy. Seeks spiritual connection."
         },
         "Mars": {
-            "Aries": """
-**Dynamic Action Taker**
-Your Mars in Aries gives you tremendous initiative and courage in taking action. You're a natural pioneer who enjoys starting projects and facing challenges head-on. Your energy is direct and powerful, though sometimes short-lived.
-
-**Action Style:**
-- Immediate response to opportunities
-- Courage in facing obstacles
-- Leadership in physical activities
-- Competitive drive
-
-**Growth Opportunity**: Learning sustained effort and consideration of consequences while maintaining your dynamic approach to challenges.
-""",
-            "Taurus": """
-**Persistent Worker**
-Your Mars in Taurus gives you steady, determined action and physical endurance. You work methodically toward your goals and have remarkable persistence. Your energy is reliable and grounded in practical reality.
-
-**Action Style:**
-- Steady, persistent effort
-- Practical approach to challenges
-- Physical endurance
-- Financial initiative
-
-**Growth Opportunity**: Learning flexibility in action while maintaining your reliable, persistent approach.
-""",
-            "Gemini": """
-**Versatile Doer**
-Your Mars in Gemini gives you versatile, communicative action and mental energy. You excel at multitasking and can handle multiple projects simultaneously. Your energy is quick, adaptable, and mentally oriented.
-
-**Action Style:**
-- Multitasking ability
-- Communication as action
-- Intellectual initiative
-- Adaptable energy use
-
-**Growth Opportunity**: Learning focused action while maintaining your versatile, communicative approach.
-""",
-            "Cancer": """
-**Protective Action Taker**
-Your Mars in Cancer gives you emotionally driven action and protective energy. You act from deep feelings and defend what you care about passionately. Your energy is nurturing but can be defensive when threatened.
-
-**Action Style:**
-- Emotionally motivated action
-- Protective initiatives
-- Home and family focus
-- Intuitive energy use
-
-**Growth Opportunity**: Learning direct action while maintaining your protective, emotionally intelligent approach.
-""",
-            "Leo": """
-**Confident Leader**
-Your Mars in Leo gives you confident, dramatic action and creative energy. You lead with enthusiasm and enjoy being recognized for your accomplishments. Your energy is generous, warm, and inspiring to others.
-
-**Action Style:**
-- Confident initiative
-- Creative action
-- Leadership energy
-- Recognition-driven effort
-
-**Growth Opportunity**: Learning humble action while maintaining your confident, inspiring approach.
-""",
-            "Virgo": """
-**Precise Worker**
-Your Mars in Virgo gives you precise, analytical action and service-oriented energy. You work efficiently and pay attention to important details. Your energy is practical, organized, and healing-oriented.
-
-**Action Style:**
-- Efficient, precise action
-- Service-oriented initiatives
-- Health-focused energy
-- Analytical problem-solving
-
-**Growth Opportunity**: Learning big-picture action while maintaining your precise, efficient approach.
-""",
-            "Libra": """
-**Diplomatic Actor**
-Your Mars in Libra gives you balanced, diplomatic action and relationship-oriented energy. You act through partnership and seek harmonious solutions. Your energy is cooperative, fair-minded, and aesthetically oriented.
-
-**Action Style:**
-- Partnership-based action
-- Diplomatic initiatives
-- Balanced energy use
-- Artistic expression
-
-**Growth Opportunity**: Learning independent action while maintaining your diplomatic, cooperative approach.
-""",
-            "Scorpio": """
-**Intense Powerhouse**
-Your Mars in Scorpio gives you intense, determined action and transformative energy. You pursue goals with tremendous focus and can completely reinvent situations. Your energy is powerful, secretive, and psychologically astute.
-
-**Action Style:**
-- Intense, focused action
-- Transformative initiatives
-- Psychological energy use
-- Strategic pursuit
-
-**Growth Opportunity**: Learning transparent action while maintaining your intense, transformative power.
-""",
-            "Sagittarius": """
-**Adventurous Explorer**
-Your Mars in Sagittarius gives you optimistic, adventurous action and philosophical energy. You act from higher principles and enjoy exploration and learning. Your energy is freedom-loving, honest, and expansive.
-
-**Action Style:**
-- Adventurous initiatives
-- Philosophically motivated action
-- Freedom-oriented energy
-- Teaching and exploring
-
-**Growth Opportunity**: Learning grounded action while maintaining your adventurous, expansive approach.
-""",
-            "Capricorn": """
-**Ambitious Achiever**
-Your Mars in Capricorn gives you disciplined, ambitious action and structured energy. You work patiently toward long-term goals and build lasting achievements. Your energy is responsible, practical, and authority-oriented.
-
-**Action Style:**
-- Disciplined, patient action
-- Ambitious initiatives
-- Structured energy use
-- Career-focused effort
-
-**Growth Opportunity**: Learning spontaneous action while maintaining your disciplined, ambitious approach.
-""",
-            "Aquarius": """
-**Innovative Initiator**
-Your Mars in Aquarius gives you original, innovative action and humanitarian energy. You act from visionary ideas and enjoy pioneering new approaches. Your energy is independent, progressive, and group-oriented.
-
-**Action Style:**
-- Innovative initiatives
-- Humanitarian action
-- Independent energy use
-- Technological expression
-
-**Growth Opportunity**: Learning traditional action when useful while maintaining your innovative, progressive approach.
-""",
-            "Pisces": """
-**Compassionate Doer**
-Your Mars in Pisces gives you compassionate, intuitive action and spiritual energy. You act from deep empathy and can accomplish things through inspired effort. Your energy is adaptive, healing, and creatively expressed.
-
-**Action Style:**
-- Compassionate initiatives
-- Intuitive action
-- Spiritual energy use
-- Creative expression
-
-**Growth Opportunity**: Learning focused action while maintaining your compassionate, intuitive approach.
-"""
+            "AQU": "Strong reasoning powers. Often interested in science. Fond of freedom & independence.",
+            "ARI": "Energetic, competitive, pioneering. Direct and assertive action.",
+            "TAU": "Persistent, determined, practical. Slow but steady approach.",
+            "GEM": "Versatile, quick, communicative. Action through words and ideas.",
+            "CAN": "Protective, emotional, defensive. Actions driven by feelings.",
+            "LEO": "Confident, dramatic, creative. Actions with flair and leadership.",
+            "VIR": "Precise, analytical, efficient. Methodical and careful action.",
+            "LIB": "Diplomatic, balanced, cooperative. Seeks harmony in action.",
+            "SCO": "Intense, determined, transformative. Powerful and secretive action.",
+            "SAG": "Adventurous, optimistic, freedom-loving. Action with purpose.",
+            "CAP": "Ambitious, disciplined, patient. Strategic and persistent action.",
+            "PIS": "Compassionate, intuitive, adaptable. Action through inspiration."
         },
         "Jupiter": {
-            "Aries": """
-**Expansive Pioneer**
-Your Jupiter in Aries expands your courage, initiative, and leadership qualities. You have an optimistic approach to new beginnings and enjoy pioneering new philosophical or spiritual territories. Your faith in yourself helps you undertake ambitious projects.
-
-**Areas of Expansion:**
-- Confidence in personal initiatives
-- Philosophical courage
-- Leadership opportunities
-- Independent ventures
-
-**Wisdom Lesson**: Learning to balance your expansive initiatives with consideration for collective needs while maintaining your pioneering spirit.
-""",
-            "Taurus": """
-**Abundant Builder**
-Your Jupiter in Taurus expands your practical wisdom, material resources, and sensual appreciation. You have faith in gradual growth and find abundance through steady, reliable methods. Your optimism is grounded in tangible reality.
-
-**Areas of Expansion:**
-- Material abundance and security
-- Practical skills development
-- Sensual enjoyment of life
-- Financial growth opportunities
-
-**Wisdom Lesson**: Learning to balance material expansion with spiritual values while maintaining your practical approach to abundance.
-""",
-            "Gemini": """
-**Knowledge Seeker**
-Your Jupiter in Gemini expands your intellectual curiosity, communication skills, and social connections. You find wisdom through learning, teaching, and exchanging ideas. Your optimism comes from mental stimulation and variety.
-
-**Areas of Expansion:**
-- Intellectual knowledge
-- Communication abilities
-- Social networking
-- Learning opportunities
-
-**Wisdom Lesson**: Learning to balance breadth of knowledge with depth of understanding while maintaining your curious nature.
-""",
-            "Cancer": """
-**Nurturing Growth**
-Your Jupiter in Cancer expands your emotional intelligence, nurturing capacity, and family connections. You find abundance through emotional security and creating comfortable environments. Your optimism is deeply connected to home and family.
-
-**Areas of Expansion:**
-- Emotional security
-- Family blessings
-- Nurturing opportunities
-- Home and real estate
-
-**Wisdom Lesson**: Learning to balance emotional expansion with healthy boundaries while maintaining your nurturing nature.
-""",
-            "Leo": """
-**Creative Abundance**
-Your Jupiter in Leo expands your creative expression, leadership abilities, and generous spirit. You find abundance through self-expression and inspiring others. Your optimism is dramatic and warm-hearted.
-
-**Areas of Expansion:**
-- Creative self-expression
-- Leadership opportunities
-- Recognition and appreciation
-- Generous giving and receiving
-
-**Wisdom Lesson**: Learning to balance self-expression with consideration for others while maintaining your generous spirit.
-""",
-            "Virgo": """
-**Service Expansion**
-Your Jupiter in Virgo expands your analytical abilities, service orientation, and practical skills. You find abundance through being useful and improving systems. Your optimism comes from practical accomplishments and helpfulness.
-
-**Areas of Expansion:**
-- Service opportunities
-- Health and wellness knowledge
-- Analytical skills development
-- Practical problem-solving
-
-**Wisdom Lesson**: Learning to balance perfectionism with acceptance while maintaining your helpful nature.
-""",
-            "Libra": """
-**Harmonious Growth**
-Your Jupiter in Libra expands your diplomatic skills, aesthetic appreciation, and relationship opportunities. You find abundance through partnership, beauty, and creating harmony. Your optimism is balanced and fair-minded.
-
-**Areas of Expansion:**
-- Partnership blessings
-- Artistic opportunities
-- Social grace development
-- Balanced growth
-
-**Wisdom Lesson**: Learning to balance partnership needs with personal identity while maintaining your harmonious approach.
-""",
-            "Scorpio": """
-**Transformative Expansion**
-Your Jupiter in Scorpio expands your psychological insight, transformative power, and resource management. You find abundance through deep investigation and personal transformation. Your optimism is intense and regenerative.
-
-**Areas of Expansion:**
-- Psychological understanding
-- Transformative opportunities
-- Resource management skills
-- Investigative abilities
-
-**Wisdom Lesson**: Learning to balance intensity with lightness while maintaining your transformative power.
-""",
-            "Sagittarius": """
-**Philosophical Explorer**
-Your Jupiter in Sagittarius expands your philosophical understanding, adventurous spirit, and teaching abilities. You find abundance through exploration, learning, and seeking truth. Your optimism is natural and expansive.
-
-**Areas of Expansion:**
-- Philosophical wisdom
-- Travel opportunities
-- Teaching abilities
-- Cultural understanding
-
-**Wisdom Lesson**: Learning to balance freedom with responsibility while maintaining your adventurous spirit.
-""",
-            "Capricorn": """
-**Structured Growth**
-Your Jupiter in Capricorn expands your ambition, discipline, and organizational abilities. You find abundance through careful planning and long-term building. Your optimism is practical and achievement-oriented.
-
-**Areas of Expansion:**
-- Career advancement
-- Organizational skills
-- Ambitious projects
-- Traditional wisdom
-
-**Wisdom Lesson**: Learning to balance ambition with emotional fulfillment while maintaining your disciplined approach.
-""",
-            "Aquarius": """
-**Innovative Expansion**
-Your Jupiter in Aquarius expands your innovative thinking, humanitarian vision, and group connections. You find abundance through progressive ideas and social change. Your optimism is futuristic and original.
-
-**Areas of Expansion:**
-- Innovative ideas
-- Group affiliations
-- Humanitarian opportunities
-- Technological advancement
-
-**Wisdom Lesson**: Learning to balance innovation with practical implementation while maintaining your visionary approach.
-""",
-            "Pisces": """
-**Spiritual Abundance**
-Your Jupiter in Pisces expands your compassion, intuition, and spiritual connection. You find abundance through service, creativity, and universal love. Your optimism is compassionate and spiritually oriented.
-
-**Areas of Expansion:**
-- Spiritual understanding
-- Creative inspiration
-- Compassionate service
-- Universal connection
-
-**Wisdom Lesson**: Learning to balance spiritual ideals with practical reality while maintaining your compassionate nature.
-"""
+            "LEO": "Has a talent for organizing & leading. Open & ready to help anyone in need - magnanimous & affectionate.",
+            "ARI": "Enthusiastic, confident, generous. Natural leadership abilities.",
+            "TAU": "Practical, steady growth. Values material security and comfort.",
+            "GEM": "Curious, communicative, versatile. Expands through learning and connections.",
+            "CAN": "Nurturing, protective growth. Expands family and home life.",
+            "VIR": "Analytical, service-oriented growth. Improves through attention to detail.",
+            "LIB": "Harmonious, diplomatic expansion. Grows through relationships and beauty.",
+            "SCO": "Intense, transformative growth. Expands through deep investigation.",
+            "SAG": "Philosophical, adventurous expansion. Seeks truth and meaning.",
+            "CAP": "Ambitious, disciplined growth. Builds lasting structures and authority.",
+            "AQU": "Innovative, humanitarian expansion. Progress through originality.",
+            "PIS": "Compassionate, spiritual growth. Expands through intuition and service."
         },
         "Saturn": {
-            "Aries": """
-**Disciplined Pioneer**
-Your Saturn in Aries teaches lessons about responsible initiative and disciplined action. You're learning to balance your desire for immediate action with thoughtful consideration. Your challenges often involve learning patience in pursuing your goals.
-
-**Life Lessons:**
-- Responsible leadership
-- Patient pursuit of goals
-- Balancing independence with cooperation
-- Disciplined use of personal power
-
-**Mastery Path**: Learning to initiate action that serves long-term structures while maintaining your courageous approach to challenges.
-""",
-            "Taurus": """
-**Practical Builder**
-Your Saturn in Taurus teaches lessons about material responsibility and practical stability. You're learning to build security through reliable methods and patient accumulation. Your challenges involve developing financial discipline.
-
-**Life Lessons:**
-- Financial responsibility
-- Practical skill development
-- Patient value building
-- Material discipline
-
-**Mastery Path**: Learning to create lasting security while maintaining flexibility in the face of change.
-""",
-            "Gemini": """
-**Organized Communicator**
-Your Saturn in Gemini teaches lessons about responsible communication and mental discipline. You're learning to express ideas clearly and reliably. Your challenges involve developing consistent thinking patterns.
-
-**Life Lessons:**
-- Responsible communication
-- Mental organization
-- Reliable learning methods
-- Practical knowledge application
-
-**Mastery Path**: Learning to balance intellectual versatility with focused expertise while maintaining your communicative gifts.
-""",
-            "Cancer": """
-**Emotional Responsibility**
-Your Saturn in Cancer teaches lessons about emotional maturity and family responsibility. You're learning to create emotional security through reliable nurturing. Your challenges involve developing healthy emotional boundaries.
-
-**Life Lessons:**
-- Emotional discipline
-- Family responsibility
-- Creating secure foundations
-- Balanced nurturing
-
-**Mastery Path**: Learning to provide emotional security while maintaining personal emotional health.
-""",
-            "Leo": """
-**Responsible Leader**
-Your Saturn in Leo teaches lessons about creative responsibility and dignified leadership. You're learning to express yourself authentically while considering others' needs. Your challenges involve balancing self-expression with responsibility.
-
-**Life Lessons:**
-- Responsible self-expression
-- Dignified leadership
-- Creative discipline
-- Generous authority
-
-**Mastery Path**: Learning to lead with heart while maintaining appropriate boundaries and responsibilities.
-""",
-            "Virgo": """
-**Efficient Organizer**
-Your Saturn in Virgo teaches lessons about practical service and systematic improvement. You're learning to be useful in organized, reliable ways. Your challenges involve balancing perfectionism with practical reality.
-
-**Life Lessons:**
-- Practical service discipline
-- Health responsibility
-- Systematic organization
-- Efficient problem-solving
-
-**Mastery Path**: Learning to improve systems while accepting necessary imperfections in the process.
-""",
-            "Libra": """
-**Diplomatic Responsibility**
-Your Saturn in Libra teaches lessons about partnership commitment and balanced justice. You're learning to create fair, lasting relationships. Your challenges involve making firm decisions within partnerships.
-
-**Life Lessons:**
-- Partnership commitment
-- Balanced decision-making
-- Artistic discipline
-- Fair relationship structures
-
-**Mastery Path**: Learning to create harmonious structures while maintaining personal integrity within relationships.
-""",
-            "Scorpio": """
-**Transformative Discipline**
-Your Saturn in Scorpio teaches lessons about psychological depth and responsible power. You're learning to handle intensity with wisdom and integrity. Your challenges involve transforming limitations into strengths.
-
-**Life Lessons:**
-- Psychological discipline
-- Responsible power use
-- Transformative patience
-- Emotional intensity management
-
-**Mastery Path**: Learning to work with deep psychological forces while maintaining ethical boundaries and personal integrity.
-""",
-            "Sagittarius": """
-**Philosophical Structure**
-Your Saturn in Sagittarius teaches lessons about philosophical integrity and responsible expansion. You're learning to ground your beliefs in practical reality. Your challenges involve balancing freedom with commitment.
-
-**Life Lessons:**
-- Philosophical discipline
-- Responsible teaching
-- Structured expansion
-- Ethical exploration
-
-**Mastery Path**: Learning to expand horizons while maintaining philosophical integrity and practical grounding.
-""",
-            "Capricorn": """
-**Natural Authority**
-Your Saturn in Capricorn gives you natural understanding of structure, discipline, and long-term planning. You're here to master the art of building lasting institutions. Your challenges involve balancing ambition with humanity.
-
-**Life Lessons:**
-- Natural leadership responsibility
-- Institutional building
-- Long-term achievement
-- Traditional wisdom mastery
-
-**Mastery Path**: Learning to create enduring structures while maintaining compassion and human connection.
-""",
-            "Aquarius": """
-**Innovative Responsibility**
-Your Saturn in Aquarius teaches lessons about progressive structures and group responsibility. You're learning to implement innovative ideas in practical ways. Your challenges involve balancing individuality with group needs.
-
-**Life Lessons:**
-- Innovative discipline
-- Group responsibility
-- Progressive structures
-- Humanitarian commitment
-
-**Mastery Path**: Learning to create future-oriented structures while maintaining connection to practical present needs.
-""",
-            "Pisces": """
-**Compassionate Discipline**
-Your Saturn in Pisces teaches lessons about spiritual responsibility and compassionate boundaries. You're learning to serve with wisdom while maintaining healthy limits. Your challenges involve balancing idealism with reality.
-
-**Life Lessons:**
-- Spiritual discipline
-- Compassionate service
-- Creative structure
-- Boundary development
-
-**Mastery Path**: Learning to serve spiritually while maintaining practical effectiveness and personal boundaries.
-"""
+            "SAG": "Upright, open, courageous, honourable, grave, dignified, very capable.",
+            "ARI": "Ambitious, disciplined pioneer. Builds structures with initiative.",
+            "TAU": "Practical, patient builder. Creates lasting material security.",
+            "GEM": "Serious, organized communicator. Structures thinking and learning.",
+            "CAN": "Responsible, protective authority. Builds family traditions.",
+            "LEO": "Dignified, authoritative leader. Structures creative expression.",
+            "VIR": "Precise, efficient organizer. Creates order through service.",
+            "LIB": "Balanced, diplomatic judge. Structures relationships fairly.",
+            "SCO": "Intense, transformative discipline. Builds through deep investigation.",
+            "CAP": "Ambitious, responsible builder. Creates lasting institutions.",
+            "AQU": "Innovative, disciplined reformer. Structures progressive ideas.",
+            "PIS": "Compassionate, spiritual discipline. Builds through faith."
         },
         "Uranus": {
-            "Aries": """
-**Revolutionary Pioneer**
-Your Uranus in Aries brings sudden insights and innovative approaches to personal initiative. You have original ideas about leadership and courage, and you may pioneer new forms of independent action. Your approach to life is uniquely your own.
-
-**Innovation Areas:**
-- New forms of leadership
-- Innovative approaches to challenges
-- Revolutionary personal expression
-- Independent technological uses
-
-**Evolutionary Task**: Grounding your innovative ideas in practical reality while maintaining your revolutionary spirit.
-""",
-            "Taurus": """
-**Innovative Values**
-Your Uranus in Taurus brings revolutionary changes to values, resources, and material security. You have innovative ideas about money, possessions, and environmental sustainability. Your approach to security is unconventional.
-
-**Innovation Areas:**
-- Alternative economic systems
-- Sustainable resource use
-- Unconventional values
-- Technological agriculture
-
-**Evolutionary Task**: Integrating innovative values with practical stability while maintaining your progressive vision.
-""",
-            "Gemini": """
-**Communication Revolution**
-Your Uranus in Gemini brings revolutionary changes to communication, learning, and information exchange. You have innovative ideas about education, technology, and social networking. Your thinking is ahead of its time.
-
-**Innovation Areas:**
-- Revolutionary communication methods
-- Alternative education systems
-- Information technology advances
-- Social networking innovation
-
-**Evolutionary Task**: Channeling your communicative innovations toward constructive purposes while maintaining mental balance.
-""",
-            "Cancer": """
-**Emotional Innovation**
-Your Uranus in Cancer brings revolutionary changes to family, home, and emotional security. You have innovative ideas about nurturing, parenting, and domestic life. Your approach to emotional security is unconventional.
-
-**Innovation Areas:**
-- Alternative family structures
-- Innovative home environments
-- Emotional freedom expression
-- Nurturing technology
-
-**Evolutionary Task**: Balancing emotional innovation with emotional security needs while maintaining your progressive vision.
-""",
-            "Leo": """
-**Creative Revolution**
-Your Uranus in Leo brings revolutionary changes to creativity, self-expression, and leadership. You have innovative ideas about art, entertainment, and personal power. Your approach to creativity is uniquely original.
-
-**Innovation Areas:**
-- Revolutionary art forms
-- Innovative entertainment
-- Alternative leadership styles
-- Creative technology
-
-**Evolutionary Task**: Expressing your creative innovations while maintaining connection with audience understanding.
-""",
-            "Virgo": """
-**Service Innovation**
-Your Uranus in Virgo brings revolutionary changes to health, service, and practical efficiency. You have innovative ideas about healing, work methods, and environmental health. Your approach to service is technologically advanced.
-
-**Innovation Areas:**
-- Alternative health systems
-- Innovative work methods
-- Environmental technology
-- Service automation
-
-**Evolutionary Task**: Implementing practical innovations while maintaining human touch and service quality.
-""",
-            "Libra": """
-**Relationship Revolution**
-Your Uranus in Libra brings revolutionary changes to relationships, partnership, and social harmony. You have innovative ideas about marriage, diplomacy, and artistic collaboration. Your approach to relationships is unconventional.
-
-**Innovation Areas:**
-- Alternative relationship models
-- Innovative partnership structures
-- Revolutionary art collaborations
-- Social harmony technology
-
-**Evolutionary Task**: Creating relationship innovations while maintaining balance and mutual respect.
-""",
-            "Scorpio": """
-**Transformative Innovation**
-Your Uranus in Scorpio brings revolutionary changes to psychology, transformation, and shared resources. You have innovative ideas about intimacy, power, and regeneration. Your approach to transformation is technologically advanced.
-
-**Innovation Areas:**
-- Psychological innovation
-- Transformative technology
-- Alternative power structures
-- Regenerative systems
-
-**Evolutionary Task**: Directing transformative innovations toward healing purposes while maintaining ethical boundaries.
-""",
-            "Sagittarius": """
-**Philosophical Revolution**
-Your Uranus in Sagittarius brings revolutionary changes to philosophy, education, and cultural expansion. You have innovative ideas about religion, travel, and higher learning. Your approach to truth-seeking is unconventional.
-
-**Innovation Areas:**
-- Alternative philosophical systems
-- Revolutionary education methods
-- Cultural exchange innovation
-- Spiritual technology
-
-**Evolutionary Task**: Expanding philosophical horizons while maintaining practical wisdom and cultural sensitivity.
-""",
-            "Capricorn": """
-**Structural Revolution**
-Your Uranus in Capricorn brings revolutionary changes to authority, government, and social structures. You have innovative ideas about business, tradition, and institutional reform. Your approach to building is futuristic.
-
-**Innovation Areas:**
-- Government innovation
-- Business revolution
-- Structural reform
-- Traditional institution updates
-
-**Evolutionary Task**: Implementing structural changes while maintaining stability and practical effectiveness.
-""",
-            "Aquarius": """
-**Natural Innovator**
-Your Uranus in Aquarius operates at home, bringing natural genius for innovation, technology, and social progress. You have visionary ideas that can transform society. Your thinking is radically original and future-oriented.
-
-**Innovation Areas:**
-- Technological breakthroughs
-- Social system innovation
-- Humanitarian advancement
-- Future vision implementation
-
-**Evolutionary Task**: Grounding your visionary ideas in practical reality while maintaining your progressive spirit.
-""",
-            "Pisces": """
-**Spiritual Innovation**
-Your Uranus in Pisces brings revolutionary changes to spirituality, compassion, and universal connection. You have innovative ideas about healing, art, and spiritual practice. Your approach to mysticism is technologically informed.
-
-**Innovation Areas:**
-- Spiritual technology
-- Healing innovation
-- Artistic revolution
-- Compassionate systems
-
-**Evolutionary Task**: Integrating spiritual innovations with practical compassion while maintaining mystical depth.
-"""
+            "CAN": "Rather passive, compassionate, sensitive, impressionable, intuitive.",
+            "ARI": "Innovative, independent pioneer. Sudden changes and breakthroughs.",
+            "TAU": "Unconventional values and financial ideas. Slow but revolutionary change.",
+            "GEM": "Revolutionary thinking and communication. Sudden insights.",
+            "LEO": "Creative innovation and dramatic self-expression.",
+            "VIR": "Unconventional approaches to health and service.",
+            "LIB": "Revolutionary relationships and artistic expression.",
+            "SCO": "Transformative insights and psychological breakthroughs.",
+            "SAG": "Philosophical innovation and expansion of consciousness.",
+            "CAP": "Structural reforms and institutional changes.",
+            "AQU": "Humanitarian vision and technological innovation.",
+            "PIS": "Spiritual insights and mystical revelations."
         },
         "Neptune": {
-            "Aries": """
-**Visionary Pioneer**
-Your Neptune in Aries gives you spiritual ideals about courage and initiative. You may have dreams of heroic service or spiritual leadership. Your compassion expresses through courageous action, and you inspire others with your visionary approach.
-
-**Spiritual Ideals:**
-- Idealistic leadership
-- Compassionate action
-- Spiritual courage
-- Inspirational initiatives
-
-**Transcendence Path**: Learning to manifest your spiritual ideals in practical actions while maintaining your visionary inspiration.
-""",
-            "Taurus": """
-**Mystical Values**
-Your Neptune in Taurus gives you spiritual ideals about beauty, security, and material abundance. You may dream of creating earthly paradise or manifesting spiritual values in physical form. Your compassion expresses through practical care.
-
-**Spiritual Ideals:**
-- Beautiful spiritual environments
-- Material spirituality
-- Sensual mysticism
-- Abundant compassion
-
-**Transcendence Path**: Learning to balance spiritual ideals with practical reality while maintaining your mystical appreciation.
-""",
-            "Gemini": """
-**Inspired Communication**
-Your Neptune in Gemini gives you spiritual ideals about communication, learning, and mental connection. You may receive inspired messages or dream of universal understanding. Your compassion expresses through teaching and sharing ideas.
-
-**Spiritual Ideals:**
-- Inspired communication
-- Universal knowledge
-- Spiritual networking
-- Compassionate teaching
-
-**Transcendence Path**: Learning to ground inspired communications in practical understanding while maintaining your visionary thinking.
-""",
-            "Cancer": """
-**Mystical Nurturing**
-Your Neptune in Cancer gives you spiritual ideals about family, home, and emotional security. You may dream of ideal family relationships or spiritual parenting. Your compassion expresses through emotional healing and nurturing.
-
-**Spiritual Ideals:**
-- Spiritual family
-- Emotional healing
-- Nurturing mysticism
-- Compassionate home
-
-**Transcendence Path**: Learning to balance spiritual nurturing with practical emotional boundaries while maintaining your compassionate nature.
-""",
-            "Leo": """
-**Inspired Creativity**
-Your Neptune in Leo gives you spiritual ideals about creativity, self-expression, and leadership. You may dream of inspirational art or spiritual performance. Your compassion expresses through dramatic healing and generous inspiration.
-
-**Spiritual Ideals:**
-- Inspired creativity
-- Spiritual leadership
-- Dramatic compassion
-- Generous inspiration
-
-**Transcendence Path**: Learning to channel creative inspiration practically while maintaining your spiritual vision.
-""",
-            "Virgo": """
-**Healing Service**
-Your Neptune in Virgo gives you spiritual ideals about service, health, and practical improvement. You may dream of perfect health systems or inspired service organizations. Your compassion expresses through practical healing and helpfulness.
-
-**Spiritual Ideals:**
-- Healing service
-- Spiritual health
-- Inspired organization
-- Compassionate improvement
-
-**Transcendence Path**: Learning to implement spiritual service in practical ways while maintaining your healing vision.
-""",
-            "Libra": """
-**Harmonious Ideals**
-Your Neptune in Libra gives you spiritual ideals about relationships, beauty, and social harmony. You may dream of perfect partnerships or spiritually inspired art. Your compassion expresses through creating beauty and balance.
-
-**Spiritual Ideals:**
-- Spiritual partnerships
-- Inspired beauty
-- Harmonious compassion
-- Balanced ideals
-
-**Transcendence Path**: Learning to manifest spiritual harmony in practical relationships while maintaining your idealistic vision.
-""",
-            "Scorpio": """
-**Mystical Transformation**
-Your Neptune in Scorpio gives you spiritual ideals about transformation, psychology, and shared resources. You may dream of spiritual regeneration or mystical intimacy. Your compassion expresses through deep healing and transformation.
-
-**Spiritual Ideals:**
-- Transformative compassion
-- Psychological spirituality
-- Mystical intimacy
-- Regenerative ideals
-
-**Transcendence Path**: Learning to channel transformative spiritual energy constructively while maintaining your mystical depth.
-""",
-            "Sagittarius": """
-**Visionary Philosophy**
-Your Neptune in Sagittarius gives you spiritual ideals about philosophy, travel, and cultural understanding. You may dream of universal religion or spiritual exploration. Your compassion expresses through inspirational teaching and cultural healing.
-
-**Spiritual Ideals:**
-- Universal philosophy
-- Spiritual exploration
-- Inspirational teaching
-- Cultural compassion
-
-**Transcendence Path**: Learning to ground spiritual philosophy in practical understanding while maintaining your visionary expansion.
-""",
-            "Capricorn": """
-**Spiritual Structure**
-Your Neptune in Capricorn gives you spiritual ideals about authority, structure, and social responsibility. You may dream of spiritually informed institutions or compassionate governments. Your compassion expresses through responsible service and structural healing.
-
-**Spiritual Ideals:**
-- Spiritual authority
-- Compassionate structures
-- Responsible ideals
-- Institutional healing
-
-**Transcendence Path**: Learning to build spiritual structures practically while maintaining your compassionate vision.
-""",
-            "Aquarius": """
-**Universal Ideals**
-Your Neptune in Aquarius gives you spiritual ideals about innovation, groups, and humanitarian progress. You may dream of spiritual technology or universal brotherhood. Your compassion expresses through progressive healing and group inspiration.
-
-**Spiritual Ideals:**
-- Universal compassion
-- Spiritual innovation
-- Group healing
-- Progressive ideals
-
-**Transcendence Path**: Learning to implement universal ideals in practical group contexts while maintaining your spiritual vision.
-""",
-            "Pisces": """
-**Natural Mystic**
-Your Neptune in Pisces operates at home, giving you natural spiritual connection, compassion, and artistic inspiration. You easily access mystical states and have profound empathy. Your compassion is all-encompassing and spiritually informed.
-
-**Spiritual Ideals:**
-- Universal compassion
-- Mystical connection
-- Inspired art
-- Spiritual service
-
-**Transcendence Path**: Learning to channel spiritual inspiration practically while maintaining healthy boundaries and mystical connection.
-"""
+            "LIB": "Idealistic, often a bit out of touch with reality. Has only a hazy view & understanding of real life & the world.",
+            "ARI": "Spiritual pioneering and inspired action.",
+            "TAU": "Dreamy values and idealized security.",
+            "GEM": "Imaginative communication and inspired ideas.",
+            "CAN": "Mystical home life and spiritual nurturing.",
+            "LEO": "Creative inspiration and dramatic spirituality.",
+            "VIR": "Service through inspiration and healing.",
+            "SCO": "Deep spiritual transformation and psychic sensitivity.",
+            "SAG": "Philosophical idealism and spiritual expansion.",
+            "CAP": "Structured spirituality and institutional faith.",
+            "AQU": "Collective ideals and humanitarian dreams.",
+            "PIS": "Spiritual connection and mystical understanding."
         },
         "Pluto": {
-            "Aries": """
-**Transformative Power**
-Your Pluto in Aries gives you tremendous power to transform through direct action. You have deep resources of courage and the ability to completely reinvent yourself. Your transformative process often involves learning about the right use of personal power.
-
-**Transformation Areas:**
-- Personal identity reinvention
-- Courageous facing of shadows
-- Powerful new beginnings
-- Deep psychological courage
-
-**Evolutionary Journey**: Learning to use your transformative power for collective healing while maintaining your personal authenticity.
-""",
-            "Taurus": """
-**Value Transformation**
-Your Pluto in Taurus gives you power to transform values, resources, and material security. You experience deep changes in what you consider important and how you handle resources. Your transformation involves learning about true security.
-
-**Transformation Areas:**
-- Value system revolution
-- Financial transformation
-- Environmental regeneration
-- Security understanding
-
-**Evolutionary Journey**: Learning to transform material reality while maintaining spiritual values and practical stability.
-""",
-            "Gemini": """
-**Mental Regeneration**
-Your Pluto in Gemini gives you power to transform thinking, communication, and learning processes. You experience deep changes in how you process information and communicate. Your transformation involves learning about true knowledge.
-
-**Transformation Areas:**
-- Mental process transformation
-- Communication power
-- Learning regeneration
-- Information revolution
-
-**Evolutionary Journey**: Learning to transform thinking patterns while maintaining practical communication and mental balance.
-""",
-            "Cancer": """
-**Emotional Regeneration**
-Your Pluto in Cancer gives you power to transform emotions, family patterns, and security needs. You experience deep emotional healing and family transformation. Your process involves learning about true emotional security.
-
-**Transformation Areas:**
-- Emotional pattern transformation
-- Family healing
-- Security regeneration
-- Nurturing power
-
-**Evolutionary Journey**: Learning to transform emotional foundations while maintaining healthy boundaries and emotional stability.
-""",
-            "Leo": """
-**Creative Power**
-Your Pluto in Leo gives you power to transform creativity, self-expression, and personal power. You experience deep changes in how you express yourself and use your influence. Your transformation involves learning about authentic power.
-
-**Transformation Areas:**
-- Creative transformation
-- Power use regeneration
-- Self-expression revolution
-- Leadership transformation
-
-**Evolutionary Journey**: Learning to transform creative expression while maintaining heart connection and generous leadership.
-""",
-            "Virgo": """
-**Service Transformation**
-Your Pluto in Virgo gives you power to transform service, health, and practical efficiency. You experience deep changes in how you serve and maintain well-being. Your transformation involves learning about true service.
-
-**Transformation Areas:**
-- Service method transformation
-- Health regeneration
-- Practical efficiency revolution
-- Analytical power
-
-**Evolutionary Journey**: Learning to transform service approaches while maintaining practical effectiveness and compassionate help.
-""",
-            "Libra": """
-**Relationship Power**
-Your Pluto in Libra gives you power to transform relationships, partnership, and social harmony. You experience deep changes in how you relate and create balance. Your transformation involves learning about true partnership.
-
-**Transformation Areas:**
-- Relationship pattern transformation
-- Partnership regeneration
-- Social harmony revolution
-- Artistic power
-
-**Evolutionary Journey**: Learning to transform relationships while maintaining balance, fairness, and mutual respect.
-""",
-            "Scorpio": """
-**Natural Transformer**
-Your Pluto in Scorpio operates at home, giving you natural power for deep transformation, psychological insight, and regenerative ability. You easily access profound changes and understand life-death-rebirth cycles. Your transformative power is immense.
-
-**Transformation Areas:**
-- Psychological transformation
-- Regenerative power
-- Intimate revolution
-- Resource mastery
-
-**Evolutionary Journey**: Learning to channel transformative power for healing purposes while maintaining ethical boundaries and personal integration.
-""",
-            "Sagittarius": """
-**Philosophical Revolution**
-Your Pluto in Sagittarius gives you power to transform beliefs, philosophy, and cultural understanding. You experience deep changes in what you consider true and how you explore. Your transformation involves learning about ultimate truth.
-
-**Transformation Areas:**
-- Belief system transformation
-- Philosophical regeneration
-- Cultural revolution
-- Exploratory power
-
-**Evolutionary Journey**: Learning to transform philosophical understanding while maintaining practical wisdom and cultural sensitivity.
-""",
-            "Capricorn": """
-**Structural Power**
-Your Pluto in Capricorn gives you power to transform structures, authority, and social systems. You experience deep changes in how you build and maintain institutions. Your transformation involves learning about true authority.
-
-**Transformation Areas:**
-- Structural transformation
-- Authority regeneration
-- Institutional revolution
-- Building power
-
-**Evolutionary Journey**: Learning to transform structures while maintaining stability, responsibility, and compassionate leadership.
-""",
-            "Aquarius": """
-**Collective Transformation**
-Your Pluto in Aquarius gives you power to transform groups, innovation, and social progress. You experience deep changes in how you participate in collective evolution. Your transformation involves learning about true freedom.
-
-**Transformation Areas:**
-- Group transformation
-- Innovative regeneration
-- Social revolution
-- Collective power
-
-**Evolutionary Journey**: Learning to transform collective structures while maintaining individual freedom and progressive vision.
-""",
-            "Pisces": """
-**Spiritual Alchemy**
-Your Pluto in Pisces gives you power to transform spirituality, compassion, and universal connection. You experience deep changes in how you connect with the divine and serve humanity. Your transformation involves learning about ultimate surrender.
-
-**Transformation Areas:**
-- Spiritual transformation
-- Compassionate regeneration
-- Universal revolution
-- Mystical power
-
-**Evolutionary Journey**: Learning to transform spiritual understanding while maintaining practical compassion and healthy boundaries.
-"""
-        },
-        "North Node": {
-            "Aries": """
-**Soul Mission: Courageous Independence**
-Your North Node in Aries calls you to develop courage, initiative, and independent action. Your soul's growth comes through learning to trust your own instincts and take bold steps forward. You're learning to balance consideration for others with healthy self-assertion.
-
-**Growth Areas:**
-- Developing personal courage
-- Learning independent decision-making
-- Taking initiative in life
-- Trusting your inner guidance
-
-**Karmic Release**: Releasing over-dependence on others' opinions and learning to stand confidently in your own truth.
-""",
-            "Taurus": """
-**Soul Mission: Practical Mastery**
-Your North Node in Taurus calls you to develop stability, practical skills, and material security. Your soul's growth comes through learning to build lasting value and appreciate simple pleasures. You're learning to balance spiritual ideals with earthly reality.
-
-**Growth Areas:**
-- Developing financial wisdom
-- Learning practical skills
-- Creating stable foundations
-- Appreciating physical beauty
-
-**Karmic Release**: Releasing restless seeking and learning to find contentment in present moment reality.
-""",
-            "Gemini": """
-**Soul Mission: Intellectual Connection**
-Your North Node in Gemini calls you to develop communication skills, intellectual curiosity, and social connections. Your soul's growth comes through learning, teaching, and exchanging ideas. You're learning to balance depth with variety.
-
-**Growth Areas:**
-- Developing communication ability
-- Learning from diverse sources
-- Building social networks
-- Sharing knowledge generously
-
-**Karmic Release**: Releasing narrow perspectives and learning to appreciate multiple viewpoints.
-""",
-            "Cancer": """
-**Soul Mission: Emotional Security**
-Your North Node in Cancer calls you to develop emotional intelligence, nurturing ability, and family connections. Your soul's growth comes through creating emotional security and caring for others. You're learning to balance independence with emotional connection.
-
-**Growth Areas:**
-- Developing emotional awareness
-- Learning nurturing skills
-- Creating home security
-- Building family traditions
-
-**Karmic Release**: Releasing emotional detachment and learning to trust intimate connections.
-""",
-            "Leo": """
-**Soul Mission: Creative Self-Expression**
-Your North Node in Leo calls you to develop creativity, self-confidence, and leadership ability. Your soul's growth comes through authentic self-expression and inspiring others. You're learning to balance humility with self-recognition.
-
-**Growth Areas:**
-- Developing creative talents
-- Learning confident self-expression
-- Taking leadership roles
-- Sharing joy generously
-
-**Karmic Release**: Releasing self-doubt and learning to recognize your inherent worth.
-""",
-            "Virgo": """
-**Soul Mission: Service and Improvement**
-Your North Node in Virgo calls you to develop practical service, analytical skills, and health awareness. Your soul's growth comes through being useful and improving systems. You're learning to balance perfectionism with acceptance.
-
-**Growth Areas:**
-- Developing service orientation
-- Learning analytical thinking
-- Improving health habits
-- Creating efficient systems
-
-**Karmic Release**: Releasing criticism of self and others and learning constructive improvement methods.
-""",
-            "Libra": """
-**Soul Mission: Harmonious Relationships**
-Your North Node in Libra calls you to develop diplomacy, partnership skills, and aesthetic appreciation. Your soul's growth comes through creating balance and beauty in relationships. You're learning to balance independence with cooperation.
-
-**Growth Areas:**
-- Developing diplomatic skills
-- Learning partnership balance
-- Creating beauty in life
-- Practicing fair decision-making
-
-**Karmic Release**: Releasing people-pleasing and learning authentic relationship harmony.
-""",
-            "Scorpio": """
-**Soul Mission: Transformative Depth**
-Your North Node in Scorpio calls you to develop psychological insight, emotional depth, and transformative power. Your soul's growth comes through facing shadows and facilitating healing. You're learning to balance intensity with compassion.
-
-**Growth Areas:**
-- Developing psychological understanding
-- Learning emotional authenticity
-- Practicing transformation
-- Managing power wisely
-
-**Karmic Release**: Releasing superficiality and learning to engage life's depths courageously.
-""",
-            "Sagittarius": """
-**Soul Mission: Philosophical Expansion**
-Your North Node in Sagittarius calls you to develop philosophical understanding, adventurous spirit, and teaching ability. Your soul's growth comes through seeking truth and expanding horizons. You're learning to balance freedom with responsibility.
-
-**Growth Areas:**
-- Developing philosophical wisdom
-- Learning through adventure
-- Teaching and inspiring others
-- Expanding cultural understanding
-
-**Karmic Release**: Releasing narrow beliefs and learning universal perspectives.
-""",
-            "Capricorn": """
-**Soul Mission: Structural Achievement**
-Your North Node in Capricorn calls you to develop ambition, discipline, and organizational ability. Your soul's growth comes through building lasting structures and assuming responsibility. You're learning to balance achievement with humanity.
-
-**Growth Areas:**
-- Developing career mastery
-- Learning disciplined action
-- Building enduring institutions
-- Practicing responsible leadership
-
-**Karmic Release**: Releasing irresponsibility and learning to embrace mature achievement.
-""",
-            "Aquarius": """
-**Soul Mission: Innovative Contribution**
-Your North Node in Aquarius calls you to develop innovative thinking, group participation, and humanitarian vision. Your soul's growth comes through progressive ideas and social contribution. You're learning to balance individuality with group needs.
-
-**Growth Areas:**
-- Developing innovative ideas
-- Learning group cooperation
-- Contributing to social progress
-- Practicing futuristic thinking
-
-**Karmic Release**: Releasing conventional thinking and learning to express unique vision.
-""",
-            "Pisces": """
-**Soul Mission: Compassionate Service**
-Your North Node in Pisces calls you to develop compassion, intuition, and spiritual connection. Your soul's growth comes through selfless service and artistic inspiration. You're learning to balance practical reality with spiritual ideals.
-
-**Growth Areas:**
-- Developing compassionate understanding
-- Learning intuitive wisdom
-- Practicing spiritual service
-- Expressing creative inspiration
-
-**Karmic Release**: Releasing boundaries that separate and learning universal connection.
-"""
+            "LEO": "Strong creative desires. Uncontrollable sexual appetite. Determined to win.",
+            "ARI": "Transformative initiative and rebirth through action.",
+            "TAU": "Deep financial transformation and value regeneration.",
+            "GEM": "Psychological communication and mental transformation.",
+            "CAN": "Emotional rebirth and family transformation.",
+            "VIR": "Service transformation and health regeneration.",
+            "LIB": "Relationship transformation and artistic rebirth.",
+            "SCO": "Deep psychological transformation and rebirth.",
+            "SAG": "Philosophical transformation and belief regeneration.",
+            "CAP": "Structural transformation and power rebirth.",
+            "AQU": "Collective transformation and social regeneration.",
+            "PIS": "Spiritual transformation and mystical rebirth."
         }
     }
 
-    # EXTENSIVE CAREER INTERPRETATIONS
+    # INTERPRETĂRI SPECIFICE PENTRU CAREER (EXTINSE)
     career_interpretations = {
         "Sun": {
-            "Aries": """
-**Career as Pioneer and Leader**
-Your Sun in Aries shines brightest in careers that allow initiative, leadership, and competition. You thrive in environments where you can be first - whether launching new projects, entering new markets, or pioneering innovative approaches.
-
-**Ideal Career Paths:**
-- Entrepreneurship and business ownership
-- Military or police leadership
-- Sports and athletics
-- Emergency services and crisis management
-- Surgical medicine (especially trauma)
-- Engineering and technology innovation
-
-**Success Strategy**: Your competitive nature drives you to excel, but remember that sustainable success comes from building teams that complement your pioneering energy. Look for careers where your courage and initiative are valued assets.
-""",
-            "Taurus": """
-**Career as Builder and Stabilizer**
-Your Sun in Taurus finds fulfillment in careers that involve creating tangible value and lasting security. You excel in fields where patience, persistence, and practical wisdom lead to gradual but substantial accumulation.
-
-**Ideal Career Paths:**
-- Banking, finance, and investment
-- Real estate and property development
-- Agriculture and environmental management
-- Luxury goods and high-quality products
-- Arts and crafts with material mastery
-- Hospitality and comfort industries
-
-**Success Strategy**: Your methodical approach ensures quality, but be open to innovation within your field. Your gift is creating enduring value that withstands economic fluctuations and changing trends.
-""",
-            "Gemini": """
-**Career as Communicator and Networker**
-Your Sun in Gemini excels in careers that involve communication, information, and variety. You thrive in fast-paced environments where you can use your mental agility and networking skills. Multi-tasking comes naturally to you.
-
-**Ideal Career Paths:**
-- Journalism, writing, and publishing
-- Sales and marketing
-- Teaching and education
-- Technology and IT
-- Public relations and media
-- Transportation and logistics
-
-**Success Strategy**: Your versatility is a great asset, but focus on developing depth in one or two key areas to complement your breadth of knowledge. Look for careers that offer continuous learning opportunities.
-""",
-            "Cancer": """
-**Career as Nurturer and Protector**
-Your Sun in Cancer finds fulfillment in careers that involve caring, protecting, and creating emotional security. You excel in fields where your intuition and nurturing instincts can flourish. Building lasting emotional connections is key to your success.
-
-**Ideal Career Paths:**
-- Healthcare and nursing
-- Education and childcare
-- Hospitality and restaurant management
-- Real estate and home-related businesses
-- Psychology and counseling
-- Family businesses and traditions
-
-**Success Strategy**: Your emotional intelligence is your greatest asset. Create work environments that feel like family, and don't be afraid to use your intuitive understanding of people's needs.
-""",
-            "Leo": """
-**Career as Creative Leader**
-Your Sun in Leo thrives in careers that allow creative expression, leadership, and recognition. You need to be in the spotlight and excel when your talents are appreciated. Your natural charisma draws opportunities to you.
-
-**Ideal Career Paths:**
-- Entertainment and performing arts
-- Management and executive positions
-- Teaching and coaching
-- Luxury brands and high-end products
-- Event planning and production
-- Entrepreneurship with creative vision
-
-**Success Strategy**: Your confidence inspires others, but remember to share the spotlight and develop teams that can implement your visionary ideas. Look for careers where you can be the "face" of an organization.
-""",
-            "Virgo": """
-**Career as Analyst and Healer**
-Your Sun in Virgo excels in careers that require precision, analysis, and service. You find fulfillment in improving systems, helping others, and paying attention to important details. Your practical wisdom makes you invaluable.
-
-**Ideal Career Paths:**
-- Healthcare and medicine
-- Research and development
-- Accounting and finance
-- Editing and writing
-- Environmental science
-- Quality control and efficiency
-
-**Success Strategy**: Your attention to detail is exceptional, but remember to also see the big picture. Your gift is making things work better - find organizations that value improvement and service.
-""",
-            "Libra": """
-**Career as Diplomat and Artist**
-Your Sun in Libra thrives in careers that involve beauty, harmony, and partnership. You excel in environments where diplomacy, aesthetics, and balanced relationships are valued. Your sense of justice and beauty guides your career choices.
-
-**Ideal Career Paths:**
-- Law and mediation
-- Design and architecture
-- Public relations and diplomacy
-- Arts and entertainment
-- Relationship counseling
-- Luxury goods and fashion
-
-**Success Strategy**: Your diplomatic skills are invaluable, but learn to make decisions confidently. Your gift is creating harmony and beauty - find careers where these qualities are appreciated and rewarded.
-""",
-            "Scorpio": """
-**Career as Transformer and Investigator**
-Your Sun in Scorpio excels in careers that involve depth, transformation, and power dynamics. You're drawn to fields where you can investigate mysteries, manage resources, or facilitate profound change. Your intensity drives major accomplishments.
-
-**Ideal Career Paths:**
-- Psychology and psychiatry
-- Finance and investment
-- Research and investigation
-- Surgery and emergency medicine
-- Leadership in crisis situations
-- Spiritual counseling and transformation
-
-**Success Strategy**: Your ability to handle intensity is remarkable, but remember to maintain balance. Your gift is transformation - find careers where you can help people or organizations through significant changes.
-""",
-            "Sagittarius": """
-**Career as Philosopher and Explorer**
-Your Sun in Sagittarius thrives in careers that involve adventure, learning, and expansion. You need freedom and meaning in your work, and excel when you can explore new horizons physically or intellectually. Your optimism opens doors.
-
-**Ideal Career Paths:**
-- Education and academia
-- Travel and tourism
-- Publishing and media
-- Philosophy and religion
-- Sports and adventure
-- International business
-
-**Success Strategy**: Your love of freedom is essential to your happiness, but develop enough structure to manifest your big ideas. Your gift is inspiration - find careers where you can expand people's horizons.
-""",
-            "Capricorn": """
-**Career as Architect and Authority**
-Your Sun in Capricorn excels in careers that involve structure, authority, and long-term building. You have natural leadership abilities and understand how to create lasting institutions. Your patience and discipline ensure steady advancement.
-
-**Ideal Career Paths:**
-- Business management and executive roles
-- Government and politics
-- Architecture and engineering
-- Finance and banking
-- Traditional professions (law, medicine)
-- Historical preservation
-
-**Success Strategy**: Your ambition drives you to the top, but remember to balance achievement with personal fulfillment. Your gift is building lasting structures - find organizations where you can leave a permanent legacy.
-""",
-            "Aquarius": """
-**Career as Innovator and Humanitarian**
-Your Sun in Aquarius thrives in careers that involve innovation, technology, and social progress. You're drawn to fields where you can implement visionary ideas and work for the betterment of humanity. Your originality sets you apart.
-
-**Ideal Career Paths:**
-- Technology and IT
-- Science and research
-- Social work and activism
-- Astronomy and space-related fields
-- Alternative energy
-- Group leadership and organizations
-
-**Success Strategy**: Your visionary thinking is needed in the world, but learn to work within existing systems when necessary. Your gift is innovation - find careers where you can implement progressive ideas.
-""",
-            "Pisces": """
-**Career as Mystic and Healer**
-Your Sun in Pisces excels in careers that involve compassion, creativity, and spiritual connection. You're drawn to fields where you can heal, inspire, or create beauty. Your empathy and intuition guide you to meaningful work.
-
-**Ideal Career Paths:**
-- Arts and entertainment
-- Healthcare and healing professions
-- Spiritual counseling and ministry
-- Environmental conservation
-- Photography and film
-- Service-oriented organizations
-
-**Success Strategy**: Your compassion is your greatest gift, but establish clear boundaries to avoid burnout. Your purpose is to bring spiritual values into practical reality through your work.
-"""
-        }
-    }
-
-    # EXTENSIVE RELATIONSHIP INTERPRETATIONS
-    relationship_interpretations = {
-        "Sun": {
-            "Aries": """
-**Relationship Style: The Passionate Partner**
-In relationships, your Aries Sun needs excitement, challenge, and plenty of independence. You're attracted to partners who have their own strong identity and who appreciate your direct, enthusiastic approach to love.
-
-**What You Need:**
-- Partners who respect your independence
-- Excitement and new experiences together
-- Direct communication without games
-- Appreciation for your initiatives
-- Space to pursue individual interests
-
-**Growth Opportunity**: Learning to balance your need for independence with the commitment required for deep intimacy. Your passion is magnetic, but lasting relationships require patience and compromise.
-""",
-            "Taurus": """
-**Relationship Style: The Loyal Partner**
-Your Taurus Sun approaches relationships with steadfast loyalty and a deep need for security. You value consistency, physical affection, and tangible expressions of love. Once committed, you're incredibly reliable and devoted.
-
-**What You Need:**
-- Emotional and financial security
-- Physical closeness and affection
-- Stable, predictable partnership
-- Appreciation for your practical care
-- Beautiful, comfortable home environment
-
-**Growth Opportunity**: Learning flexibility when change is necessary while maintaining the stability that nourishes you. Your loyalty is precious, but avoid becoming possessive or resistant to necessary growth.
-""",
-            "Gemini": """
-**Relationship Style: The Communicative Partner**
-Your Gemini Sun needs mental connection and variety in relationships. You're attracted to partners who can engage you intellectually and who appreciate your curious, adaptable nature. Communication is your primary love language.
-
-**What You Need:**
-- Mental stimulation and interesting conversation
-- Freedom to maintain separate interests
-- Lighthearted, playful connection
-- Partners who appreciate your versatility
-- Social activities and networking together
-
-**Growth Opportunity**: Learning to connect emotionally as well as intellectually. Your mental agility is attractive, but deep relationships also require emotional consistency and vulnerability.
-""",
-            "Cancer": """
-**Relationship Style: The Nurturing Partner**
-Your Cancer Sun approaches relationships with deep emotional commitment and protective care. You need emotional security and create strong family bonds. Your intuition helps you understand your partner's unspoken needs.
-
-**What You Need:**
-- Emotional security and commitment
-- Family connection and traditions
-- Nurturing home environment
-- Partners who appreciate your caring nature
-- Time to build trust slowly
-
-**Growth Opportunity**: Learning to establish healthy boundaries while maintaining your nurturing capacity. Your emotional depth is precious, but protect yourself from becoming overly dependent or smothering.
-""",
-            "Leo": """
-**Relationship Style: The Generous Lover**
-Your Leo Sun brings warmth, generosity, and dramatic expression to relationships. You need appreciation and admiration from your partner, and you give loyalty and protection in return. Your love is big-hearted and expressive.
-
-**What You Need:**
-- Appreciation and recognition
-- Romantic gestures and celebrations
-- Loyal, committed partnership
-- Opportunities to shine together
-- Generous emotional exchange
-
-**Growth Opportunity**: Learning humility and equal partnership while maintaining your generous spirit. Your warmth is magnetic, but remember that true partnership involves mutual admiration and support.
-""",
-            "Virgo": """
-**Relationship Style: The Practical Partner**
-Your Virgo Sun approaches relationships with practical care, service, and attention to detail. You show love through helpful actions and appreciate partners who are reliable and competent. Your love is sincere and modest.
-
-**What You Need:**
-- Practical expressions of care
-- Shared health and wellness goals
-- Orderly, harmonious home life
-- Partners who appreciate your helpful nature
-- Clear communication about needs
-
-**Growth Opportunity**: Learning to accept imperfection in relationships while maintaining your caring approach. Your practical support is valuable, but remember that love also requires emotional spontaneity and acceptance.
-""",
-            "Libra": """
-**Relationship Style: The Harmonious Partner**
-Your Libra Sun needs partnership, beauty, and balance in relationships. You're naturally diplomatic and excel at creating romantic harmony. You appreciate aesthetic beauty and seek partners who share your love of elegance.
-
-**What You Need:**
-- Balanced, fair partnership
-- Beautiful surroundings and experiences
-- Diplomatic communication
-- Social connection as a couple
-- Romantic harmony and peace
-
-**Growth Opportunity**: Learning to establish your own identity within relationships while maintaining your harmonious approach. Your diplomatic skills are valuable, but remember that healthy relationships also require honest conflict.
-""",
-            "Scorpio": """
-**Relationship Style: The Intense Partner**
-Your Scorpio Sun approaches relationships with depth, passion, and transformative intensity. You seek soul-level connection and are drawn to emotional mysteries. Your loyalty is absolute, and you expect the same in return.
-
-**What You Need:**
-- Emotional depth and honesty
-- Transformative growth together
-- Absolute loyalty and commitment
-- Psychological understanding
-- Privacy and intimacy
-
-**Growth Opportunity**: Learning trust and emotional openness while maintaining your passionate depth. Your intensity creates profound bonds, but remember that love also requires lightness and space.
-""",
-            "Sagittarius": """
-**Relationship Style: The Adventurous Partner**
-Your Sagittarius Sun needs freedom, adventure, and philosophical connection in relationships. You're attracted to partners who share your love of exploration and learning. Your approach is honest, optimistic, and freedom-loving.
-
-**What You Need:**
-- Freedom within commitment
-- Adventure and new experiences
-- Philosophical compatibility
-- Honest, direct communication
-- Partners who appreciate your independence
-
-**Growth Opportunity**: Learning commitment within freedom while maintaining your adventurous spirit. Your optimism is refreshing, but lasting relationships also require consistency and emotional presence.
-""",
-            "Capricorn": """
-**Relationship Style: The Serious Partner**
-Your Capricorn Sun approaches relationships with seriousness, responsibility, and long-term planning. You value stability and build relationships carefully over time. Your love is loyal, practical, and enduring.
-
-**What You Need:**
-- Long-term commitment
-- Practical partnership goals
-- Respect for tradition and stability
-- Partners who appreciate your responsible nature
-- Slowly built trust and connection
-
-**Growth Opportunity**: Learning emotional expression within responsibility while maintaining your serious approach. Your reliability is precious, but remember that love also requires spontaneity and emotional vulnerability.
-""",
-            "Aquarius": """
-**Relationship Style: The Unconventional Partner**
-Your Aquarius Sun needs intellectual connection, friendship, and freedom in relationships. You value uniqueness and are attracted to partners who appreciate your original approach to love. Your love is friendly, progressive, and mentally stimulating.
-
-**What You Need:**
-- Intellectual companionship
-- Freedom and independence
-- Unconventional relationship styles
-- Shared humanitarian interests
-- Partners who respect your uniqueness
-
-**Growth Opportunity**: Learning emotional connection within freedom while maintaining your unique approach. Your intellectual companionship is valuable, but deep relationships also require emotional intimacy and consistency.
-""",
-            "Pisces": """
-**Relationship Style: The Romantic Dreamer**
-Your Pisces Sun approaches relationships with compassion, romance, and spiritual connection. You seek soulmate relationships and have deep empathy for your partner. Your love is idealistic, compassionate, and spiritually oriented.
-
-**What You Need:**
-- Spiritual and emotional connection
-- Romantic idealism
-- Compassionate understanding
-- Creative expression together
-- Healing and supportive partnership
-
-**Growth Opportunity**: Learning practical boundaries in love while maintaining your compassionate nature. Your empathy creates deep bonds, but protect yourself from losing your identity in relationships.
-"""
-        }
-    }
-
-    # EXTENSIVE SEXUAL INTERPRETATIONS
-    sexual_interpretations = {
-        "Sun": {
-            "Aries": """
-**Sexual Style: The Passionate Pioneer**
-Your Aries Sun brings fiery passion and adventurous exploration to your sexual nature. You approach intimacy with enthusiasm and courage, enjoying the thrill of new experiences and spontaneous encounters. Your sexual energy is direct, passionate, and full of life force.
-
-**What Turns You On:**
-- Spontaneous, passionate encounters
-- Partners who match your intensity
-- New sexual experiences and techniques
-- Physical challenge and playfulness
-- Direct, honest sexual communication
-
-**Sexual Growth**: Learning to balance your passionate intensity with emotional connection and consideration for your partner's pace and preferences.
-""",
-            "Taurus": """
-**Sexual Style: The Sensual Lover**
-Your Taurus Sun brings deep sensuality and physical appreciation to your sexual nature. You value slow, deliberate intimacy that engages all the senses. Your sexual energy is grounded, patient, and profoundly connected to physical pleasure.
-
-**What Turns You On:**
-- Slow, sensual lovemaking
-- Beautiful, comfortable environments
-- Physical touch and massage
-- Sensory experiences (scents, textures)
-- Reliability and trust in partnership
-
-**Sexual Growth**: Learning to incorporate variety and spontaneity while maintaining the sensual depth that nourishes you.
-""",
-            "Gemini": """
-**Sexual Style: The Playful Communicator**
-Your Gemini Sun brings mental stimulation and playful variety to your sexual nature. You enjoy sexual experimentation and intellectual connection during intimacy. Your sexual energy is curious, adaptable, and verbally expressive.
-
-**What Turns You On:**
-- Intellectual foreplay and conversation
-- Variety and new techniques
-- Playful, lighthearted encounters
-- Partners who can keep up mentally
-- Sexual learning and exploration
-
-**Sexual Growth**: Learning to connect emotionally and physically beyond mental stimulation, developing deeper sensual presence.
-""",
-            "Cancer": """
-**Sexual Style: The Emotional Nurturer**
-Your Cancer Sun brings deep emotional connection and nurturing care to your sexual nature. You experience sex as soulful merging and emotional bonding. Your sexual energy is protective, intuitive, and deeply feeling.
-
-**What Turns You On:**
-- Emotional intimacy and trust
-- Nurturing, caring touch
-- Home-like, comfortable settings
-- Emotional vulnerability shared
-- Long-term commitment and security
-
-**Sexual Growth**: Learning to maintain healthy emotional boundaries while enjoying deep intimate connection.
-""",
-            "Leo": """
-**Sexual Style: The Dramatic Performer**
-Your Leo Sun brings dramatic expression and generous warmth to your sexual nature. You enjoy being admired and appreciated during intimacy, and you give passionately in return. Your sexual energy is confident, expressive, and heart-centered.
-
-**What Turns You On:**
-- Appreciation and admiration
-- Romantic, dramatic settings
-- Creative sexual expression
-- Partners who match your enthusiasm
-- Generous mutual giving
-
-**Sexual Growth**: Learning equal partnership in intimacy, balancing self-expression with attentive listening to your partner's needs.
-""",
-            "Virgo": """
-**Sexual Style: The Attentive Perfectionist**
-Your Virgo Sun brings careful attention and service orientation to your sexual nature. You notice details and aim to please your partner through thoughtful technique. Your sexual energy is precise, health-conscious, and improvement-oriented.
-
-**What Turns You On:**
-- Clean, orderly environments
-- Attention to technique and detail
-- Health and wellness connection
-- Practical expressions of care
-- Mutual improvement and learning
-
-**Sexual Growth**: Learning to relax perfectionism and embrace spontaneous, imperfect intimacy as equally valuable.
-""",
-            "Libra": """
-**Sexual Style: The Harmonious Artist**
-Your Libra Sun brings aesthetic appreciation and balanced partnership to your sexual nature. You value beauty, harmony, and mutual satisfaction in intimate experiences. Your sexual energy is graceful, romantic, and relationship-focused.
-
-**What Turns You On:**
-- Beautiful, romantic settings
-- Balanced give-and-take
-- Artistic, graceful lovemaking
-- Partnership harmony
-- Aesthetic appreciation of partner
-
-**Sexual Growth**: Learning to express your own sexual needs clearly while maintaining the harmony you value.
-""",
-            "Scorpio": """
-**Sexual Style: The Intense Transformer**
-Your Scorpio Sun brings profound intensity and transformative power to your sexual nature. You experience sex as soul-level merging and psychological revelation. Your sexual energy is powerful, investigative, and regenerating.
-
-**What Turns You On:**
-- Deep emotional and psychological connection
-- Intensity and passion
-- Sexual mysteries and taboos
-- Complete trust and vulnerability
-- Transformative intimate experiences
-
-**Sexual Growth**: Learning to balance intense intimacy with lightness and play, maintaining healthy boundaries in profound connection.
-""",
-            "Sagittarius": """
-**Sexual Style: The Adventurous Explorer**
-Your Sagittarius Sun brings optimistic adventure and philosophical connection to your sexual nature. You enjoy sexual freedom and view intimacy as joyful exploration. Your sexual energy is enthusiastic, honest, and freedom-loving.
-
-**What Turns You On:**
-- Adventure and new experiences
-- Philosophical connection
-- Honest, direct communication
-- Freedom within commitment
-- Optimistic, joyful encounters
-
-**Sexual Growth**: Learning to balance freedom with emotional commitment, developing consistency within adventurous exploration.
-""",
-            "Capricorn": """
-**Sexual Style: The Responsible Master**
-Your Capricorn Sun brings seriousness and disciplined mastery to your sexual nature. You approach intimacy with responsibility and long-term commitment in mind. Your sexual energy is controlled, enduring, and achievement-oriented.
-
-**What Turns You On:**
-- Long-term commitment
-- Traditional romantic gestures
-- Slow, building passion
-- Achievement of intimate goals
-- Reliability and responsibility
-
-**Sexual Growth**: Learning to incorporate spontaneity and emotional vulnerability within your serious approach to intimacy.
-""",
-            "Aquarius": """
-**Sexual Style: The Innovative Experimenter**
-Your Aquarius Sun brings originality and intellectual freedom to your sexual nature. You enjoy unconventional approaches and view intimacy as creative experimentation. Your sexual energy is detached, innovative, and friendship-oriented.
-
-**What Turns You On:**
-- Unconventional techniques
-- Intellectual connection
-- Friendship foundation
-- Technological or innovative elements
-- Freedom and independence
-
-**Sexual Growth**: Learning to combine emotional intimacy with your innovative approach, developing heart connection alongside intellectual freedom.
-""",
-            "Pisces": """
-**Sexual Style: The Romantic Mystic**
-Your Pisces Sun brings spiritual connection and compassionate merging to your sexual nature. You experience sex as soulful union and spiritual transcendence. Your sexual energy is compassionate, imaginative, and boundary-dissolving.
-
-**What Turns You On:**
-- Spiritual connection
-- Romantic, idealistic settings
-- Compassionate understanding
-- Creative, imaginative play
-- Soul-level merging
-
-**Sexual Growth**: Learning to maintain healthy boundaries while enjoying deep spiritual and emotional connection in intimacy.
-"""
+            "ARI": "Natural entrepreneur and pioneer. Thrives in competitive environments. Excellent at starting new projects.",
+            "TAU": "Steady and reliable worker. Excellent in finance, real estate, and stable professions.",
+            "GEM": "Communicator and networker. Excels in sales, teaching, writing, and multi-tasking roles.",
+            "CAN": "Nurturing careers in healthcare, education, hospitality. Strong in family businesses.",
+            "LEO": "Natural leader and performer. Thrives in management, entertainment, and creative fields.",
+            "VIR": "Analytical and detail-oriented. Excellent in research, accounting, healthcare, and service industries.",
+            "LIB": "Diplomatic and artistic. Successful in law, design, public relations, and partnership-based businesses.",
+            "SCO": "Intense and investigative. Excels in research, psychology, finance, and transformative roles.",
+            "SAG": "Adventurous and philosophical. Thrives in travel, education, publishing, and international business.",
+            "CAP": "Ambitious and disciplined. Natural executive material. Excels in corporate leadership and long-term planning.",
+            "AQU": "Innovative and humanitarian. Successful in technology, science, social work, and progressive fields.",
+            "PIS": "Compassionate and creative. Excels in arts, healing professions, spirituality, and service-oriented work."
         },
-        "Mars": {
-            "Aries": """
-**Sexual Energy: Fiery and Direct**
-Your Mars in Aries gives you passionate, immediate sexual energy. You approach desire with courage and enthusiasm, enjoying spontaneous encounters and direct expression. Your sexual style is pioneering and full of life force.
-
-**Turn-ons:**
-- Immediate, passionate encounters
-- Partners who match your intensity
-- Sexual challenges and conquests
-- Direct communication about desires
-- Physical activity and play
-
-**Growth Area**: Learning to balance immediate passion with emotional connection and consideration for your partner's timing.
-""",
-            "Taurus": """
-**Sexual Energy: Sensual and Enduring**
-Your Mars in Taurus gives you steady, sensual sexual energy. You approach desire with patience and physical appreciation, enjoying slow, deliberate intimacy. Your sexual style is reliable and deeply connected to sensory pleasure.
-
-**Turn-ons:**
-- Slow, sensual lovemaking
-- Physical comfort and beauty
-- Reliability and trust
-- Sensory exploration
-- Enduring passion
-
-**Growth Area**: Learning to incorporate variety while maintaining the sensual depth that satisfies you.
-""",
-            "Gemini": """
-**Sexual Energy: Playful and Versatile**
-Your Mars in Gemini gives you curious, adaptable sexual energy. You approach desire with mental stimulation and variety in mind, enjoying playful experimentation. Your sexual style is communicative and intellectually engaged.
-
-**Turn-ons:**
-- Intellectual foreplay
-- Variety and new techniques
-- Playful, light encounters
-- Verbal communication
-- Sexual learning
-
-**Growth Area**: Learning to connect physically beyond mental stimulation, developing deeper sensual presence.
-""",
-            "Cancer": """
-**Sexual Energy: Emotional and Protective**
-Your Mars in Cancer gives you emotionally connected sexual energy. You approach desire with nurturing care and emotional bonding in mind. Your sexual style is protective, intuitive, and deeply feeling.
-
-**Turn-ons:**
-- Emotional intimacy
-- Nurturing touch
-- Home-like settings
-- Emotional vulnerability
-- Long-term security
-
-**Growth Area**: Learning to maintain healthy emotional boundaries while enjoying deep connection.
-""",
-            "Leo": """
-**Sexual Energy: Dramatic and Generous**
-Your Mars in Leo gives you confident, expressive sexual energy. You approach desire with dramatic flair and generous giving, enjoying admiration and appreciation. Your sexual style is warm, enthusiastic, and heart-centered.
-
-**Turn-ons:**
-- Appreciation and admiration
-- Romantic settings
-- Creative expression
-- Mutual enthusiasm
-- Generous exchange
-
-**Growth Area**: Learning equal partnership, balancing self-expression with attentive listening to your partner.
-""",
-            "Virgo": """
-**Sexual Energy: Attentive and Improving**
-Your Mars in Virgo gives you precise, service-oriented sexual energy. You approach desire with attention to detail and aim to please through thoughtful technique. Your sexual style is health-conscious and improvement-focused.
-
-**Turn-ons:**
-- Clean, orderly environments
-- Attention to technique
-- Health connection
-- Practical care
-- Mutual improvement
-
-**Growth Area**: Learning to relax perfectionism and embrace spontaneous intimacy.
-""",
-            "Libra": """
-**Sexual Energy: Harmonious and Artistic**
-Your Mars in Libra gives you balanced, aesthetic sexual energy. You approach desire with harmony and mutual satisfaction in mind, valuing beauty and partnership. Your sexual style is graceful, romantic, and relationship-focused.
-
-**Turn-ons:**
-- Beautiful settings
-- Balanced partnership
-- Artistic lovemaking
-- Relationship harmony
-- Aesthetic appreciation
-
-**Growth Area**: Learning to express your own needs clearly while maintaining harmony.
-""",
-            "Scorpio": """
-**Sexual Energy: Intense and Transformative**
-Your Mars in Scorpio gives you powerful, investigative sexual energy. You approach desire with intensity and psychological depth, experiencing sex as soul-level merging. Your sexual style is passionate, secretive, and regenerating.
-
-**Turn-ons:**
-- Deep psychological connection
-- Intensity and passion
-- Sexual mysteries
-- Complete trust
-- Transformative experiences
-
-**Growth Area**: Learning to balance intensity with lightness and maintain healthy boundaries.
-""",
-            "Sagittarius": """
-**Sexual Energy: Adventurous and Honest**
-Your Mars in Sagittarius gives you optimistic, freedom-loving sexual energy. You approach desire with adventure and philosophical connection in mind, valuing honesty and exploration. Your sexual style is enthusiastic and expansive.
-
-**Turn-ons:**
-- Adventure and new experiences
-- Philosophical connection
-- Honest communication
-- Freedom within commitment
-- Joyful encounters
-
-**Growth Area**: Learning to balance freedom with emotional commitment.
-""",
-            "Capricorn": """
-**Sexual Energy: Disciplined and Masterful**
-Your Mars in Capricorn gives you controlled, ambitious sexual energy. You approach desire with responsibility and long-term goals in mind, valuing discipline and achievement. Your sexual style is enduring and achievement-oriented.
-
-**Turn-ons:**
-- Long-term commitment
-- Traditional romance
-- Slow-building passion
-- Intimate achievements
-- Reliability
-
-**Growth Area**: Learning to incorporate spontaneity and emotional vulnerability.
-""",
-            "Aquarius": """
-**Sexual Energy: Innovative and Detached**
-Your Mars in Aquarius gives you original, independent sexual energy. You approach desire with innovation and intellectual freedom in mind, enjoying unconventional approaches. Your sexual style is detached and experimental.
-
-**Turn-ons:**
-- Unconventional techniques
-- Intellectual connection
-- Friendship basis
-- Innovative elements
-- Freedom
-
-**Growth Area**: Learning to combine emotional intimacy with innovation.
-""",
-            "Pisces": """
-**Sexual Energy: Compassionate and Mystical**
-Your Mars in Pisces gives you spiritual, compassionate sexual energy. You approach desire with soulful connection and imaginative play in mind, experiencing sex as transcendent merging. Your sexual style is compassionate and boundary-dissolving.
-
-**Turn-ons:**
-- Spiritual connection
-- Romantic idealism
-- Compassionate understanding
-- Imaginative play
-- Soul merging
-
-**Growth Area**: Learning to maintain healthy boundaries while enjoying deep connection.
-"""
+        "Moon": {
+            "ARI": "Career success through initiative and emotional drive. Needs variety and challenge.",
+            "TAU": "Stable career growth through persistence. Values financial security and comfort.",
+            "GEM": "Versatile career with multiple interests. Success in communication and networking.",
+            "CAN": "Career tied to emotional security. Success in nurturing and protective roles.",
+            "LEO": "Career recognition through creative expression. Needs appreciation and leadership roles.",
+            "VIR": "Career excellence through attention to detail. Success in service and analytical work.",
+            "LIB": "Career success through partnerships and diplomacy. Values harmony and beauty.",
+            "SCO": "Career transformation through intense focus. Success in research and investigative work.",
+            "SAG": "Career expansion through adventure and learning. Philosophical approach to work.",
+            "CAP": "Career ambition through emotional discipline. Builds professional reputation carefully.",
+            "AQU": "Innovative career through unique emotional expression. Progressive work environments.",
+            "PIS": "Compassionate career through intuitive service. Success in healing and creative fields."
+        },
+        "Mercury": {
+            "ARI": "Quick-thinking and innovative in career. Excellent at starting projects and initiatives.",
+            "TAU": "Practical and persistent communicator. Success in finance and stable professions.",
+            "GEM": "Versatile and adaptable in career. Excels in multi-tasking and communication roles.",
+            "CAN": "Intuitive and emotional thinking. Success in nurturing and memory-oriented work.",
+            "LEO": "Confident and creative communication. Leadership in expressive and authoritative roles.",
+            "VIR": "Analytical and precise thinking. Excellence in detail-oriented and service work.",
+            "LIB": "Diplomatic and balanced communication. Success in partnership-based businesses.",
+            "SCO": "Investigative and profound thinking. Excellence in research and transformative work.",
+            "SAG": "Philosophical and broad-minded thinking. Success in education and expansive fields.",
+            "CAP": "Organized and ambitious thinking. Strategic planning and long-term career goals.",
+            "AQU": "Innovative and original thinking. Success in technology and progressive fields.",
+            "PIS": "Intuitive and imaginative thinking. Excellence in creative and compassionate work."
         },
         "Venus": {
-            "Aries": """
-**What You Find Sexy: Passion and Challenge**
-Your Venus in Aries is turned on by direct passion, confidence, and a bit of challenge. You appreciate partners who take initiative and match your enthusiastic approach to love and sex.
-
-**Sexual Attraction Factors:**
-- Confidence and courage
-- Spontaneous passion
-- Independent spirit
-- Direct communication
-- Playful competition
-
-**Ideal Sexual Partner**: Someone who maintains their own identity while enthusiastically joining your adventures.
-""",
-            "Taurus": """
-**What You Find Sexy: Sensuality and Reliability**
-Your Venus in Taurus is turned on by physical beauty, sensual appreciation, and reliable presence. You value partners who appreciate comfort and take time for thorough sensual exploration.
-
-**Sexual Attraction Factors:**
-- Physical beauty and grace
-- Sensual attentiveness
-- Reliability and consistency
-- Comfortable environments
-- Slow, deliberate pace
-
-**Ideal Sexual Partner**: Someone who values physical comfort and sensual pleasure as much as you do.
-""",
-            "Gemini": """
-**What You Find Sexy: Mental Stimulation and Variety**
-Your Venus in Gemini is turned on by intellectual connection, verbal play, and variety. You appreciate partners who can engage you mentally and keep things interesting.
-
-**Sexual Attraction Factors:**
-- Intellectual compatibility
-- Good communication
-- Playful variety
-- Social versatility
-- Learning together
-
-**Ideal Sexual Partner**: Someone who values mental connection and enjoys exploring new ideas together.
-""",
-            "Cancer": """
-**What You Find Sexy: Emotional Security and Nurturing**
-Your Venus in Cancer is turned on by emotional depth, nurturing care, and family feeling. You value partners who create emotional safety and understand your sensitive nature.
-
-**Sexual Attraction Factors:**
-- Emotional vulnerability
-- Nurturing behavior
-- Home and family orientation
-- Protective instincts
-- Long-term commitment
-
-**Ideal Sexual Partner**: Someone who values emotional intimacy and creates a sense of home together.
-""",
-            "Leo": """
-**What You Find Sexy: Appreciation and Generosity**
-Your Venus in Leo is turned on by admiration, generous expression, and dramatic romance. You appreciate partners who recognize your special qualities and match your warm-hearted approach.
-
-**Sexual Attraction Factors:**
-- Appreciation and admiration
-- Generous affection
-- Romantic gestures
-- Confidence and pride
-- Creative expression
-
-**Ideal Sexual Partner**: Someone who values mutual admiration and enjoys romantic expression.
-""",
-            "Virgo": """
-**What You Find Sexy: Practical Care and Improvement**
-Your Venus in Virgo is turned on by practical service, attention to detail, and health consciousness. You value partners who show care through helpful actions and shared improvement goals.
-
-**Sexual Attraction Factors:**
-- Practical helpfulness
-- Attention to details
-- Health awareness
-- Modest sincerity
-- Improvement orientation
-
-**Ideal Sexual Partner**: Someone who values practical care and shared growth.
-""",
-            "Libra": """
-**What You Find Sexy: Beauty and Harmony**
-Your Venus in Libra is turned on by aesthetic beauty, harmonious partnership, and diplomatic grace. You value partners who appreciate beauty and create balanced relationships.
-
-**Sexual Attraction Factors:**
-- Physical and aesthetic beauty
-- Diplomatic behavior
-- Partnership orientation
-- Social grace
-- Balanced approach
-
-**Ideal Sexual Partner**: Someone who values beauty and creates harmonious partnership.
-""",
-            "Scorpio": """
-**What You Find Sexy: Intensity and Depth**
-Your Venus in Scorpio is turned on by emotional intensity, psychological depth, and transformative power. You value partners who aren't afraid of deep connection and emotional truth.
-
-**Sexual Attraction Factors:**
-- Emotional intensity
-- Psychological insight
-- Loyal commitment
-- Transformative potential
-- Privacy respect
-
-**Ideal Sexual Partner**: Someone who values deep connection and emotional honesty.
-""",
-            "Sagittarius": """
-**What You Find Sexy: Freedom and Adventure**
-Your Venus in Sagittarius is turned on by philosophical connection, adventurous spirit, and honest expression. You value partners who respect your freedom and share your love of exploration.
-
-**Sexual Attraction Factors:**
-- Philosophical compatibility
-- Adventurous spirit
-- Honest communication
-- Freedom respect
-- Optimistic outlook
-
-**Ideal Sexual Partner**: Someone who values freedom and enjoys exploring life together.
-""",
-            "Capricorn": """
-**What You Find Sexy: Responsibility and Achievement**
-Your Venus in Capricorn is turned on by seriousness, responsibility, and long-term planning. You value partners who understand commitment and build steadily toward shared goals.
-
-**Sexual Attraction Factors:**
-- Responsible behavior
-- Ambitious nature
-- Traditional values
-- Reliability
-- Long-term orientation
-
-**Ideal Sexual Partner**: Someone who values commitment and builds lasting partnership.
-""",
-            "Aquarius": """
-**What You Find Sexy: Uniqueness and Innovation**
-Your Venus in Aquarius is turned on by originality, intellectual connection, and progressive thinking. You appreciate partners who appreciate your uniqueness and share innovative ideas.
-
-**Sexual Attraction Factors:**
-- Unique individuality
-- Intellectual stimulation
-- Progressive values
-- Friendship basis
-- Unconventional approach
-
-**Ideal Sexual Partner**: Someone who values individuality and enjoys intellectual companionship.
-""",
-            "Pisces": """
-**What You Find Sexy: Compassion and Spirituality**
-Your Venus in Pisces is turned on by compassionate understanding, spiritual connection, and romantic idealism. You value partners who share your empathy and appreciate soulful connection.
-
-**Sexual Attraction Factors:**
-- Compassionate nature
-- Spiritual sensitivity
-- Romantic idealism
-- Creative expression
-- Healing orientation
-
-**Ideal Sexual Partner**: Someone who values spiritual connection and compassionate partnership.
-"""
+            "ARI": "Direct approach to career values. Success in competitive and pioneering fields.",
+            "TAU": "Stable and sensual career values. Excellence in finance and comfort-oriented work.",
+            "GEM": "Versatile and communicative values. Success in networking and multi-faceted roles.",
+            "CAN": "Nurturing and protective values. Career success through emotional security.",
+            "LEO": "Generous and dramatic values. Success in creative and recognition-based work.",
+            "VIR": "Practical and helpful values. Excellence in service and detail-oriented professions.",
+            "LIB": "Harmonious and artistic values. Success in partnerships and beauty-related fields.",
+            "SCO": "Intense and passionate values. Career transformation through deep commitment.",
+            "SAG": "Adventurous and expansive values. Success in travel and philosophical work.",
+            "CAP": "Serious and responsible values. Long-term career stability and achievement.",
+            "AQU": "Unconventional and friendly values. Success in innovative and social fields.",
+            "PIS": "Compassionate and romantic values. Excellence in creative and healing professions."
+        },
+        "Mars": {
+            "ARI": "Energetic and competitive career drive. Natural pioneer and initiator.",
+            "TAU": "Persistent and determined work ethic. Slow but steady career growth.",
+            "GEM": "Versatile and communicative action. Success in multi-tasking roles.",
+            "CAN": "Protective and emotional drive. Career success through nurturing actions.",
+            "LEO": "Confident and dramatic initiative. Leadership in creative fields.",
+            "VIR": "Precise and analytical action. Excellence in detail-oriented work.",
+            "LIB": "Diplomatic and balanced drive. Success through partnership and harmony.",
+            "SCO": "Intense and transformative action. Power in investigative work.",
+            "SAG": "Adventurous and optimistic drive. Success through expansion and learning.",
+            "CAP": "Ambitious and disciplined action. Strategic career advancement.",
+            "AQU": "Innovative and independent drive. Success in progressive fields.",
+            "PIS": "Compassionate and intuitive action. Success through inspired service."
+        },
+        "Jupiter": {
+            "ARI": "Expansive career through initiative. Natural leadership and confidence.",
+            "TAU": "Steady growth through persistence. Financial expansion and security.",
+            "GEM": "Versatile expansion through communication. Success in learning and teaching.",
+            "CAN": "Nurturing growth through emotional security. Family business success.",
+            "LEO": "Creative expansion through recognition. Leadership in expressive fields.",
+            "VIR": "Analytical growth through service. Improvement through attention to detail.",
+            "LIB": "Harmonious expansion through partnerships. Success in artistic fields.",
+            "SCO": "Transformative growth through investigation. Deep professional development.",
+            "SAG": "Philosophical expansion through adventure. Natural teacher and explorer.",
+            "CAP": "Ambitious growth through discipline. Long-term career building.",
+            "AQU": "Innovative expansion through originality. Success in technology fields.",
+            "PIS": "Compassionate growth through intuition. Success in healing and arts."
+        },
+        "Saturn": {
+            "ARI": "Career discipline through initiative. Learning responsibility through risk-taking.",
+            "TAU": "Stable career structure through persistence. Financial responsibility.",
+            "GEM": "Organized communication skills. Responsibility in teaching and writing.",
+            "CAN": "Emotional career responsibility. Building family security.",
+            "LEO": "Creative leadership responsibility. Structured self-expression.",
+            "VIR": "Analytical service discipline. Excellence through attention to detail.",
+            "LIB": "Partnership responsibility. Balanced professional relationships.",
+            "SCO": "Transformative discipline. Deep professional commitment.",
+            "SAG": "Philosophical responsibility. Structured expansion and learning.",
+            "CAP": "Natural career ambition and discipline. Built for professional success.",
+            "AQU": "Innovative responsibility. Structured progressive thinking.",
+            "PIS": "Compassionate discipline. Structured service and creativity."
+        },
+        "Uranus": {
+            "ARI": "Innovative career breakthroughs. Pioneering new professional fields.",
+            "TAU": "Unconventional financial ideas. Slow but revolutionary changes.",
+            "GEM": "Revolutionary communication. Sudden insights in networking.",
+            "CAN": "Innovative emotional security. New approaches to nurturing work.",
+            "LEO": "Creative breakthroughs. Unique self-expression in career.",
+            "VIR": "Unconventional service approaches. Innovative health and analysis.",
+            "LIB": "Revolutionary partnerships. New approaches to artistic work.",
+            "SCO": "Transformative insights. Psychological breakthroughs in career.",
+            "SAG": "Philosophical innovation. Expanding consciousness in work.",
+            "CAP": "Structural reforms. Institutional changes in career.",
+            "AQU": "Natural innovator. Humanitarian vision in technology.",
+            "PIS": "Spiritual insights. Mystical revelations in creative work."
+        },
+        "Neptune": {
+            "ARI": "Spiritual pioneering in career. Inspired action and vision.",
+            "TAU": "Dreamy financial values. Idealized security and comfort.",
+            "GEM": "Imaginative communication. Inspired ideas and networking.",
+            "CAN": "Mystical emotional security. Spiritual nurturing in work.",
+            "LEO": "Creative inspiration. Dramatic spiritual expression.",
+            "VIR": "Service through inspiration. Healing and analytical compassion.",
+            "LIB": "Harmonious ideals. Spiritual partnerships and beauty.",
+            "SCO": "Deep spiritual transformation. Psychic sensitivity in work.",
+            "SAG": "Philosophical idealism. Spiritual expansion and learning.",
+            "CAP": "Structured spirituality. Institutional faith in career.",
+            "AQU": "Collective ideals. Humanitarian dreams and vision.",
+            "PIS": "Natural mystic. Spiritual connection in creative work."
+        },
+        "Pluto": {
+            "ARI": "Transformative career initiative. Rebirth through action.",
+            "TAU": "Deep financial transformation. Value regeneration in work.",
+            "GEM": "Psychological communication. Mental transformation in career.",
+            "CAN": "Emotional career rebirth. Family transformation.",
+            "LEO": "Creative transformation. Rebirth through self-expression.",
+            "VIR": "Service transformation. Health regeneration in work.",
+            "LIB": "Relationship transformation. Artistic rebirth in career.",
+            "SCO": "Deep psychological transformation. Natural rebirth in work.",
+            "SAG": "Philosophical transformation. Belief regeneration.",
+            "CAP": "Structural transformation. Power rebirth in institutions.",
+            "AQU": "Collective transformation. Social regeneration.",
+            "PIS": "Spiritual transformation. Mystical rebirth in work."
         }
     }
 
-    # Choose interpretation dictionary based on type
-    if interpretation_type == "Career & Vocation":
+    # INTERPRETĂRI SPECIFICE PENTRU RELATIONSHIPS (EXTINSE)
+    relationships_interpretations = {
+        "Sun": {
+            "ARI": "Direct and passionate in relationships. Natural leader who values independence.",
+            "TAU": "Loyal and stable partner. Values security and physical comfort in relationships.",
+            "GEM": "Communicative and curious in love. Needs mental stimulation and variety.",
+            "CAN": "Nurturing and protective partner. Strong family orientation and emotional bonds.",
+            "LEO": "Generous and dramatic in relationships. Needs admiration and recognition.",
+            "VIR": "Practical and helpful partner. Shows love through service and attention.",
+            "LIB": "Harmonious and diplomatic. Seeks balance and partnership in relationships.",
+            "SCO": "Intense and passionate. Seeks deep emotional transformation in love.",
+            "SAG": "Adventurous and philosophical. Values freedom and honesty in relationships.",
+            "CAP": "Serious and responsible partner. Seeks stability and long-term commitment.",
+            "AQU": "Independent and unconventional. Values friendship and intellectual connection.",
+            "PIS": "Compassionate and romantic. Seeks spiritual connection and soulmates."
+        },
+        "Moon": {
+            "ARI": "Emotionally direct and passionate. Needs independence and excitement in relationships.",
+            "TAU": "Emotionally stable and loyal. Values security and physical comfort.",
+            "GEM": "Emotionally communicative and curious. Needs mental connection and variety.",
+            "CAN": "Deeply nurturing and protective. Strong emotional bonds and family orientation.",
+            "LEO": "Emotionally generous and proud. Needs recognition and appreciation.",
+            "VIR": "Emotionally practical and helpful. Shows care through service and attention.",
+            "LIB": "Emotionally harmonious and diplomatic. Seeks balance and partnership.",
+            "SCO": "Emotionally intense and passionate. Deep emotional connections and transformation.",
+            "SAG": "Emotionally adventurous and optimistic. Needs freedom and philosophical connection.",
+            "CAP": "Emotionally responsible and reserved. Controls feelings carefully.",
+            "AQU": "Emotionally independent and unconventional. Unique emotional expression.",
+            "PIS": "Emotionally compassionate and intuitive. Deep spiritual connections."
+        },
+        "Mercury": {
+            "ARI": "Direct and spontaneous communication. Expresses love ideas boldly.",
+            "TAU": "Practical and persistent communication. Values stable and honest dialogue.",
+            "GEM": "Versatile and curious communication. Needs mental stimulation in relationships.",
+            "CAN": "Intuitive and emotional communication. Thinks with heart and memory.",
+            "LEO": "Confident and dramatic communication. Expresses love with flair.",
+            "VIR": "Analytical and precise communication. Shows care through thoughtful words.",
+            "LIB": "Diplomatic and balanced communication. Seeks harmony in dialogue.",
+            "SCO": "Investigative and profound communication. Seeks deep truth in relationships.",
+            "SAG": "Philosophical and honest communication. Values expansive discussions.",
+            "CAP": "Practical and organized communication. Builds relationships carefully.",
+            "AQU": "Innovative and original communication. Unique way of expressing love.",
+            "PIS": "Intuitive and compassionate communication. Romantic and dreamy expression."
+        },
+        "Venus": {
+            "ARI": "Direct and passionate in love. Attracted to challenge and excitement.",
+            "TAU": "Sensual and loyal partner. Values stability and physical pleasure.",
+            "GEM": "Playful and communicative in relationships. Needs mental connection.",
+            "CAN": "Nurturing and protective. Seeks emotional security and deep bonding.",
+            "LEO": "Generous and dramatic in love. Needs romance and admiration.",
+            "VIR": "Practical and helpful partner. Shows love through service and care.",
+            "LIB": "Harmonious and artistic. Seeks balance and partnership in love.",
+            "SCO": "Intense and passionate. Seeks deep emotional bonds and transformation.",
+            "SAG": "Adventurous and freedom-loving. Values honesty and philosophical connection.",
+            "CAP": "Serious and responsible. Seeks stability and long-term commitment.",
+            "AQU": "Unconventional and friendly. Values independence and intellectual connection.",
+            "PIS": "Romantic and compassionate. Seeks spiritual connection and soulmates."
+        },
+        "Mars": {
+            "ARI": "Direct and passionate pursuit. Competitive and enthusiastic in relationships.",
+            "TAU": "Persistent and determined approach. Slow but steady in building love.",
+            "GEM": "Playful and communicative action. Enjoys mental stimulation in partnerships.",
+            "CAN": "Protective and emotional drive. Actions driven by deep feelings.",
+            "LEO": "Confident and dramatic pursuit. Generous and proud in relationships.",
+            "VIR": "Practical and helpful approach. Shows care through service.",
+            "LIB": "Diplomatic and balanced action. Seeks harmony and partnership.",
+            "SCO": "Intense and transformative approach. Powerful and determined in love.",
+            "SAG": "Adventurous and optimistic pursuit. Values freedom and honesty.",
+            "CAP": "Ambitious and disciplined approach. Builds relationships carefully.",
+            "AQU": "Innovative and independent action. Unconventional approach to love.",
+            "PIS": "Compassionate and intuitive pursuit. Romantic and dreamy approach."
+        },
+        "Jupiter": {
+            "ARI": "Expansive and confident in relationships. Natural optimism and enthusiasm.",
+            "TAU": "Steady growth in love. Values security and comfort expansion.",
+            "GEM": "Versatile expansion through communication. Enjoys learning in partnerships.",
+            "CAN": "Nurturing growth through emotional security. Family-oriented expansion.",
+            "LEO": "Creative expansion through recognition. Generous and warm-hearted.",
+            "VIR": "Analytical growth through service. Improvement in practical love.",
+            "LIB": "Harmonious expansion through partnerships. Seeks beauty and balance.",
+            "SCO": "Transformative growth through depth. Philosophical approach to intimacy.",
+            "SAG": "Natural expansion through adventure. Optimistic and freedom-loving.",
+            "CAP": "Ambitious growth through discipline. Builds long-term relationships.",
+            "AQU": "Innovative expansion through originality. Progressive relationship values.",
+            "PIS": "Compassionate growth through intuition. Spiritual connection in love."
+        },
+        "Saturn": {
+            "ARI": "Disciplined approach to relationships. Learning responsibility through independence.",
+            "TAU": "Stable and persistent in love. Builds security through commitment.",
+            "GEM": "Organized communication in relationships. Responsibility in dialogue.",
+            "CAN": "Emotional responsibility in love. Building family security.",
+            "LEO": "Creative leadership responsibility. Structured self-expression in relationships.",
+            "VIR": "Analytical service discipline. Practical approach to love.",
+            "LIB": "Partnership responsibility. Balanced and committed relationships.",
+            "SCO": "Transformative discipline. Deep commitment in intimate relationships.",
+            "SAG": "Philosophical responsibility. Structured expansion in love.",
+            "CAP": "Natural responsibility in relationships. Built for long-term commitment.",
+            "AQU": "Innovative responsibility. Structured progressive relationship values.",
+            "PIS": "Compassionate discipline. Structured spiritual connection."
+        },
+        "Uranus": {
+            "ARI": "Innovative relationship breakthroughs. Pioneering new forms of partnership.",
+            "TAU": "Unconventional values in love. Slow but revolutionary changes.",
+            "GEM": "Revolutionary communication. Sudden insights in relationships.",
+            "CAN": "Innovative emotional security. New approaches to family and nurturing.",
+            "LEO": "Creative breakthroughs in love. Unique self-expression.",
+            "VIR": "Unconventional service approaches. Innovative practical care.",
+            "LIB": "Revolutionary partnerships. New approaches to balance and harmony.",
+            "SCO": "Transformative insights. Psychological breakthroughs in intimacy.",
+            "SAG": "Philosophical innovation. Expanding consciousness in relationships.",
+            "CAP": "Structural reforms. Institutional changes in partnership.",
+            "AQU": "Natural innovator in relationships. Humanitarian vision in love.",
+            "PIS": "Spiritual insights. Mystical revelations in romantic connections."
+        },
+        "Neptune": {
+            "ARI": "Spiritual pioneering in relationships. Inspired action and vision in love.",
+            "TAU": "Dreamy values in partnerships. Idealized security and comfort.",
+            "GEM": "Imaginative communication. Inspired ideas in relationships.",
+            "CAN": "Mystical emotional security. Spiritual nurturing in love.",
+            "LEO": "Creative inspiration. Dramatic spiritual expression in relationships.",
+            "VIR": "Service through inspiration. Healing and compassionate care.",
+            "LIB": "Harmonious ideals. Spiritual partnerships and beauty.",
+            "SCO": "Deep spiritual transformation. Psychic sensitivity in intimacy.",
+            "SAG": "Philosophical idealism. Spiritual expansion in relationships.",
+            "CAP": "Structured spirituality. Institutional faith in partnership.",
+            "AQU": "Collective ideals. Humanitarian dreams in love.",
+            "PIS": "Natural mystic. Spiritual connection in romantic relationships."
+        },
+        "Pluto": {
+            "ARI": "Transformative relationship initiative. Rebirth through passionate action.",
+            "TAU": "Deep value transformation. Regeneration of security in love.",
+            "GEM": "Psychological communication. Mental transformation in relationships.",
+            "CAN": "Emotional rebirth in partnerships. Family transformation.",
+            "LEO": "Creative transformation. Rebirth through self-expression in love.",
+            "VIR": "Service transformation. Health regeneration in relationships.",
+            "LIB": "Relationship transformation. Artistic rebirth in partnership.",
+            "SCO": "Deep psychological transformation. Natural rebirth in intimacy.",
+            "SAG": "Philosophical transformation. Belief regeneration in love.",
+            "CAP": "Structural transformation. Power rebirth in committed relationships.",
+            "AQU": "Collective transformation. Social regeneration in partnerships.",
+            "PIS": "Spiritual transformation. Mystical rebirth in romantic connections."
+        }
+    }
+
+    # INTERPRETĂRI SPECIFICE PENTRU SPIRITUAL (EXTINSE)
+    spiritual_interpretations = {
+        "Sun": {
+            "ARI": "Spiritual pioneer and warrior. Direct connection to divine energy.",
+            "TAU": "Grounded spirituality. Connection to earth energies and practical mysticism.",
+            "GEM": "Communicative spirituality. Channel for divine messages and teachings.",
+            "CAN": "Nurturing spiritual path. Connection to ancestral wisdom and emotional healing.",
+            "LEO": "Creative spirituality. Divine expression through art and performance.",
+            "VIR": "Service-oriented spirituality. Healing through practical service and analysis.",
+            "LIB": "Harmonious spirituality. Connection to beauty, balance, and divine partnership.",
+            "SCO": "Transformative spirituality. Deep psychic abilities and rebirth.",
+            "SAG": "Philosophical spirituality. Expansion through truth-seeking and adventure.",
+            "CAP": "Structured spirituality. Building spiritual foundations and discipline.",
+            "AQU": "Innovative spirituality. Connection to collective consciousness and futurism.",
+            "PIS": "Compassionate spirituality. Deep connection to universal love and mercy."
+        },
+        "Moon": {
+            "ARI": "Emotional spiritual pioneer. Direct intuitive connection to divine.",
+            "TAU": "Grounded emotional spirituality. Practical mystical experiences.",
+            "GEM": "Communicative emotional spirituality. Learning and teaching spiritual concepts.",
+            "CAN": "Nurturing emotional path. Connection to ancestral spiritual wisdom.",
+            "LEO": "Creative emotional spirituality. Dramatic spiritual expression.",
+            "VIR": "Service-oriented emotional spirituality. Healing through practical compassion.",
+            "LIB": "Harmonious emotional spirituality. Balanced spiritual partnerships.",
+            "SCO": "Transformative emotional spirituality. Deep psychic emotional connections.",
+            "SAG": "Philosophical emotional spirituality. Expansion through emotional truth.",
+            "CAP": "Structured emotional spirituality. Disciplined emotional spiritual practice.",
+            "AQU": "Innovative emotional spirituality. Progressive spiritual emotions.",
+            "PIS": "Compassionate emotional spirituality. Deep spiritual emotional connections."
+        },
+        "Mercury": {
+            "ARI": "Direct spiritual communication. Pioneering spiritual ideas and concepts.",
+            "TAU": "Practical spiritual thinking. Grounded mystical communication.",
+            "GEM": "Versatile spiritual communication. Learning and teaching divine wisdom.",
+            "CAN": "Intuitive spiritual thinking. Emotional connection to spiritual concepts.",
+            "LEO": "Creative spiritual communication. Expressive divine teachings.",
+            "VIR": "Analytical spiritual thinking. Service-oriented spiritual analysis.",
+            "LIB": "Harmonious spiritual communication. Balanced spiritual dialogue.",
+            "SCO": "Transformative spiritual thinking. Deep psychological spiritual insights.",
+            "SAG": "Philosophical spiritual communication. Expansive spiritual learning.",
+            "CAP": "Structured spiritual thinking. Organized spiritual concepts.",
+            "AQU": "Innovative spiritual communication. Progressive spiritual ideas.",
+            "PIS": "Intuitive spiritual thinking. Compassionate spiritual insights."
+        },
+        "Venus": {
+            "ARI": "Direct spiritual values. Pioneering approach to divine love.",
+            "TAU": "Grounded spiritual values. Practical mystical appreciation.",
+            "GEM": "Communicative spiritual values. Learning through spiritual relationships.",
+            "CAN": "Nurturing spiritual values. Emotional connection to divine love.",
+            "LEO": "Creative spiritual values. Expressive divine beauty.",
+            "VIR": "Service-oriented spiritual values. Practical spiritual harmony.",
+            "LIB": "Harmonious spiritual values. Balanced divine partnerships.",
+            "SCO": "Transformative spiritual values. Deep psychological spiritual connections.",
+            "SAG": "Philosophical spiritual values. Expansive spiritual appreciation.",
+            "CAP": "Structured spiritual values. Disciplined spiritual love.",
+            "AQU": "Innovative spiritual values. Progressive spiritual relationships.",
+            "PIS": "Compassionate spiritual values. Deep connection to universal love."
+        },
+        "Mars": {
+            "ARI": "Direct spiritual action. Pioneering spiritual initiatives.",
+            "TAU": "Grounded spiritual drive. Practical mystical persistence.",
+            "GEM": "Communicative spiritual action. Learning through spiritual doing.",
+            "CAN": "Nurturing spiritual drive. Emotional spiritual protection.",
+            "LEO": "Creative spiritual action. Expressive spiritual leadership.",
+            "VIR": "Service-oriented spiritual drive. Practical spiritual service.",
+            "LIB": "Harmonious spiritual action. Balanced spiritual partnerships.",
+            "SCO": "Transformative spiritual drive. Deep psychological spiritual power.",
+            "SAG": "Philosophical spiritual action. Expansive spiritual adventure.",
+            "CAP": "Structured spiritual drive. Disciplined spiritual work.",
+            "AQU": "Innovative spiritual action. Progressive spiritual initiatives.",
+            "PIS": "Compassionate spiritual drive. Inspired spiritual service."
+        },
+        "Jupiter": {
+            "ARI": "Expansive spiritual seeking. Philosophical exploration and truth-seeking.",
+            "TAU": "Grounded spiritual growth. Expansion through practical wisdom.",
+            "GEM": "Communicative spirituality. Learning and teaching spiritual concepts.",
+            "CAN": "Nurturing spiritual path. Expansion through emotional wisdom.",
+            "LEO": "Creative spiritual expression. Expansion through divine creativity.",
+            "VIR": "Service-oriented spirituality. Growth through healing and analysis.",
+            "LIB": "Harmonious spiritual path. Expansion through beauty and partnership.",
+            "SCO": "Transformative spiritual growth. Expansion through deep investigation.",
+            "SAG": "Natural spiritual seeker. Philosophical expansion and adventure.",
+            "CAP": "Structured spiritual growth. Expansion through discipline and tradition.",
+            "AQU": "Innovative spirituality. Expansion through universal consciousness.",
+            "PIS": "Compassionate spiritual path. Expansion through universal love."
+        },
+        "Saturn": {
+            "ARI": "Spiritual discipline through initiative. Learning responsibility through risk.",
+            "TAU": "Grounded spiritual structure. Practical mystical discipline.",
+            "GEM": "Organized spiritual communication. Responsibility in teaching wisdom.",
+            "CAN": "Emotional spiritual responsibility. Building family spiritual security.",
+            "LEO": "Creative spiritual leadership. Structured divine expression.",
+            "VIR": "Analytical spiritual service. Discipline in healing work.",
+            "LIB": "Partnership spiritual responsibility. Balanced spiritual commitments.",
+            "SCO": "Transformative spiritual discipline. Deep psychological commitment.",
+            "SAG": "Philosophical spiritual responsibility. Structured expansion.",
+            "CAP": "Natural spiritual discipline. Built for spiritual mastery.",
+            "AQU": "Innovative spiritual responsibility. Structured progressive thinking.",
+            "PIS": "Compassionate spiritual discipline. Structured universal love."
+        },
+        "Uranus": {
+            "ARI": "Innovative spiritual breakthroughs. Pioneering new spiritual paths.",
+            "TAU": "Unconventional spiritual values. Slow but revolutionary changes.",
+            "GEM": "Revolutionary spiritual communication. Sudden spiritual insights.",
+            "CAN": "Innovative emotional spirituality. New approaches to nurturing.",
+            "LEO": "Creative spiritual breakthroughs. Unique divine expression.",
+            "VIR": "Unconventional service spirituality. Innovative healing approaches.",
+            "LIB": "Revolutionary spiritual partnerships. New approaches to harmony.",
+            "SCO": "Transformative spiritual insights. Psychological breakthroughs.",
+            "SAG": "Philosophical spiritual innovation. Expanding consciousness.",
+            "CAP": "Structural spiritual reforms. Institutional changes in spirituality.",
+            "AQU": "Natural spiritual innovator. Humanitarian spiritual vision.",
+            "PIS": "Spiritual insights and revelations. Mystical breakthroughs."
+        },
+        "Neptune": {
+            "ARI": "Spiritual pioneering and vision. Inspired action and divine connection.",
+            "TAU": "Grounded spiritual dreams. Practical mystical ideals.",
+            "GEM": "Communicative spiritual inspiration. Learning through divine messages.",
+            "CAN": "Nurturing spiritual dreams. Emotional connection to universal love.",
+            "LEO": "Creative spiritual inspiration. Dramatic divine expression.",
+            "VIR": "Service-oriented spiritual dreams. Healing through inspired compassion.",
+            "LIB": "Harmonious spiritual ideals. Balanced divine partnerships.",
+            "SCO": "Transformative spiritual dreams. Deep psychic connections.",
+            "SAG": "Philosophical spiritual ideals. Expansive spiritual vision.",
+            "CAP": "Structured spiritual dreams. Institutional faith and discipline.",
+            "AQU": "Collective spiritual ideals. Humanitarian dreams and vision.",
+            "PIS": "Natural spiritual mystic. Deep connection to universal consciousness."
+        },
+        "Pluto": {
+            "ARI": "Transformative spiritual initiative. Rebirth through divine action.",
+            "TAU": "Deep spiritual value transformation. Regeneration of earthly spirituality.",
+            "GEM": "Psychological spiritual communication. Mental transformation through wisdom.",
+            "CAN": "Emotional spiritual rebirth. Family and ancestral transformation.",
+            "LEO": "Creative spiritual transformation. Rebirth through divine expression.",
+            "VIR": "Service spiritual transformation. Health and healing regeneration.",
+            "LIB": "Relationship spiritual transformation. Artistic divine rebirth.",
+            "SCO": "Deep psychological spiritual transformation. Natural rebirth and power.",
+            "SAG": "Philosophical spiritual transformation. Belief regeneration and expansion.",
+            "CAP": "Structural spiritual transformation. Power rebirth in institutions.",
+            "AQU": "Collective spiritual transformation. Social and humanitarian regeneration.",
+            "PIS": "Complete spiritual transformation. Ultimate surrender and enlightenment."
+        }
+    }
+
+    # INTERPRETĂRI PENTRU SEXUAL (EXTINSE)
+    sexual_interpretations = {
+        "Sun": {
+            "ARI": "Direct and passionate sexual energy. Natural initiator and explorer.",
+            "TAU": "Sensual and persistent sexual nature. Values physical pleasure and stability.",
+            "GEM": "Playful and communicative sexuality. Enjoys variety and mental stimulation.",
+            "CAN": "Nurturing and emotional sexual nature. Deep emotional connections in intimacy.",
+            "LEO": "Dramatic and generous sexuality. Needs admiration and creative expression.",
+            "VIR": "Practical and attentive lover. Shows care through service and attention.",
+            "LIB": "Harmonious and artistic sexuality. Values beauty and partnership.",
+            "SCO": "Intense and transformative sexual energy. Deep psychological connections.",
+            "SAG": "Adventurous and optimistic sexuality. Values freedom and exploration.",
+            "CAP": "Disciplined and ambitious sexual nature. Builds intimacy carefully.",
+            "AQU": "Innovative and unconventional sexuality. Experimental and freedom-loving.",
+            "PIS": "Compassionate and intuitive sexuality. Spiritual and romantic connections."
+        },
+        "Moon": {
+            "ARI": "Emotionally direct and passionate. Needs excitement and independence.",
+            "TAU": "Emotionally stable and sensual. Values security and physical comfort.",
+            "GEM": "Emotionally communicative and curious. Needs mental connection.",
+            "CAN": "Deeply nurturing and emotional. Strong emotional bonds in intimacy.",
+            "LEO": "Emotionally generous and proud. Needs recognition and appreciation.",
+            "VIR": "Emotionally practical and helpful. Shows care through attention.",
+            "LIB": "Emotionally harmonious and diplomatic. Seeks balance in intimacy.",
+            "SCO": "Emotionally intense and passionate. Deep emotional transformation.",
+            "SAG": "Emotionally adventurous and optimistic. Needs freedom and exploration.",
+            "CAP": "Emotionally responsible and reserved. Controls feelings carefully.",
+            "AQU": "Emotionally independent and unconventional. Unique emotional expression.",
+            "PIS": "Emotionally compassionate and intuitive. Deep spiritual connections."
+        },
+        "Mercury": {
+            "ARI": "Direct and spontaneous sexual communication. Expresses desires boldly.",
+            "TAU": "Practical and persistent communication. Values honest and stable dialogue.",
+            "GEM": "Playful and curious communication. Enjoys mental stimulation.",
+            "CAN": "Intuitive and emotional communication. Expresses with heart and memory.",
+            "LEO": "Confident and dramatic communication. Expressive and authoritative.",
+            "VIR": "Analytical and precise communication. Thoughtful and attentive words.",
+            "LIB": "Diplomatic and balanced communication. Seeks harmony in dialogue.",
+            "SCO": "Investigative and profound communication. Seeks deep truth.",
+            "SAG": "Philosophical and honest communication. Values expansive discussions.",
+            "CAP": "Practical and organized communication. Builds intimacy carefully.",
+            "AQU": "Innovative and original communication. Unique way of expressing desires.",
+            "PIS": "Intuitive and compassionate communication. Romantic and dreamy expression."
+        },
+        "Venus": {
+            "ARI": "Direct and passionate in love. Attracted to challenge and excitement.",
+            "TAU": "Sensual and loyal. Values stability and physical pleasure.",
+            "GEM": "Playful and communicative. Needs mental connection and variety.",
+            "CAN": "Nurturing and emotional. Seeks security and deep bonding.",
+            "LEO": "Generous and dramatic. Needs romance and admiration.",
+            "VIR": "Practical and helpful. Shows love through service and care.",
+            "LIB": "Harmonious and artistic. Seeks balance and partnership.",
+            "SCO": "Intense and passionate. Seeks deep emotional transformation.",
+            "SAG": "Adventurous and freedom-loving. Values honesty and exploration.",
+            "CAP": "Serious and responsible. Seeks stability and commitment.",
+            "AQU": "Unconventional and friendly. Values independence and intellectual connection.",
+            "PIS": "Romantic and compassionate. Seeks spiritual connection."
+        },
+        "Mars": {
+            "ARI": "Passionate and direct sexual energy. Enthusiastic and competitive.",
+            "TAU": "Sensual and persistent. Values physical pleasure and stability.",
+            "GEM": "Playful and communicative. Enjoys variety and mental stimulation.",
+            "CAN": "Protective and emotional. Deep emotional connections.",
+            "LEO": "Confident and dramatic. Needs admiration and creative expression.",
+            "VIR": "Precise and attentive. Shows care through service.",
+            "LIB": "Diplomatic and balanced. Seeks harmony and partnership.",
+            "SCO": "Intense and transformative. Deep psychological connections.",
+            "SAG": "Adventurous and optimistic. Values freedom and exploration.",
+            "CAP": "Ambitious and disciplined. Builds intimacy carefully.",
+            "AQU": "Innovative and unconventional. Experimental and freedom-loving.",
+            "PIS": "Compassionate and intuitive. Spiritual and romantic approach."
+        },
+        "Jupiter": {
+            "ARI": "Expansive and confident sexuality. Natural optimism and enthusiasm.",
+            "TAU": "Steady sensual growth. Values security and comfort expansion.",
+            "GEM": "Versatile sexual expansion. Enjoys learning and variety.",
+            "CAN": "Nurturing emotional growth. Family-oriented expansion.",
+            "LEO": "Creative sexual expression. Generous and warm-hearted.",
+            "VIR": "Analytical service growth. Improvement in practical intimacy.",
+            "LIB": "Harmonious expansion. Seeks beauty and balance.",
+            "SCO": "Transformative depth. Philosophical approach to intimacy.",
+            "SAG": "Natural adventurous expansion. Optimistic and freedom-loving.",
+            "CAP": "Ambitious disciplined growth. Builds long-term intimacy.",
+            "AQU": "Innovative progressive values. Experimental and original.",
+            "PIS": "Compassionate intuitive growth. Spiritual connection."
+        },
+        "Saturn": {
+            "ARI": "Disciplined sexual approach. Learning responsibility through independence.",
+            "TAU": "Stable and persistent. Builds security through commitment.",
+            "GEM": "Organized communication. Responsibility in intimate dialogue.",
+            "CAN": "Emotional responsibility. Building family security.",
+            "LEO": "Creative leadership. Structured self-expression.",
+            "VIR": "Analytical service discipline. Practical approach.",
+            "LIB": "Partnership responsibility. Balanced and committed.",
+            "SCO": "Transformative discipline. Deep commitment.",
+            "SAG": "Philosophical responsibility. Structured expansion.",
+            "CAP": "Natural responsibility. Built for long-term commitment.",
+            "AQU": "Innovative responsibility. Structured progressive values.",
+            "PIS": "Compassionate discipline. Structured spiritual connection."
+        },
+        "Uranus": {
+            "ARI": "Innovative sexual breakthroughs. Pioneering new forms of intimacy.",
+            "TAU": "Unconventional values. Slow but revolutionary changes.",
+            "GEM": "Revolutionary communication. Sudden insights in sexuality.",
+            "CAN": "Innovative emotional security. New approaches to nurturing.",
+            "LEO": "Creative breakthroughs. Unique self-expression.",
+            "VIR": "Unconventional service approaches. Innovative practical care.",
+            "LIB": "Revolutionary partnerships. New approaches to harmony.",
+            "SCO": "Transformative insights. Psychological breakthroughs.",
+            "SAG": "Philosophical innovation. Expanding consciousness.",
+            "CAP": "Structural reforms. Institutional changes in intimacy.",
+            "AQU": "Natural innovator. Humanitarian vision in sexuality.",
+            "PIS": "Spiritual insights. Mystical revelations."
+        },
+        "Neptune": {
+            "ARI": "Spiritual pioneering. Inspired action and vision.",
+            "TAU": "Dreamy values. Idealized security and comfort.",
+            "GEM": "Imaginative communication. Inspired ideas.",
+            "CAN": "Mystical emotional security. Spiritual nurturing.",
+            "LEO": "Creative inspiration. Dramatic spiritual expression.",
+            "VIR": "Service through inspiration. Healing compassion.",
+            "LIB": "Harmonious ideals. Spiritual partnerships.",
+            "SCO": "Deep spiritual transformation. Psychic sensitivity.",
+            "SAG": "Philosophical idealism. Spiritual expansion.",
+            "CAP": "Structured spirituality. Institutional faith.",
+            "AQU": "Collective ideals. Humanitarian dreams.",
+            "PIS": "Natural mystic. Spiritual connection."
+        },
+        "Pluto": {
+            "ARI": "Transformative sexual initiative. Rebirth through action.",
+            "TAU": "Deep value transformation. Regeneration of security.",
+            "GEM": "Psychological communication. Mental transformation.",
+            "CAN": "Emotional rebirth. Family transformation.",
+            "LEO": "Creative transformation. Rebirth through expression.",
+            "VIR": "Service transformation. Health regeneration.",
+            "LIB": "Relationship transformation. Artistic rebirth.",
+            "SCO": "Deep psychological transformation. Natural rebirth.",
+            "SAG": "Philosophical transformation. Belief regeneration.",
+            "CAP": "Structural transformation. Power rebirth.",
+            "AQU": "Collective transformation. Social regeneration.",
+            "PIS": "Spiritual transformation. Mystical rebirth."
+        }
+    }
+
+    # Alege dicționarul de interpretări în funcție de tip
+    if interpretation_type == "Career":
         interpretations = career_interpretations
-        focus_description = "professional path, vocational calling, and success patterns"
-    elif interpretation_type == "Relationships & Love":
-        interpretations = relationship_interpretations
-        focus_description = "relationship dynamics, love patterns, and partnership needs"
-    elif interpretation_type == "Sexual Nature":
+    elif interpretation_type == "Relationships":
+        interpretations = relationships_interpretations
+    elif interpretation_type == "Spiritual":
+        interpretations = spiritual_interpretations
+    elif interpretation_type == "Sexual":
         interpretations = sexual_interpretations
-        focus_description = "sexual energy, attraction patterns, and intimate expression"
-    elif interpretation_type == "Spiritual Growth":
+    else:  # Natal
         interpretations = natal_interpretations
-        focus_description = "soul evolution, spiritual lessons, and higher purpose"
-    elif interpretation_type == "Personality Analysis":
-        interpretations = natal_interpretations
-        focus_description = "core personality traits, strengths, and growth areas"
-    elif interpretation_type == "Life Purpose":
-        interpretations = natal_interpretations
-        focus_description = "soul mission, karmic lessons, and life direction"
-    else:  # Natal Chart
-        interpretations = natal_interpretations
-        focus_description = "complete astrological profile and life patterns"
     
-    # CORECTARE: Afișează TOATE planetele, nu doar primele 5
-    planets_to_display = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto", "North Node"]
+    # TOATE PLANETELE pentru TOATE tipurile de interpretare
+    planets_to_display = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"]
     
     for planet_name in planets_to_display:
         if planet_name in chart_data['planets']:
             planet_data = chart_data['planets'][planet_name]
             planet_sign = planet_data['sign']
             
-            # Display interpretation for sign
+            # Afișează interpretarea pentru semn
             if (planet_name in interpretations and 
                 planet_sign in interpretations[planet_name]):
                 
-                with st.expander(f"{planet_name} in {planet_sign}", expanded=True):
-                    st.markdown(interpretations[planet_name][planet_sign])
-            else:
-                # Dacă nu găsește interpretarea, afișează un mesaj
-                with st.expander(f"{planet_name} in {planet_sign}", expanded=True):
-                    st.info(f"Detailed interpretation for {planet_name} in {planet_sign} is being developed. This placement influences {focus_description} in unique ways specific to your chart.")
-    
-    # Add house interpretations
-    st.markdown("---")
-    st.subheader("🏠 House Placements Analysis")
-    
-    house_interpretations = {
-        1: "**The House of Self** - Your approach to life, personal identity, and how others see you. This house reveals your basic personality, physical appearance, and overall approach to new beginnings.",
-        2: "**The House of Values** - Your relationship with money, possessions, and personal values. This area shows how you attract resources, what you truly value, and your attitude toward material security.",
-        3: "**The House of Communication** - Your thinking style, communication, and immediate environment. This covers siblings, early education, local travel, and how you process and share information.",
-        4: "**The House of Home** - Your roots, family, emotional foundation, and private life. This reveals your connection to family traditions, your need for security, and what makes you feel emotionally safe.",
-        5: "**The House of Creativity** - Your self-expression, romance, children, and creative pursuits. This area shows how you approach pleasure, love affairs, creative projects, and what brings you joy.",
-        6: "**The House of Service** - Your work habits, health routines, and service to others. This covers daily work environment, health practices, and how you organize your life for efficiency.",
-        7: "**The House of Partnership** - Your approach to relationships, marriage, and significant others. This reveals what you seek in partners and how you approach all one-to-one relationships.",
-        8: "**The House of Transformation** - Your approach to intimacy, shared resources, and rebirth. This covers psychological depth, other people's resources, and your capacity for personal transformation.",
-        9: "**The House of Philosophy** - Your beliefs, higher education, travel, and search for meaning. This reveals your approach to religion, philosophy, foreign cultures, and expanding your horizons.",
-        10: "**The House of Career** - Your public life, career, reputation, and life direction. This shows your professional ambitions, public image, and what you strive to achieve in the world.",
-        11: "**The House of Community** - Your friendships, groups, hopes, and humanitarian interests. This covers your social circles, group affiliations, and your vision for the future.",
-        12: "**The House of Spirituality** - Your subconscious, spirituality, solitude, and hidden strengths. This reveals your connection to the unconscious, spiritual practices, and what you need to release."
-    }
-    
-    for house_num in range(1, 13):
-        if house_num in chart_data['houses']:
-            house_data = chart_data['houses'][house_num]
-            st.write(f"**House {house_num} in {house_data['sign']}**: {house_data['position_str']}")
-            st.write(f"*{house_interpretations[house_num]}*")
-            st.write("")
+                st.write(f"**{planet_name} in {planet_sign}**")
+                st.write(interpretations[planet_name][planet_sign])
+                st.write("")
 
 def display_about():
-    st.header("ℹ️ About This Astrology App")
+    st.header("ℹ️ About Horoscope")
     st.markdown("""
-    ### Professional Astrology App v2.0
+    ### Horoscope ver. 2.0 (Streamlit Edition)
     
     **Copyright © 2025**  
-    Advanced Astrological Analysis System
+    RAD  
     
-    **Professional Features**  
-    - Precise astronomical calculations using Swiss Ephemeris
-    - Comprehensive natal chart interpretations
-    - Detailed transit and progression analysis
-    - Professional-grade aspect calculations
-    - In-depth psychological and spiritual insights
-    - Career, relationship, sexual nature, and life purpose analysis
+    **Features**  
+    - Professional astrological calculations using Swiss Ephemeris
+    - Interactive chart wheel visualization
+    - Accurate planetary positions with professional ephemeris files
+    - Natal chart calculations with Placidus houses
+    - Complete planetary aspects calculations
+    - **Transits and Progressions** (Secondary & Solar Arc)
+    - Comprehensive interpretations for signs, degrees and houses
     
-    **Technical Specifications**  
-    - Swiss Ephemeris for maximum astronomical accuracy
-    - Placidus house system as professional standard
-    - Complete planetary aspects with precise orbs
-    - Advanced chart visualization
-    - Professional interpretation database
-    
-    **Astrological Methodology**  
-    This application uses traditional Western astrological techniques combined with modern psychological insights. All calculations meet professional astrological standards for accuracy and depth of interpretation.
-    
-    **Data Privacy**  
-    All birth data and calculations remain private and are not stored on any server. Your astrological information is processed locally in your browser session.
+    **Technical:** Built with Streamlit, Swiss Ephemeris (pyswisseph), and Matplotlib
+    for professional astrological charting.
     """)
 
 if __name__ == "__main__":
