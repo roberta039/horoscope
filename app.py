@@ -1726,21 +1726,26 @@ def display_complete_interpretations(chart_data, interpretation_type):
         if 1 in chart_data['houses']:
             asc_data = chart_data['houses'][1]
             asc_sign = asc_data['sign']
-            asc_key = f"ASC{asc_sign[:3].upper()}"
+            asc_key = f"ASC{asc_sign}"
             
             if asc_key in sexual_interpretations:
                 st.write(f"**Ascendant in {asc_sign}**")
                 st.write(f"{sexual_interpretations[asc_key]}")
                 st.markdown("---")
         
-        # 2. All planet interpretations
+        # 2. All planet interpretations - CORECTAT
         sexual_planets = ["Sun", "Moon", "Mercury", "Venus", "Mars"]
         
         for planet_name in sexual_planets:
             if planet_name in chart_data['planets']:
                 planet_data = chart_data['planets'][planet_name]
                 planet_sign = planet_data['sign']
-                planet_key = f"{planet_name[:3]}{planet_sign[:3].upper()}"
+                
+                # CORECTIE: Folosește primele 3 litere din numele planetei + semnul complet
+                if planet_name == "Moon":
+                    planet_key = f"Moo{planet_sign}"
+                else:
+                    planet_key = f"{planet_name[:3]}{planet_sign}"
                 
                 if planet_key in sexual_interpretations:
                     st.write(f"**{planet_name} in {planet_sign}**")
