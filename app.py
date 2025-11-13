@@ -1290,7 +1290,7 @@ def display_interpretation():
 def display_complete_interpretations(chart_data, interpretation_type):
     """Display interpretations for Natal, Natal Aspects, and Sexual only"""
     
-    # Natal Interpretations (Planets in Signs) - COMPLETE
+    # COMPLETE Natal Interpretations (Planets in Signs) - TOATE PLANETELE
     natal_interpretations = {
         "Sun": {
             "ARI": "Open, energetic, strong, enthusiastic, forward looking, positive, determined, inventive, bright, filled with a zest for life.",
@@ -1434,7 +1434,7 @@ def display_complete_interpretations(chart_data, interpretation_type):
         }
     }
 
-    # COMPLETE Aspect Interpretations - ALL COMBINATIONS
+    # COMPLETE Aspect Interpretations - TOATE COMBINAȚIILE
     aspect_interpretations = {
         # Sun aspects
         "SUN = MOO": "a feeling or moody nature",
@@ -1480,7 +1480,7 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "MOO = URA": "emotionally high-strung",
         "MOO + URA": "emotionally free",
         "MOO - URA": "an individualist",
-        "MOO = NEP": "ives in their feelings",
+        "MOO = NEP": "lives in their feelings",
         "MOO + NEP": "suffers from emotional deception, disillusionment",
         "MOO - NEP": "kind hearted, emotionally inspired",
         "MOO = PLU": "emotionally compulsive",
@@ -1500,7 +1500,7 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "MER + SAT": "the most conscientious",
         "MER - SAT": "nervous system under constant pressure, confidence adversely affected",
         "MER = URA": "lives a life of independent thinking",
-        "MER + URA": "nspired, experimental thinker",
+        "MER + URA": "inspired, experimental thinker",
         "MER - URA": "a revolutionary thinker",
         "MER = NEP": "the most imaginative",
         "MER + NEP": "acutely sensitive, delicate mind",
@@ -1576,7 +1576,7 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "URA = PLU": "highly clairvoyant, metaphysical, extremely devotional, evolved"
     }
 
-    # COMPLETE Sexual Interpretations - ALL PLANETS AND HOUSES
+    # COMPLETE Sexual Interpretations - TOATE PLANETELE ȘI CASELE
     sexual_interpretations = {
         # Ascendant interpretations
         "ASCARI": "Quick, aggressive, makes the first move. Immediately noticed in a room. Gets to the point fast, sometimes too fast intense, physical, heats up in in a hurry, cools quickly after sex, but can charge up again soon afterwards for more. Dispenses with foreplay in favor of the nitty-gritty. Comes in a flash, with super-high peak. Needs to study patience & sensitivity to avoid putting off slower, easy-going partners. Should lay back, come on less strong to get long-range love.",
@@ -1746,24 +1746,6 @@ def display_complete_interpretations(chart_data, interpretation_type):
                     st.write(f"**{planet_name} in {planet_sign}**")
                     st.write(f"{sexual_interpretations[planet_key]}")
                     st.markdown("---")
-
-def get_house_sexual_theme(house_num):
-    """Get sexual theme for each house"""
-    themes = {
-        1: "Self & Identity",
-        2: "Values & Sensuality", 
-        3: "Communication & Curiosity",
-        4: "Home & Emotional Security",
-        5: "Pleasure & Romance",
-        6: "Health & Service",
-        7: "Partnerships & Balance",
-        8: "Intimacy & Transformation",
-        9: "Expansion & Philosophy", 
-        10: "Career & Public Life",
-        11: "Friendships & Social",
-        12: "Subconscious & Fantasy"
-    }
-    return themes.get(house_num, "Personal Energy")
 
 def display_about():
     st.header("ℹ️ About Horoscope")
