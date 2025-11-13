@@ -315,15 +315,30 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
             
             ax.plot([x_inner, x_outer], [y_inner, y_outer], color=house_color, linewidth=1, alpha=0.5)
             
-            # Numerele caselor - CORECTAT: Casa 1 începe unde era 11
-            house_number = (i + 10) % 12 + 1  # Transformare: 0->10, 1->11, 2->12, 3->1, etc.
+            # Numerele caselor
             house_text_angle = angle + 15  # Centrul casei
             house_rad_angle = np.radians(house_text_angle)
             x_house = center_x + house_radius * np.cos(house_rad_angle)
             y_house = center_y + house_radius * np.sin(house_rad_angle)
             
-            ax.text(x_house, y_house, str(house_number), ha='center', va='center', 
+            ax.text(x_house, y_house, str(i+1), ha='center', va='center', 
                    color=house_color, fontsize=10, fontweight='bold')
+            
+            # Semnele zodiacale
+            sign_angle = i * 30 - 75  # Poziționare pentru semne
+            sign_rad_angle = np.radians(sign_angle)
+            x_sign = center_x + (outer_radius + 0.3) * np.cos(sign_rad_angle)
+            y_sign = center_y + (outer_radius + 0.3) * np.sin(sign_rad_angle)
+            
+            ax.text(x_sign, y_sign, signs[i], ha='center', va='center', 
+                   color=house_color, fontsize=14)
+            
+            # Numele semnului
+            x_name = center_x + (outer_radius + 0.7) * np.cos(sign_rad_angle)
+            y_name = center_y + (outer_radius + 0.7) * np.sin(sign_rad_angle)
+            
+            ax.text(x_name, y_name, sign_names[i], ha='center', va='center', 
+                   color=house_color, fontsize=8, rotation=angle+90)
         
         # Calculează aspectele dacă este necesar
         if show_aspects:
