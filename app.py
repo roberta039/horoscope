@@ -899,12 +899,23 @@ def display_transits():
     natal_chart = st.session_state.chart_data
     birth_data = st.session_state.birth_data
     
+    # Calculează automat tranzitele pentru data nașterii la prima afișare
+    if st.session_state.transit_data is None:
+        with st.spinner("Calculating transits for birth date..."):
+            transit_data = calculate_transits(
+                natal_chart['jd'], 
+                birth_data['date'],  # Folosește automat data nașterii
+                birth_data['lat_deg'], 
+                birth_data['lon_deg']
+            )
+            st.session_state.transit_data = transit_data
+    
     st.subheader("Transit Date Selection")
     col1, col2 = st.columns(2)
     
     with col1:
         transit_date = st.date_input("Select Transit Date", 
-                                   datetime.now().date(),
+                                   birth_data['date'],  # Default este data nașterii
                                    min_value=datetime(1900, 1, 1).date(),
                                    max_value=datetime(2100, 12, 31).date())
     
@@ -913,7 +924,10 @@ def display_transits():
         show_chart = st.checkbox("Show Transit Chart Wheel", value=True)
         show_aspect_lines = st.checkbox("Show Aspect Lines in Chart", value=True)
     
-    if st.button("Calculate Transits", type="primary"):
+    # Recalculează doar dacă data a fost schimbată sau la apăsarea butonului
+    current_transit_date = st.session_state.transit_data.get('date') if st.session_state.transit_data else None
+    
+    if st.button("Calculate Transits", type="primary") or (current_transit_date and transit_date != current_transit_date):
         with st.spinner("Calculating transits..."):
             transit_data = calculate_transits(
                 natal_chart['jd'], 
@@ -993,12 +1007,22 @@ def display_progressions():
     natal_chart = st.session_state.chart_data
     birth_data = st.session_state.birth_data
     
+    # Calculează automat progresiile pentru data nașterii la prima afișare
+    if st.session_state.progressed_data is None:
+        with st.spinner("Calculating progressions for birth date..."):
+            progressed_data = calculate_progressions(
+                birth_data, 
+                birth_data['date'],  # Folosește automat data nașterii
+                'secondary'  # Metoda implicită
+            )
+            st.session_state.progressed_data = progressed_data
+    
     st.subheader("Progression Settings")
     col1, col2 = st.columns(2)
     
     with col1:
         progression_date = st.date_input("Select Progression Date", 
-                                       datetime.now().date(),
+                                       birth_data['date'],  # Default este data nașterii
                                        min_value=birth_data['date'],
                                        max_value=datetime(2100, 12, 31).date())
     
@@ -1010,7 +1034,18 @@ def display_progressions():
         )
         show_aspect_lines = st.checkbox("Show Aspect Lines in Chart", value=True)
     
-    if st.button("Calculate Progressions", type="primary"):
+    # Recalculează doar dacă data sau metoda au fost schimbate
+    current_progressed_data = st.session_state.progressed_data
+    current_progression_date = current_progressed_data.get('date') if current_progressed_data else None
+    current_method = current_progressed_data.get('method', '') if current_progressed_data else ''
+    
+    should_recalculate = (
+        st.button("Calculate Progressions", type="primary") or 
+        (current_progression_date and progression_date != current_progression_date) or
+        (current_method and progression_method not in current_method)
+    )
+    
+    if should_recalculate:
         with st.spinner("Calculating progressions..."):
             progressed_data = calculate_progressions(
                 birth_data, 
