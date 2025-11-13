@@ -1434,10 +1434,10 @@ def display_complete_interpretations(chart_data, interpretation_type):
         }
     }
 
-    # COMPLETE Aspect Interpretations from your file
+    # COMPLETE Aspect Interpretations 
     aspect_interpretations = {
         "SUN = MOO": "a feeling or moody nature",
-        "SUN + MOO": "emotionally well-balanced",
+        "SUN + MOO": "emotionally well-balanced", 
         "SUN - MOO": "feels a split between emotions and will",
         "SUN = MER": "mentally active",
         "SUN = VEN": "kind, gentle, warmhearted",
@@ -1463,7 +1463,7 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "MOO + MER": "articulate, optimistic, great mental clarity",
         "MOO - MER": "struggles to find balance between feelings and intellect",
         "MOO = VEN": "sensual",
-        "MOO + VEN": "sweet, charming",
+        "MOO + VEN": "sweet, charming", 
         "MOO - VEN": "pursues the needs of the heart, a sensualist",
         "MOO = MAR": "brave, bold, energetic",
         "MOO + MAR": "thrives on activity",
@@ -1489,7 +1489,7 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "MER + MAR": "intelligent, incisive, the best attitude",
         "MER - MAR": "a professional critic",
         "MER = JUP": "mentally exuberant",
-        "MER + JUP": "the best learner",
+        "MER + JUP": "the best learner", 
         "MER - JUP": "no sense of mental proportion",
         "MER = SAT": "lives a life of concentrated thought",
         "MER + SAT": "the most conscientious",
@@ -1513,7 +1513,7 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "VEN + SAT": "excellent marriage partner, brings form and structure to aesthetic principles",
         "VEN - SAT": "suffers in love life due to past life abusive and harmful actions",
         "VEN = URA": "excited about love",
-        "VEN + URA": "thrilled with life, excited about love",
+        "VEN + URA": "thrilled with life, excited about love", 
         "VEN - URA": "fickle, divorce prone",
         "VEN = NEP": "idealizes love",
         "VEN + NEP": "the consummate love partner",
@@ -1534,7 +1534,7 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "MAR + NEP": "wants to help",
         "MAR - NEP": "little ability to put desires above those of others",
         "MAR = PLU": "a reservoir of unlimited energy",
-        "MAR + PLU": "great potential, combined with the most potent energy",
+        "MAR + PLU": "great potential, combined with the most potent energy", 
         "MAR - PLU": "driven by compulsive cravings to dominate and win",
         "JUP = SAT": "the strongest character and depth of soul",
         "JUP + SAT": "the best judgment",
@@ -1552,7 +1552,7 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "SAT + URA": "good at implementing progressive plans and actions",
         "SAT - URA": "struggles to be both authoritarian and revolutionary",
         "SAT = NEP": "a practical idealist",
-        "SAT + NEP": "outstanding example of responsibility",
+        "SAT + NEP": "outstanding example of responsibility", 
         "SAT - NEP": "dissatisfied and uncertain of yourself",
         "SAT = PLU": "compulsive about responsibility",
         "SAT + PLU": "a mature human being",
@@ -1561,8 +1561,9 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "URA = PLU": "highly clairvoyant, metaphysical, extremely devotional, evolved"
     }
 
-    # COMPLETE Sexual Interpretations from your file
+    # COMPLETE Sexual Interpretations
     sexual_interpretations = {
+        # Ascendant interpretations
         "ASCARI": "Quick, aggressive, makes the first move. Immediately noticed in a room. Gets to the point fast, sometimes too fast intense, physical, heats up in in a hurry, cools quickly after sex, but can charge up again soon afterwards for more. Dispenses with foreplay in favor of the nitty-gritty. Comes in a flash, with super-high peak. Needs to study patience & sensitivity to avoid putting off slower, easy-going partners. Should lay back, come on less strong to get long-range love.",
         "ASCTAU": "Earthy, animal magnetism that grows on you. Slow at moving, but persistent once aroused. Good at foreplay with practice but takes some time to learn technique. Leans toward physical affection. Warm, friendly loving rather than fiery passion. Smouldering intensity with banked fires that burn hotter as time goes on. Sex requires cultivation, development to reach its peak. Steady and strong, lots of staying power. Can keep it up all night with a willing & imaginative partner.",
         "ASCGEM": "Talented, varied in sex technique. Likes change and imagination in sex, will try anything for its own sake or just to please a partner. May get hung up in method alone & forget the pleasure motive behind it. A delicate touch. Is bored with heavy, repetitive sex, & tires out if partner uses just brawn & not brains. Likes fantasy games, basic scenes laid out in advance and filled in spontaneously as the situation presents itself. Likes the unusual, but not deeply kinky.",
@@ -1575,6 +1576,8 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "ASCCAP": "Seeks a serious affair, no lightweight playing around. Can be too serious about partners. Tends to hang onto an affair after it is already over. Won't take no for an answer or won't say yes, not much in between. May get stuck in same groove so should look to partner to suggest sexual variety. Once has the hang of it, simply won't quit, hangs in there. Good for no-nonsense, don't-stop sex sessions, but will use sex as a weapon when pressed so don't get involved lightly.",
         "ASCAQU": "A cool, calm, and collected lover. Knows what to do & does it, but can become emotionally quite distant while physically deep in the fray. Takes careful stock and wants to taste & test everything before settling down to one form of expression -then may become quite conservative. Very even-handed with a lover, can't understand jealousy, turnabout is fair play. Analytic surface may belie a warm heart & a sensuous touch. A deeply satisfying emotional tie will form if patient.",
         "ASCPIS": "Sensitive, feels lover's needs & desires. Supple and able to please and adjust to any situation. May play passive or dominant role -an easy switcher if partner is too. Seeks to make sex a channel of higher communication to transform the personality to spiritual realms through totally shared emotion. Can participate in technique but doesn't value them except as a come-on to more personal intimacy that goes beyond sex. A good role-player, but may get lost in role, lose contact.",
+        
+        # Sun sign interpretations
         "SunARI": "Fiery, intense, aggressive in all aspects of sex. Makes first move naturally, or would like to. Finishes off too quickly. Partner is left exhausted, wanting more time, care in loving.",
         "SunTAU": "Thoughtful, reliable lover. A hearty appetite for sex. Sees sex as a loving, not just craving, appetite. Hard to get into kinky sex or purely recreational sex. Determined. Good staying power.",
         "SunGEM": "Active, likes variety. Can try out any new technique, but gets bored easily. Sex is more fun & communication than hot passion. Sex is more mental than physical. Good at fantasy games, manual and oral techniques. Can be a good swinger.",
@@ -1586,7 +1589,21 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "SunSAG": "Enthusiastic, ardent, romantic. Likes classic scenarios that frame sex like a picture. Love on the ground, in the woods, under the sky, on the open sea. Wild turn-ons, if not always practical.",
         "SunCAP": "Conservative about sex but will go along with most anything to please a partner, if committed to one. Lots of staying power and can keep it up all night, though sex can get repetitive, hung up on one style or technique.",
         "SunAQU": "Even-handed lover, careful and often skilled at technique. Will try anything, taste and savor partner or sex skill. Makes a good swinger, knows all the rules, but exposes inner passions rarely.",
-        "SunPIS": "Psychic. Anticipates needs and aims to please. Very fantasy-oriented, more emotional than physical. Needs a partner communicative but firm and practical to guide through reality. Due to high empathy, voyeurism is natural."
+        "SunPIS": "Psychic. Anticipates needs and aims to please. Very fantasy-oriented, more emotional than physical. Needs a partner communicative but firm and practical to guide through reality. Due to high empathy, voyeurism is natural.",
+        
+        # Moon sign interpretations
+        "MooARI": "Quick response, instant turn-on or turn-off. Won't pull punch. Can reach peaks quickly. Capable of multiple orgasms, but impatient with long foreplay. Once aroused, wants to get down to business. Super intense, but burns out quickly. May come too fast for partner. Needs slowing down to fully enjoy experience. Ready for anything, can get in over head if not careful. May burn out relationships when partner can't keep up pace. Needs constant new stimulation to keep sex stimulating, alive.",
+        "MooTAU": "Slow and steady to respond, but once aroused stays that way. A reliable partner, good to lean on, but can't be rushed. Requires honesty: no flirting or coy game-playing. No frills, decorations, wants down-to-earth stuff. Stays friends even after affairs are over, treasures people for themselves, not just as sex turn-on. Should not be deceived--as good and longlasting an enemy as friend. Not a swinger at heart, likes longrange affairs that mean friendship & deep inner commitment.",
+        "MooGEM": "Flexible, experiments. Reaction is likely to be 'why not?' can make a good swinger, but may not take sex very seriously or associate it with deep involvement. Free & easy lover, likes new or interesting sex for its own sake. Thrives on variety; not intensity or depth. A very good sense of humor. Skillful at fantasy role-playing as long as it stays light. Shuns heavyweight scenes like real s/m, emotional melodrama, and the like. A sex friend and playmate who doesn't need to push it.",
+        "MooCAN": "Oversensitive at times, but doesn't show it. May seem hard or cynical at first, but wants tender, family-style loving underneath. Very sympathetic to others' troubles. A good shoulder to cry on, but takes a while to open up. Sex must be emotional, not too mechanical. Technicalities hinder. A oneperson lover, retreats if other appears on scene. Wants to envelop lover totally, dissolve into emotions of love. Gives & needs lots of attention. Total involvement once committed.",
+        "MooLEO": "Mellow, good-time partner who exudes enthusiasm, particularly in company. Once aroused, has big sex appetite, can handle more than one partner. Jealousy a no-no, has room for everyone who wants to play while still truly loyal to own partner in long run. Sees good in life even when on hard times. Can rebound -ready for more. An all-night lovemaker, may be too much for some. Can miss technical details in spirited hearty sex play. A friend always, a child at heart, full of fun.",
+        "MooVIR": "A stickler for details: the right time, place, atmosphere, surroundings. Good for fetishes & fantasies, but demanding. Insists on real McCoy. Good role player, if roles are carefully defined. May respond to intricate, kinky scenes and play them to the hilt, while missing inner emotional message. For emotional closeness, simplicity is needed: cut away details and go heart-to-heart. Should set the scene for sex, get comfortable before any real involvement can begin on the inside.",
+        "MooLIB": "Changeable, always makes unexpected moves. Likes things in constant motion. Hard to pin down emotionally, always sees what's missing & heads for it. Creates sexual growth by not sitting still; no moss grows on this rolling stone. Insists on involvement and commitment, but only if it keeps things moving, never static. A truth-seeker who will try anything but will just as easily reject it as accept it. Turned on easily but hard to keep that way. Needs perseverant partner to keep up.",
+        "MooSCO": "A slow, smoldering fire which is hotter than it looks, and once it takes hold, consumes. Can sustain sex if partner can hold up. Sees sex as an all-enveloping fire to get lost in. A heavyweight: a night's fun is not the goal--plays for keeps. Not to be slighted, has an elephant's memory & finds revenge sweet. Very jealous, best in single partner, long-range relationships that can develop to peaks of mutual sexual selfimmolation. Ultimately sees sex as ecstatic, transcendant.",
+        "MooSAG": "Roly-poly, fun lover with a ready laugh, can play sex for passionate romance or for just an evening's good-time play. Sees brighter side of things, but may be too cheery & optimistic. Hard to pin down to specific promises. Likes plenty of space & may dissemble somewhat artlessly to get it. A voluble fantasy life, paints outrageous scenarios but forgets to fill in the details--half the fun is in the creation, not the enactment. A friendly, mellow lover, who grows richer with age.",
+        "MooCAP": "Careful, consistent, determined in response. Unflagging lover when committed -not the frivolous type. Strong on performance, less so on variety or imagination. Needs to be led by the hand to try out new things. Likes commitment, security, not a freeswinger. A lover who starts slow but will go all the way with love and coaxing. Needs reassurance that everything's o.k., then will leap into the middle with a will. Not an easy, overnight bedpal; but a life long lover & friend.",
+        "MooAQU": "Even-tempered but a bit cold, views sex with an analytic eye and experiments for interest more than pleasure. Prefers tactile to oral stimulation but will give what's necessary to keep the ball rolling. Will play many roles, but finds real closeness hard to get. Wants lover with many techniques who keeps moving. Likes to see what is happening--sex with the lights on. Takes a long time to develop intimacy. The main sex organ is the mind, to which the body plays second fiddle.",
+        "MooPIS": "Supple, adaptable lover. Sparks with insight, intuition. Lets a lover handle details, goes to the heart of the emotion. Can get lost in fantasy of moment, adapt to any lover's personal scene, though may interpret it completely differently from partner. Very emotional, needs sensitive, gentle treatment to bring out full love potential. Can spot lies but may not tell; honesty is essential. Fantasies may go beyond the practical -fulfillable only in mind. Needs partner to adapt fantasies."
     }
 
     # Display based on interpretation type
@@ -1614,49 +1631,52 @@ def display_complete_interpretations(chart_data, interpretation_type):
         # Display ALL aspect interpretations
         aspects = calculate_aspects(chart_data)
         if aspects:
+            st.write(f"**Found {len(aspects)} significant aspects**")
+            
             for aspect in aspects:
                 planet1 = aspect['planet1']
                 planet2 = aspect['planet2']
                 aspect_name = aspect['aspect_name']
                 
-                # Create aspect key for lookup - try different formats
-                aspect_keys = [
-                    f"{planet1.upper()} = {planet2.upper()}",
-                    f"{planet1.upper()} + {planet2.upper()}",
-                    f"{planet1.upper()} - {planet2.upper()}"
-                ]
+                # Create aspect key for lookup
+                aspect_key = f"{planet1.upper()} = {planet2.upper()}"
                 
                 st.write(f"**{planet1} {aspect_name} {planet2}**")
                 st.write(f"*Orb: {aspect['orb']:.2f}° | Strength: {aspect['strength']}*")
                 
-                found_interpretation = False
-                for key in aspect_keys:
-                    if key in aspect_interpretations:
-                        st.write(f"{aspect_interpretations[key]}")
-                        found_interpretation = True
-                        break
-                
-                if not found_interpretation:
-                    st.write("Significant planetary interaction")
+                if aspect_key in aspect_interpretations:
+                    st.write(f"{aspect_interpretations[aspect_key]}")
+                else:
+                    # Try alternative aspect keys
+                    alt_key1 = f"{planet1.upper()} + {planet2.upper()}"
+                    alt_key2 = f"{planet1.upper()} - {planet2.upper()}"
+                    
+                    if alt_key1 in aspect_interpretations:
+                        st.write(f"{aspect_interpretations[alt_key1]}")
+                    elif alt_key2 in aspect_interpretations:
+                        st.write(f"{aspect_interpretations[alt_key2]}")
+                    else:
+                        st.write("Significant planetary interaction")
                 st.markdown("---")
         else:
             st.info("No significant aspects found within allowed orb.")
 
     elif interpretation_type == "Sexual":
-        # Display sexual interpretations for Ascendant and Sun signs
+        # Display COMPLETE sexual interpretations
         st.write("**Sexual Energy & Expression**")
         
-        # Get Ascendant sign (assuming house 1 is the Ascendant)
+        # 1. Ascendant interpretation
         if 1 in chart_data['houses']:
-            asc_sign = chart_data['houses'][1]['sign']
-            asc_key = f"ASC{asc_sign[:3].upper()}"  # Convert to 3-letter code
+            asc_data = chart_data['houses'][1]
+            asc_sign = asc_data['sign']
+            asc_key = f"ASC{asc_sign[:3].upper()}"
             
             if asc_key in sexual_interpretations:
                 st.write(f"**Ascendant in {asc_sign}**")
                 st.write(f"{sexual_interpretations[asc_key]}")
                 st.markdown("---")
         
-        # Display Sun sign sexual interpretation
+        # 2. Sun sign interpretation
         if 'Sun' in chart_data['planets']:
             sun_data = chart_data['planets']['Sun']
             sun_sign = sun_data['sign']
@@ -1665,6 +1685,17 @@ def display_complete_interpretations(chart_data, interpretation_type):
             if sun_key in sexual_interpretations:
                 st.write(f"**Sun in {sun_sign}**")
                 st.write(f"{sexual_interpretations[sun_key]}")
+                st.markdown("---")
+        
+        # 3. Moon sign interpretation  
+        if 'Moon' in chart_data['planets']:
+            moon_data = chart_data['planets']['Moon']
+            moon_sign = moon_data['sign']
+            moon_key = f"Moo{moon_sign[:3].upper()}"
+            
+            if moon_key in sexual_interpretations:
+                st.write(f"**Moon in {moon_sign}**")
+                st.write(f"{sexual_interpretations[moon_key]}")
                 st.markdown("---")
 
 def get_house_sexual_theme(house_num):
