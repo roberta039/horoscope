@@ -125,74 +125,37 @@ def calculate_chart(birth_data):
         st.error(f"Eroare la calcularea chart-ului: {str(e)}")
         return None
 
-def calculate_planetary_positions_swiss(jd):
-    """Calculează pozițiile planetare folosind Swiss Ephemeris"""
-    planets = {
-        'Sun': swe.SUN,
-        'Moon': swe.MOON,
-        'Mercury': swe.MERCURY,
-        'Venus': swe.VENUS,
-        'Mars': swe.MARS,
-        'Jupiter': swe.JUPITER,
-        'Saturn': swe.SATURN,
-        'Uranus': swe.URANUS,
-        'Neptune': swe.NEPTUNE,
-        'Pluto': swe.PLUTO,
-        'Nod': swe.MEAN_NODE
-    }
-    
-    positions = {}
-    flags = swe.FLG_SWIEPH | swe.FLG_SPEED
-    
-    signs = ['ARI', 'TAU', 'GEM', 'CAN', 'LEO', 'VIR', 
-            'LIB', 'SCO', 'SAG', 'CAP', 'AQU', 'PIS']
-    
-    for name, planet_id in planets.items():
-        try:
-            # Calcul poziție cu Swiss Ephemeris
-            result = swe.calc_ut(jd, planet_id, flags)
-            longitude = result[0][0]  # longitudine ecliptică
-            
-            # Corecție pentru retrograde
-            is_retrograde = result[0][3] < 0  # viteza longitudinală negativă
-            
-            # Convertire în semn zodiacal
-            sign_num = int(longitude / 30)
-            sign_pos = longitude % 30
+def calculate_houses_placidus_swiss(jd, latitude, longitude):
+    """Calculează casele folosind sistemul Placidus cu Swiss Ephemeris"""
+    try:
+        # Calcul case cu Swiss Ephemeris
+        result = swe.houses(jd, latitude, longitude, b'P')  # 'P' pentru Placidus
+        
+        houses = {}
+        # SCHIMBĂ AICI: folosește semne complete
+        signs = ['ARIES', 'TAURUS', 'GEMINI', 'CANCER', 'LEO', 'VIRGO', 
+                'LIBRA', 'SCORPIO', 'SAGITTARIUS', 'CAPRICORN', 'AQUARIUS', 'PISCES']
+        
+        for i in range(12):
+            house_longitude = result[0][i]  # cuspidele caselor
+            sign_num = int(house_longitude / 30)
+            sign_pos = house_longitude % 30
             degrees = int(sign_pos)
             minutes = int((sign_pos - degrees) * 60)
             
-            positions[name] = {
-                'longitude': longitude,
+            houses[i+1] = {
+                'longitude': house_longitude,
                 'sign': signs[sign_num],
                 'degrees': degrees,
                 'minutes': minutes,
-                'retrograde': is_retrograde
+                'position_str': f"{degrees:02d}°{minutes:02d}' {signs[sign_num]}"
             }
-            
-        except Exception as e:
-            st.error(f"Eroare la calcularea poziției pentru {name}: {e}")
-            return None
-    
-    # Adăugăm Chiron manual (dacă fișierul lipseste)
-    try:
-        chiron_result = swe.calc_ut(jd, swe.CHIRON, flags)
-        chiron_longitude = chiron_result[0][0]
-    except:
-        # Fallback pentru Chiron
-        chiron_longitude = (positions['Sun']['longitude'] + 90) % 360
-    
-    chiron_sign_num = int(chiron_longitude / 30)
-    chiron_sign_pos = chiron_longitude % 30
-    positions['Chi'] = {
-        'longitude': chiron_longitude,
-        'sign': signs[chiron_sign_num],
-        'degrees': int(chiron_sign_pos),
-        'minutes': int((chiron_sign_pos - int(chiron_sign_pos)) * 60),
-        'retrograde': False
-    }
-    
-    return positions
+        
+        return houses
+        
+    except Exception as e:
+        st.error(f"Eroare la calcularea caselor: {e}")
+        return None
 
 def calculate_houses_placidus_swiss(jd, latitude, longitude):
     """Calculează casele folosind sistemul Placidus cu Swiss Ephemeris"""
