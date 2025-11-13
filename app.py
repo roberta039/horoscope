@@ -691,16 +691,16 @@ def data_input_form():
     
     with col1:
         st.subheader("Personal Data")
-        name = st.text_input("Name", "Danko")
+        name = st.text_input("Name", "Your Name")
         
         col1a, col1b = st.columns(2)
         with col1a:
             birth_date = st.date_input("Birth Date", 
-                                     datetime(1956, 4, 25).date(),
+                                     datetime(1986, 4, 25).date(),
                                      min_value=datetime(1800, 1, 1).date(),
                                      max_value=datetime(2100, 12, 31).date())
         with col1b:
-            birth_time = st.time_input("Birth Time", datetime(1956, 4, 25, 21, 0).time())
+            birth_time = st.time_input("Birth Time", datetime(1986, 4, 25, 21, 0).time())
         
         time_zone = st.selectbox("Time Zone", [f"GMT{i:+d}" for i in range(-12, 13)], index=12)
         
