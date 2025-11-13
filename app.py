@@ -1290,42 +1290,310 @@ def display_interpretation():
 def display_complete_interpretations(chart_data, interpretation_type):
     """Display interpretations for Natal, Natal Aspects, and Sexual only"""
     
+    # Mapping de la abreviere la nume complet
+    sign_mapping = {
+        "ARI": "ARIES",
+        "TAU": "TAURUS", 
+        "GEM": "GEMINI",
+        "CAN": "CANCER",
+        "LEO": "LEO",
+        "VIR": "VIRGO",
+        "LIB": "LIBRA",
+        "SCO": "SCORPIO",
+        "SAG": "SAGITTARIUS",
+        "CAP": "CAPRICORN",
+        "AQU": "AQUARIUS",
+        "PIS": "PISCES"
+    }
+    
+    def get_full_sign(sign_short):
+        """Convert abbreviated sign to full name"""
+        return sign_mapping.get(sign_short, sign_short)
+
     # COMPLETE Natal Interpretations (Planets in Signs) - TOATE PLANETELE
     natal_interpretations = {
         "Sun": {
-            "ARIES": "Open, energetic, strong, enthusiastic, forward looking, positive, determined, inventive, bright, filled with a zest for life.",
-            "TAURUS": "Reliable, able, with powers of concentration, tenacity. Steadfast, a loving & affectionate 'family' person. Honest, forthright. Learns readily from mistakes.",
-            "GEMINI": "Clever, bright, quickwitted, communicative, able to do many different things at once, eager to learn new subjects. Openminded, adaptable, curious, restless, confident, seldom settling down.",
-            "CANCER": "Emotional,complex,loving, sympathetic, understanding, humanitarian, kind, tender, respectful of the rights of others.",
+            "ARI": "Open, energetic, strong, enthusiastic, forward looking, positive, determined, inventive, bright, filled with a zest for life.",
+            "TAU": "Reliable, able, with powers of concentration, tenacity. Steadfast, a loving & affectionate 'family' person. Honest, forthright. Learns readily from mistakes.",
+            "GEM": "Clever, bright, quickwitted, communicative, able to do many different things at once, eager to learn new subjects. Openminded, adaptable, curious, restless, confident, seldom settling down.",
+            "CAN": "Emotional,complex,loving, sympathetic, understanding, humanitarian, kind, tender, respectful of the rights of others.",
             "LEO": "Self reliant, popular, good at leading others & at administration. Lots of directed energy & drive - good at achieving that which is desired. Very confident.",
-            "VIRGO": "Cool, critical, idealistic but practical, hardworking & a good planner. Sees things through to the finish. Trustworthy, dependable, never shirks responsibilities. Perfectionist for the sake of perfection.",
-            "LIBRA": "Friendly, cordial, artistic, kind, considerate, loyal, alert, sociable, moderate, balanced in views, open-minded.",
-            "SCORPIO": "Determined, direct, confident, sincere, brave, courageous, strongwilled, unafraid of setbacks or hard work. Principled & unswerving once a path has been decided on - has very clear goals.",
-            "SAGITTARIUS": "Forthright, freedom loving, honest, tolerant, broadminded, open, frank, fair, dependable, trusting (seldom suspicious), optimistic, generous, intelligent, respected, earnest, funloving & trustworthy.",
-            "CAPRICORN": "Orderly, patient, serious, stable, persevering, careful, prudent, just, ( justice usually being more important to this person than mercy ). Will always repay favours - self-reliant.",
-            "AQUARIUS": "Independent, tolerant, honest, forthright, considerate, helpful, sincere, generous, unprejudiced, broadminded, reliable, refined & humanitarian. An intense kinship with nature. Not much practical common sense.",
-            "PISCES": "Sensitive, sympathetic, understanding, kind, sentimental, dedicated, broadminded, uncritical of the shortcomings of others. Quite earnest & trustworthy. Generous."
+            "VIR": "Cool, critical, idealistic but practical, hardworking & a good planner. Sees things through to the finish. Trustworthy, dependable, never shirks responsibilities. Perfectionist for the sake of perfection.",
+            "LIB": "Friendly, cordial, artistic, kind, considerate, loyal, alert, sociable, moderate, balanced in views, open-minded.",
+            "SCO": "Determined, direct, confident, sincere, brave, courageous, strongwilled, unafraid of setbacks or hard work. Principled & unswerving once a path has been decided on - has very clear goals.",
+            "SAG": "Forthright, freedom loving, honest, tolerant, broadminded, open, frank, fair, dependable, trusting (seldom suspicious), optimistic, generous, intelligent, respected, earnest, funloving & trustworthy.",
+            "CAP": "Orderly, patient, serious, stable, persevering, careful, prudent, just, ( justice usually being more important to this person than mercy ). Will always repay favours - self-reliant.",
+            "AQU": "Independent, tolerant, honest, forthright, considerate, helpful, sincere, generous, unprejudiced, broadminded, reliable, refined & humanitarian. An intense kinship with nature. Not much practical common sense.",
+            "PIS": "Sensitive, sympathetic, understanding, kind, sentimental, dedicated, broadminded, uncritical of the shortcomings of others. Quite earnest & trustworthy. Generous."
         },
         "Moon": {
-            "ARIES": "Energetic, ambitious, strongwilled, self-centred, impulsive, dominant & obstinate.",
-            "TAURUS": "Gregarious, sociable, sensuous, sometimes strongly possessive.",
-            "GEMINI": "Quickwitted. Hungry for new experiences - a traveller. Impressionable.",
-            "CANCER": "Sensitive, friendly, but reserved; tradition loving; lives in fantasy.",
+            "ARI": "Energetic, ambitious, strongwilled, self-centred, impulsive, dominant & obstinate.",
+            "TAU": "Gregarious, sociable, sensuous, sometimes strongly possessive.",
+            "GEM": "Quickwitted. Hungry for new experiences - a traveller. Impressionable.",
+            "CAN": "Sensitive, friendly, but reserved; tradition loving; lives in fantasy.",
             "LEO": "A cheerful nature, with strong ego, which could lead to vanity, pride & conceit.",
-            "VIRGO": "Often speaks too much & too hastily. Closed book to others.",
-            "LIBRA": "Polite, diplomatic, good social manners. Eloquent.",
-            "SCORPIO": "Tenacious will, much energy & working power, passionate, often sensual. Honest.",
-            "SAGITTARIUS": "Active or restless (a roving spirit), easily inspired, but not at all persevering.",
-            "CAPRICORN": "Reserved, careful, sly. Learns by experience - reacts slowly to new things. Common sense.",
-            "AQUARIUS": "Openminded, loves freedom, original even eccentric. Individualistic.",
-            "PISCES": "Rich fantasy, deep feeling, impressionable. Easy to discourage. Receptive."
+            "VIR": "Often speaks too much & too hastily. Closed book to others.",
+            "LIB": "Polite, diplomatic, good social manners. Eloquent.",
+            "SCO": "Tenacious will, much energy & working power, passionate, often sensual. Honest.",
+            "SAG": "Active or restless (a roving spirit), easily inspired, but not at all persevering.",
+            "CAP": "Reserved, careful, sly. Learns by experience - reacts slowly to new things. Common sense.",
+            "AQU": "Openminded, loves freedom, original even eccentric. Individualistic.",
+            "PIS": "Rich fantasy, deep feeling, impressionable. Easy to discourage. Receptive."
         },
-        # ... [păstrează restul dicționarului natal_interpretations așa cum este] ...
+        "Mercury": {
+            "ARI": "Open & self-reliant, speaks fluently & too much. Ready to fight, full of new ideas.",
+            "TAU": "Thorough, persevering. Good at working with the hands. Inflexible,steady, obstinate, self-opinionated, conventional, limited in interests.",
+            "GEM": "Combative. Many-sided, interested in many subjects, well read, mentally swift.",
+            "CAN": "Dreamy, fantasises & lives in the past. Tactful, diplomatic.",
+            "LEO": "Sociable, optimistic, enjoys life. Self-confident (too much?).",
+            "VIR": "Quickwitted. Thinks realistically. Has an eye for detail. Can be fussy.",
+            "LIB": "Rational, appreciative, ready to compromise. Observant. Lacking in thoroughness.",
+            "SCO": "A shrewd & thorough thinker, taciturn, acute, penetrating, with a deep & silent personality.",
+            "SAG": "Frank, sincere, humanitarian, justice loving, rich in ideas.",
+            "CAP": "Logical, systematic, critical, shrewd, often a slow thinker/mover.",
+            "AQU": "Original, full of ideas, intuitive, usually good memory.",
+            "PIS": "Emotional, impressionable. Always fantasising, dreaming."
+        },
+        "Venus": {
+            "ARI": "Impulsive, passionate, self reliant, extroverted. Sometimes sociable.",
+            "TAU": "Often tender, sensual. Overpossessive & sometimes jealous. A good mixer.",
+            "GEM": "Flirtatious. Makes friends very easily. Has multifaceted relationships.",
+            "CAN": "Homeloving. Wary of others- generally cautious. A good host.",
+            "LEO": "Magnanimous, self-centred, often creative. An exhibitionist - loves acting.",
+            "VIR": "Appears cool & closed: really passionate. Shy, restrained, scheming.",
+            "LIB": "Very sociable, many friendships but few deep or enduring ones.",
+            "SCO": "Passionate, intense, sensual, exacting, highly sensitive to any slight or neglect.",
+            "SAG": "Freedom-loving: hence unstable, changeful in friendships & marriage.",
+            "CAP": "Faithful & usually reliable, but capricious at times.",
+            "AQU": "Impersonal but friendly, makes contacts easily.",
+            "PIS": "Tolerant, compassionate, always ready to help. Self-sacrificing."
+        },
+        "Mars": {
+            "ARI": "Energetic, enterprising, vital, open, fond of independence.",
+            "TAU": "Determined, often unyielding, persevering in work, quite self reliant.",
+            "GEM": "Interested in many things, quick, perceptive, eloquent, acute, sarcastic argumentative.",
+            "CAN": "Domestic life is very important - in this, practical & constructive.",
+            "LEO": "Ambitious, enthusiastic, persevering. Powerful, generous, hot-tempered.",
+            "VIR": "Considerate, appreciative, prudent, careful, meticulous, persevering, a natural worrier.",
+            "LIB": "Seldom angry or ill-natured. Temperamental, moody & vain.",
+            "SCO": "Dynamic. Extremely strong willed. Capable of anything when determined.",
+            "SAG": "Energetic, fond of travelling & adventure. Often not very persevering. Hasty, inconsiderate.",
+            "CAP": "Ambitious, strongwilled, persevering. Strives for rise, power, fame.",
+            "AQU": "Strong reasoning powers. Often interested in science. Fond of freedom & independence.",
+            "PIS": "Failure because of multifarious aims. Prefers compromise. Restless. No self confidence."
+        },
+        "Jupiter": {
+            "ARI": "Optimistic, energetic, fond of freedom & justice, stands up for ideas & ideals.High-spirited & self-willed.",
+            "TAU": "Reliable, good-natured, in search of success through constancy, builds up future in lots of little steps. Usually good judgement.",
+            "GEM": "Quickwitted, interested in many things, intent on expanding horizons through travel & study. Often superficial.",
+            "CAN": "Appreciative of others. Plans life carefully. Intuitive, but lives in a fantasy world.",
+            "LEO": "Has a talent for organizing & leading. Open & ready to help anyone in need - magnanimous & affectionate.",
+            "VIR": "Objectively critical, conscientious, overskeptical, quiet, kind, rather too matter-of-fact, reliable",
+            "LIB": "Gregarious, well-loved, fair, ethical, good. Convincing at conversation.",
+            "SCO": "Strongwilled, ambitious, persevering, determined & smart.",
+            "SAG": "Optimistic, always interested in learning something new.",
+            "CAP": "Has a sense of responsibility. Ambitious. Conventional, economical,honest sometimes avaricious. Persevering & stubborn.",
+            "AQU": "Idealistic, sociable, interested in teaching or philosophy. Tolerant.",
+            "PIS": "Compassionate, hospitable, ready to help others, jolly, pleasant, very easy-going."
+        },
+        "Saturn": {
+            "ARI": "Some talent for organizing, strives for leadership: however, lacks the necessary sense of responsibility & depth.",
+            "TAU": "Realistic, strongwilled, persevering, careful.",
+            "GEM": "Concentrates, a thinker. Profound, well-ordered, disciplined, logical, austere, serious.",
+            "CAN": "Sense of responsibility for the family. Conservative, economical.",
+            "LEO": "Talent for organizing, strongwilled, self-confident. Pursues objectives obstinately, heedless of others. Jealous, possessive.",
+            "VIR": "A methodical & logical thinker: sometimes a ponderer. Careful, practical, conscientious, sometimes pedantic, severe, overprudent.",
+            "LIB": "Sociable, reliable, patient, fond of justice, rational, tactful, usually diplomatic.",
+            "SCO": "Determined, persevering, pursues professional objectives tenaciously. Usually inflexible.",
+            "SAG": "Upright, open, courageous, honourable, grave, dignified, very capable.",
+            "CAP": "Highly ambitious, serious, usually introverted. Conventional.",
+            "AQU": "Pragmatic, observant. Able to influence others. Overpowering desire for independence.",
+            "PIS": "Sympathetic, adaptable, ready to sacrifice self for others, but often indecisive, cowardly, sad, moody, worrying."
+        },
+        "Uranus": {
+            "ARI": "Original, strongwilled, insists on personal freedom & independence. Proud, courageous, rebellious, dogmatic.",
+            "TAU": "Determined, self-willed, industrious, self-reliant, practical, a dogged pursuer of goals.",
+            "GEM": "Rich in ideas, inventive, versatile, gifted, able, an original thinker.",
+            "CAN": "Rather passive, compassionate, sensitive, impressionable, intuitive.",
+            "LEO": "Eccentric, original, artistic, quite self-reliant - a loner. Sometimes arrogant, wilful.",
+            "VIR": "Hypercritical, clever, whimsical. Peculiar views on health & nutrition. Emotionally unreliable.",
+            "LIB": "Fond of justice, fair. Original, unorthodox views on law. Restless, romantic.",
+            "SCO": "Strongwilled, intelligent, malicious, sly, vengeful. Intent on bodily & sensual enjoyment.",
+            "SAG": "Active, sociable. Purposeful, methodical but reckless, highly-strung, rebellious, excitable, adventurous.",
+            "CAP": "Talent for organizing, with a strong will, a fierce warlike nature, often a very strong personality.",
+            "AQU": "Original, rich in ideas, independent, usually interested in science.",
+            "PIS": "Sensitive, appreciative, adaptable, often passive. Frequently idealistic, visionary, religious, impractical."
+        },
+        "Neptune": {
+            "ARI": "Lives in fantasy. Perseveres in finding solutions for problems.",
+            "TAU": "Likes spiritual things. Very secretive. Impractical, overly traditional.",
+            "GEM": "Complex, worrying, fantasising, has many impractical ideas but sometimes flashes of brilliance too. Muddle-headed.",
+            "CAN": "Dreamy, inclined to escape from reality. Loves luxuries & comforts that life can offer.",
+            "LEO": "Fond of freedom. Takes risks. Conceited. Often stands up for own beliefs & ideals.",
+            "VIR": "Humble. Sometimes has prophetic foresight. Is very critical, sceptical about orthodox religion, tradition & received opinions in general.",
+            "LIB": "Idealistic, often a bit out of touch with reality. Has only a hazy view & understanding of real life & the world.",
+            "SCO": "Emotionally intense. Has ideals of social justice & morality. Secretive.",
+            "SAG": "Shrewd, wide-awake intellect. Interested in an unattainable Utopia.",
+            "CAP": "Can intuitively grasp things.",
+            "AQU": "Often has obscure & quixotic ideas.",
+            "PIS": "Gentle, loving, sociable, honest & reliable."
+        },
+        "Pluto": {
+            "ARI": "Straightforward, sometimes a little bit egotistical. Very assertive. Pioneering leader.",
+            "TAU": "Very interested in modern technology. Materially acquisitive.",
+            "GEM": "Strong & self-reliant, able to appraise people & situations very quickly & correctly.",
+            "CAN": "Rich inner life, often active dreams & fantasy.",
+            "LEO": "Strong creative desires. Uncontrollable sexual appetite. Determined to win.",
+            "VIR": "Prone to soul-searching & self-criticism. Thinks & acts to the point.",
+            "LIB": "Often ruled by the intellect: tries to solve problems logically. Interested in justice & the law.",
+            "SCO": "Tenacious, exceptionally enduring. Can lead the way, however difficult. Emotionally intense, highly sexual.",
+            "SAG": "Interested in the study of racial & ethnic differences & origins & of traditional beliefs.",
+            "CAP": "Fascinated by new things. Dictatorial, impatient, lacking in consideration, dedicated to own profession.",
+            "AQU": "Has many friends. Original, has many ideas. Demanding in personal relationships.",
+            "PIS": "Profound, intellectual, introverted - does not like crowds.Investigative, patient. Creative & artistic"
+        }
     }
 
     # COMPLETE Aspect Interpretations - TOATE COMBINAȚIILE
     aspect_interpretations = {
-        # ... [păstrează aspect_interpretations așa cum este] ...
+        # Sun aspects
+        "SUN = MOO": "a feeling or moody nature",
+        "SUN + MOO": "emotionally well-balanced", 
+        "SUN - MOO": "feels a split between emotions and will",
+        "SUN = MER": "mentally active",
+        "SUN = VEN": "kind, gentle, warmhearted",
+        "SUN = MAR": "strong, energetic, assertive",
+        "SUN + MAR": "a developed efficiency of action",
+        "SUN - MAR": "overly aggressive, misuse of energy",
+        "SUN = JUP": "divinely blessed",
+        "SUN + JUP": "exceedingly blessed",
+        "SUN - JUP": "indulgent, unduly confident",
+        "SUN = SAT": "conservative, hard working, cautious",
+        "SUN + SAT": "disciplined, mature, practical",
+        "SUN - SAT": "experiences restrictiveness of spirit, inferiority complex",
+        "SUN = URA": "lives a life of excitement, insatiable zest",
+        "SUN + URA": "inspired, spirited, ahead of the times",
+        "SUN - URA": "independent, rebellious, self-willed",
+        "SUN = NEP": "a mystic in the truest sense",
+        "SUN + NEP": "lives from the heart",
+        "SUN - NEP": "weak or diffused self-image",
+        "SUN = PLU": "experiences life in an emotionally concentrated way",
+        "SUN + PLU": "has the greatest ability to improve, raise their consciousness, and transform any psychological complex they may have",
+        "SUN - PLU": "tries to control all of life",
+        
+        # Moon aspects
+        "MOO = MER": "emotionally expressive",
+        "MOO + MER": "articulate, optimistic, great mental clarity",
+        "MOO - MER": "struggles to find balance between feelings and intellect",
+        "MOO = VEN": "sensual",
+        "MOO + VEN": "sweet, charming", 
+        "MOO - VEN": "pursues the needs of the heart, a sensualist",
+        "MOO = MAR": "brave, bold, energetic",
+        "MOO + MAR": "thrives on activity",
+        "MOO - MAR": "selfish",
+        "MOO = JUP": "emotionally buoyant",
+        "MOO + JUP": "emotionally blessed",
+        "MOO - JUP": "emotionally excessive",
+        "MOO = SAT": "emotionally inhibited",
+        "MOO + SAT": "emotionally mature",
+        "MOO - SAT": "an emotionally karmic lifetime",
+        "MOO = URA": "emotionally high-strung",
+        "MOO + URA": "emotionally free",
+        "MOO - URA": "an individualist",
+        "MOO = NEP": "lives in their feelings",
+        "MOO + NEP": "suffers from emotional deception, disillusionment",
+        "MOO - NEP": "kind hearted, emotionally inspired",
+        "MOO = PLU": "emotionally compulsive",
+        "MOO + PLU": "blessed in the art of living",
+        "MOO - PLU": "lives a cathartic emotional life",
+        
+        # Mercury aspects
+        "MER = VEN": "lives a life of refinement and culture",
+        "MER + VEN": "artistic potential",
+        "MER = MAR": "mentally aggressive",
+        "MER + MAR": "intelligent, incisive, the best attitude",
+        "MER - MAR": "a professional critic",
+        "MER = JUP": "mentally exuberant",
+        "MER + JUP": "the best learner", 
+        "MER - JUP": "no sense of mental proportion",
+        "MER = SAT": "lives a life of concentrated thought",
+        "MER + SAT": "the most conscientious",
+        "MER - SAT": "nervous system under constant pressure, confidence adversely affected",
+        "MER = URA": "lives a life of independent thinking",
+        "MER + URA": "inspired, experimental thinker",
+        "MER - URA": "a revolutionary thinker",
+        "MER = NEP": "the most imaginative",
+        "MER + NEP": "acutely sensitive, delicate mind",
+        "MER - NEP": "mentally unfocused",
+        "MER = PLU": "lives a life of probing and observing",
+        "MER + PLU": "balanced and whole in your thinking",
+        "MER - PLU": "too intense and subjective in their thinking",
+        
+        # Venus aspects
+        "VEN = MAR": "thrives on passion",
+        "VEN + MAR": "romantically healthy",
+        "VEN - MAR": "difficulties in relationships",
+        "VEN = JUP": "supremely lucky",
+        "VEN + JUP": "lives a life of abundant pleasure, opulence, and good fortune",
+        "VEN - JUP": "too indulgent in comforts and luxuries",
+        "VEN = SAT": "overly cautious in love matters",
+        "VEN + SAT": "excellent marriage partner, brings form and structure to aesthetic principles",
+        "VEN - SAT": "suffers in love life due to past life abusive and harmful actions",
+        "VEN = URA": "excited about love",
+        "VEN + URA": "thrilled with life, excited about love", 
+        "VEN - URA": "fickle, divorce prone",
+        "VEN = NEP": "idealizes love",
+        "VEN + NEP": "the consummate love partner",
+        "VEN - NEP": "romanticizes love",
+        "VEN = PLU": "the greatest desire is to love intensely and completely",
+        "VEN + PLU": "the healthiest love partner",
+        "VEN - PLU": "at the mercy of uncontrollable passions",
+        
+        # Mars aspects
+        "MAR = JUP": "ambitious and motivated",
+        "MAR + JUP": "enthusiastic, spirited, buoyant",
+        "MAR - JUP": "extremist",
+        "MAR = SAT": "lives a life of restrained impulses",
+        "MAR + SAT": "feels a sense of purpose and direction, consistently actualizes dreams",
+        "MAR - SAT": "desires and impulses are subject to immediate restriction and censorship",
+        "MAR = URA": "lives a life of untamed energy and audacious activity",
+        "MAR + URA": "inspired ambitions, successful",
+        "MAR - URA": "overly independent, individualistic, unconstrained",
+        "MAR = NEP": "psychically animated",
+        "MAR + NEP": "wants to help",
+        "MAR - NEP": "little ability to put desires above those of others",
+        "MAR = PLU": "a reservoir of unlimited energy",
+        "MAR + PLU": "great potential, combined with the most potent energy", 
+        "MAR - PLU": "driven by compulsive cravings to dominate and win",
+        
+        # Jupiter aspects
+        "JUP = SAT": "the strongest character and depth of soul",
+        "JUP + SAT": "the best judgment",
+        "JUP - SAT": "overly concerned with the meaning of existence",
+        "JUP = URA": "thrives on knowledge, truth, freedom",
+        "JUP + URA": "extremist",
+        "JUP - URA": "an inspired lover of truth",
+        "JUP = NEP": "devotional, pious, pure hearted",
+        "JUP + NEP": "saintly",
+        "JUP - NEP": "confused in your judgment",
+        "JUP = PLU": "compelled to find the truth, and have their life make a major impact",
+        "JUP + PLU": "honorable, of the best morals",
+        "JUP - PLU": "extreme in judgment, compulsive about philosophical and religious beliefs",
+        
+        # Saturn aspects
+        "SAT = URA": "an agent for change",
+        "SAT + URA": "good at implementing progressive plans and actions",
+        "SAT - URA": "struggles to be both authoritarian and revolutionary",
+        "SAT = NEP": "a practical idealist",
+        "SAT + NEP": "outstanding example of responsibility", 
+        "SAT - NEP": "dissatisfied and uncertain of yourself",
+        "SAT = PLU": "compulsive about responsibility",
+        "SAT + PLU": "a mature human being",
+        "SAT - PLU": "life theme is karmic repayment of past life debts, an inordinate amount of difficulty, hardship, and suffering",
+        
+        # Uranus aspects
+        "URA = NEP": "intense confusion regarding your independence, self reliance, and individuality (once every 190 years; last in 1993)",
+        "URA = PLU": "highly clairvoyant, metaphysical, extremely devotional, evolved"
     }
 
     # COMPLETE Sexual Interpretations - TOATE PLANETELE ȘI CASELE CU SEMNE COMPLETE
@@ -1477,27 +1745,27 @@ def display_complete_interpretations(chart_data, interpretation_type):
         # 1. Ascendant interpretation
         if 1 in chart_data['houses']:
             asc_data = chart_data['houses'][1]
-            asc_sign = asc_data['sign']
-            asc_key = f"ASC{asc_sign}"
+            asc_sign_short = asc_data['sign']
+            asc_sign_full = get_full_sign(asc_sign_short)
+            asc_key = f"ASC{asc_sign_full}"
             
             if asc_key in sexual_interpretations:
-                st.write(f"**Ascendant in {asc_sign}**")
+                st.write(f"**Ascendant in {asc_sign_full}**")
                 st.write(f"{sexual_interpretations[asc_key]}")
                 st.markdown("---")
         
-        # 2. All planet interpretations - ACUM CU SEMNE COMPLETE
+        # 2. All planet interpretations
         sexual_planets = ["Sun", "Moon", "Mercury", "Venus", "Mars"]
         
         for planet_name in sexual_planets:
             if planet_name in chart_data['planets']:
                 planet_data = chart_data['planets'][planet_name]
-                planet_sign = planet_data['sign']
-                
-                # Folosește numele complet al planetei + semnul complet
-                planet_key = f"{planet_name}{planet_sign}"
+                planet_sign_short = planet_data['sign']
+                planet_sign_full = get_full_sign(planet_sign_short)
+                planet_key = f"{planet_name}{planet_sign_full}"
                 
                 if planet_key in sexual_interpretations:
-                    st.write(f"**{planet_name} in {planet_sign}**")
+                    st.write(f"**{planet_name} in {planet_sign_full}**")
                     st.write(f"{sexual_interpretations[planet_key]}")
                     st.markdown("---")
 
