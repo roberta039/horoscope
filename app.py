@@ -979,13 +979,17 @@ def display_positions():
         if planet_name in chart_data['planets']:
             planet_data = chart_data['planets'][planet_name]
             positions_data.append({
+                'House': planet_data.get('house', 'N/A'),  # House prima coloană
                 'Planet': planet_name,
                 'Position': planet_data['position_str'],
-                'Longitude': f"{int(planet_data['longitude'])}°{int((planet_data['longitude'] % 1) * 60)}'",
-                'House': planet_data.get('house', 'N/A')
+                'Longitude': f"{int(planet_data['longitude'])}°{int((planet_data['longitude'] % 1) * 60)}'"
             })
     
     df = pd.DataFrame(positions_data)
+    
+    # Reordonează coloanele pentru a avea House prima
+    df = df[['House', 'Planet', 'Position', 'Longitude']]
+    
     st.dataframe(df, use_container_width=True, hide_index=True)
 
 def display_aspects():
