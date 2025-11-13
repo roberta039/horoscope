@@ -304,8 +304,8 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
         
         # Desenează casele și semnele
         for i in range(12):
-            # Schimbăm ordinea: începem de la poziția unde era casa 11
-            adjusted_i = (i + 10) % 12  # 0->10, 1->11, 2->0, 3->1, etc.
+            # Schimbăm ordinea: începem de la poziția unde era casa 12
+            adjusted_i = (i + 11) % 12  # 0->11, 1->0, 2->1, 3->2, etc.
             angle = adjusted_i * 30 - 90  # Începe de la poziția corectă
             rad_angle = np.radians(angle)
             
