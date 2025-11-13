@@ -1290,28 +1290,121 @@ def display_interpretation():
 def display_complete_interpretations(chart_data, interpretation_type):
     """Display interpretations for Natal, Natal Aspects, and Sexual only"""
     
-    # Natal Interpretations (Planets in Signs) - TOATE PLANETELE
+    # Natal Interpretations (Planets in Signs)
     natal_interpretations = {
         "Sun": {
             "ARI": "Open, energetic, strong, enthusiastic, forward looking, positive, determined, inventive, bright, filled with a zest for life.",
             "TAU": "Reliable, able, with powers of concentration, tenacity. Steadfast, a loving & affectionate 'family' person. Honest, forthright. Learns readily from mistakes.",
-            # ... (toate interpretările pentru toate planetele rămân la fel)
+            "GEM": "Clever, bright, quickwitted, communicative, able to do many different things at once, eager to learn new subjects. Openminded, adaptable, curious, restless, confident, seldom settling down.",
+            "CAN": "Emotional, complex, loving, sympathetic, understanding, humanitarian, kind, tender, respectful of the rights of others.",
+            "LEO": "Self reliant, popular, good at leading others & at administration. Lots of directed energy & drive - good at achieving that which is desired. Very confident.",
+            "VIR": "Cool, critical, idealistic but practical, hardworking & a good planner. Sees things through to the finish. Trustworthy, dependable, never shirks responsibilities. Perfectionist for the sake of perfection.",
+            "LIB": "Friendly, cordial, artistic, kind, considerate, loyal, alert, sociable, moderate, balanced in views, open-minded.",
+            "SCO": "Determined, direct, confident, sincere, brave, courageous, strongwilled, unafraid of setbacks or hard work. Principled & unswerving once a path has been decided on - has very clear goals.",
+            "SAG": "Forthright, freedom loving, honest, tolerant, broadminded, open, frank, fair, dependable, trusting (seldom suspicious), optimistic, generous, intelligent, respected, earnest, funloving & trustworthy.",
+            "CAP": "Orderly, patient, serious, stable, persevering, careful, prudent, just, (justice usually being more important to this person than mercy). Will always repay favours - self-reliant.",
+            "AQU": "Independent, tolerant, honest, forthright, considerate, helpful, sincere, generous, unprejudiced, broadminded, reliable, refined & humanitarian. An intense kinship with nature. Not much practical common sense.",
+            "PIS": "Sensitive, sympathetic, understanding, kind, sentimental, dedicated, broadminded, uncritical of the shortcomings of others. Quite earnest & trustworthy. Generous."
+        },
+        "Moon": {
+            "ARI": "Energetic, ambitious, strongwilled, self-centred, impulsive, dominant & obstinate.",
+            "TAU": "Gregarious, sociable, sensuous, sometimes strongly possessive.",
+            "GEM": "Quickwitted. Hungry for new experiences - a traveller. Impressionable.",
+            "CAN": "Sensitive, friendly, but reserved; tradition loving; lives in fantasy.",
+            "LEO": "A cheerful nature, with strong ego, which could lead to vanity, pride & conceit.",
+            "VIR": "Often speaks too much & too hastily. Closed book to others.",
+            "LIB": "Polite, diplomatic, good social manners. Eloquent.",
+            "SCO": "Tenacious will, much energy & working power, passionate, often sensual. Honest.",
+            "SAG": "Active or restless (a roving spirit), easily inspired, but not at all persevering.",
+            "CAP": "Reserved, careful, sly. Learns by experience - reacts slowly to new things. Common sense.",
+            "AQU": "Openminded, loves freedom, original even eccentric. Individualistic.",
+            "PIS": "Rich fantasy, deep feeling, impressionable. Easy to discourage. Receptive."
+        },
+        "Mercury": {
+            "ARI": "Open & self-reliant, speaks fluently & too much. Ready to fight, full of new ideas.",
+            "TAU": "Thorough, persevering. Good at working with the hands. Inflexible,steady, obstinate, self-opinionated, conventional, limited in interests.",
+            "GEM": "Combative. Many-sided, interested in many subjects, well read, mentally swift.",
+            "CAN": "Dreamy, fantasises & lives in the past. Tactful, diplomatic.",
+            "LEO": "Sociable, optimistic, enjoys life. Self-confident (too much?).",
+            "VIR": "Quickwitted. Thinks realistically. Has an eye for detail. Can be fussy.",
+            "LIB": "Rational, appreciative, ready to compromise. Observant. Lacking in thoroughness.",
+            "SCO": "A shrewd & thorough thinker, taciturn, acute, penetrating, with a deep & silent personality.",
+            "SAG": "Frank, sincere, humanitarian, justice loving, rich in ideas.",
+            "CAP": "Logical, systematic, critical, shrewd, often a slow thinker/mover.",
+            "AQU": "Original, full of ideas, intuitive, usually good memory.",
+            "PIS": "Emotional, impressionable. Always fantasising, dreaming."
+        },
+        "Venus": {
+            "ARI": "Impulsive, passionate, self reliant, extroverted. Sometimes sociable.",
+            "TAU": "Often tender, sensual. Overpossessive & sometimes jealous. A good mixer.",
+            "GEM": "Flirtatious. Makes friends very easily. Has multifaceted relationships.",
+            "CAN": "Homeloving. Wary of others- generally cautious. A good host.",
+            "LEO": "Magnanimous, self-centred, often creative. An exhibitionist - loves acting.",
+            "VIR": "Appears cool & closed: really passionate. Shy, restrained, scheming.",
+            "LIB": "Very sociable, many friendships but few deep or enduring ones.",
+            "SCO": "Passionate, intense, sensual, exacting, highly sensitive to any slight or neglect.",
+            "SAG": "Freedom-loving: hence unstable, changeful in friendships & marriage.",
+            "CAP": "Faithful & usually reliable, but capricious at times.",
+            "AQU": "Impersonal but friendly, makes contacts easily.",
+            "PIS": "Tolerant, compassionate, always ready to help. Self-sacrificing."
+        },
+        "Mars": {
+            "ARI": "Energetic, enterprising, vital, open, fond of independence.",
+            "TAU": "Determined, often unyielding, persevering in work, quite self reliant.",
+            "GEM": "Interested in many things, quick, perceptive, eloquent, acute, sarcastic argumentative.",
+            "CAN": "Domestic life is very important - in this, practical & constructive.",
+            "LEO": "Ambitious, enthusiastic, persevering. Powerful, generous, hot-tempered.",
+            "VIR": "Considerate, appreciative, prudent, careful, meticulous, persevering, a natural worrier.",
+            "LIB": "Seldom angry or ill-natured. Temperamental, moody & vain.",
+            "SCO": "Dynamic. Extremely strong willed. Capable of anything when determined.",
+            "SAG": "Energetic, fond of travelling & adventure. Often not very persevering. Hasty, inconsiderate.",
+            "CAP": "Ambitious, strongwilled, persevering. Strives for rise, power, fame.",
+            "AQU": "Strong reasoning powers. Often interested in science. Fond of freedom & independence.",
+            "PIS": "Failure because of multifarious aims. Prefers compromise. Restless. No self confidence."
         }
-        # ... (restul planetelor)
     }
 
-    # Natal Aspects Interpretations
+    # Aspect Interpretations
     aspect_interpretations = {
         "SUN = MOO": "a feeling or moody nature",
-        "SUN + MOO": "emotionally well-balanced", 
-        # ... (toate aspectele rămân)
+        "SUN + MOO": "emotionally well-balanced",
+        "SUN - MOO": "feels a split between emotions and will",
+        "SUN = MER": "mentally active",
+        "SUN = VEN": "kind, gentle, warmhearted",
+        "SUN = MAR": "strong, energetic, assertive",
+        "SUN + MAR": "a developed efficiency of action",
+        "SUN - MAR": "overly aggressive, misuse of energy",
+        "SUN = JUP": "divinely blessed",
+        "SUN + JUP": "exceedingly blessed",
+        "SUN - JUP": "indulgent, unduly confident",
+        "SUN = SAT": "conservative, hard working, cautious",
+        "SUN + SAT": "disciplined, mature, practical",
+        "SUN - SAT": "experiences restrictiveness of spirit, inferiority complex",
+        "SUN = URA": "lives a life of excitement, insatiable zest",
+        "SUN + URA": "inspired, spirited, ahead of the times",
+        "SUN - URA": "independent, rebellious, self-willed",
+        "SUN = NEP": "a mystic in the truest sense",
+        "SUN + NEP": "lives from the heart",
+        "SUN - NEP": "weak or diffused self-image",
+        "SUN = PLU": "experiences life in an emotionally concentrated way",
+        "SUN + PLU": "has the greatest ability to improve, raise their consciousness, and transform any psychological complex they may have",
+        "SUN - PLU": "tries to control all of life"
     }
 
-    # House Interpretations - TOATE CASELE
+    # House Interpretations for Sexual
     house_interpretations = {
         "01": "Usually warmhearted & lovable but also vain, hedonistic & flirtatious.",
         "02": "Often very level-headed & talented, but also rather materialistic.",
-        # ... (toate casele rămân)
+        "03": "Communicative, usually a good speaker & a lucid writer.",
+        "04": "Home is the one of the most important things in life for this person.",
+        "05": "As a child energetic, noisy, overactive, fond of taking risks.",
+        "06": "Willing to organize & work hard. Adaptable.",
+        "07": "Friendly, sociable, interested in a bettering own quality of life.",
+        "08": "Serious by nature. Though interested in material things, fascinated by philosophies of life & death.",
+        "09": "Has very wide-ranging interests.",
+        "10": "Appreciative of the importance of success in life.",
+        "11": "Often has a clear object or goal in view. A good organizer.",
+        "12": "Dreamy, delicate, vulnerable, shy, reserved, introspective. Forgetful."
     }
 
     # Display based on interpretation type
