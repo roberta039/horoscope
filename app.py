@@ -1434,147 +1434,52 @@ def display_complete_interpretations(chart_data, interpretation_type):
         }
     }
 
-    # COMPLETE Aspect Interpretations - TOATE COMBINAȚIILE
-    aspect_interpretations = {
-        # Sun aspects
-        "SUN = MOON": "a feeling or moody nature",
-        "SUN + MOON": "emotionally well-balanced", 
-        "SUN - MOON": "feels a split between emotions and will",
-        "SUN = MERCURY": "mentally active",
-        "SUN = VENUS": "kind, gentle, warmhearted",
-        "SUN = MARS": "strong, energetic, assertive",
-        "SUN + MARS": "a developed efficiency of action",
-        "SUN - MARS": "overly aggressive, misuse of energy",
-        "SUN = JUPITER": "divinely blessed",
-        "SUN + JUPITER": "exceedingly blessed",
-        "SUN - JUPITER": "indulgent, unduly confident",
-        "SUN = SATURN": "conservative, hard working, cautious",
-        "SUN + SATURN": "disciplined, mature, practical",
-        "SUN - SATURN": "experiences restrictiveness of spirit, inferiority complex",
-        "SUN = URANUS": "lives a life of excitement, insatiable zest",
-        "SUN + URANUS": "inspired, spirited, ahead of the times",
-        "SUN - URANUS": "independent, rebellious, self-willed",
-        "SUN = NEPTUNE": "a mystic in the truest sense",
-        "SUN + NEPTUNE": "lives from the heart",
-        "SUN - NEPTUNE": "weak or diffused self-image",
-        "SUN = PLUTO": "experiences life in an emotionally concentrated way",
-        "SUN + PLUTO": "has the greatest ability to improve, raise their consciousness, and transform any psychological complex they may have",
-        "SUN - PLUTO": "tries to control all of life",
-        
-        # Moon aspects
-        "MOON = MERCURY": "emotionally expressive",
-        "MOON + MERCURY": "articulate, optimistic, great mental clarity",
-        "MOON - MERCURY": "struggles to find balance between feelings and intellect",
-        "MOON = VENUS": "sensual",
-        "MOON + VENUS": "sweet, charming", 
-        "MOON - VENUS": "pursues the needs of the heart, a sensualist",
-        "MOON = MARS": "brave, bold, energetic",
-        "MOON + MARS": "thrives on activity",
-        "MOON - MARS": "selfish",
-        "MOON = JUPITER": "emotionally buoyant",
-        "MOON + JUPITER": "emotionally blessed",
-        "MOON - JUPITER": "emotionally excessive",
-        "MOON = SATURN": "emotionally inhibited",
-        "MOON + SATURN": "emotionally mature",
-        "MOON - SATURN": "an emotionally karmic lifetime",
-        "MOON = URANUS": "emotionally high-strung",
-        "MOON + URANUS": "emotionally free",
-        "MOON - URANUS": "an individualist",
-        "MOON = NEPTUNE": "lives in their feelings",
-        "MOON + NEPTUNE": "suffers from emotional deception, disillusionment",
-        "MOON - NEPTUNE": "kind hearted, emotionally inspired",
-        "MOON = PLUTO": "emotionally compulsive",
-        "MOON + PLUTO": "blessed in the art of living",
-        "MOON - PLUTO": "lives a cathartic emotional life",
-        
-        # Mercury aspects
-        "MERCURY = VENUS": "lives a life of refinement and culture",
-        "MERCURY + VENUS": "artistic potential",
-        "MERCURY = MARS": "mentally aggressive",
-        "MERCURY + MARS": "intelligent, incisive, the best attitude",
-        "MERCURY - MARS": "a professional critic",
-        "MERCURY = JUPITER": "mentally exuberant",
-        "MERCURY + JUPITER": "the best learner", 
-        "MERCURY - JUPITER": "no sense of mental proportion",
-        "MERCURY = SATURN": "lives a life of concentrated thought",
-        "MERCURY + SATURN": "the most conscientious",
-        "MERCURY - SATURN": "nervous system under constant pressure, confidence adversely affected",
-        "MERCURY = URANUS": "lives a life of independent thinking",
-        "MERCURY + URANUS": "inspired, experimental thinker",
-        "MERCURY - URANUS": "a revolutionary thinker",
-        "MERCURY = NEPTUNE": "the most imaginative",
-        "MERCURY + NEPTUNE": "acutely sensitive, delicate mind",
-        "MERCURY - NEPTUNE": "mentally unfocused",
-        "MERCURY = PLUTO": "lives a life of probing and observing",
-        "MERCURY + PLUTO": "balanced and whole in your thinking",
-        "MERCURY - PLUTO": "too intense and subjective in their thinking",
-        
-        # Venus aspects
-        "VENUS = MARS": "thrives on passion",
-        "VENUS + MARS": "romantically healthy",
-        "VENUS - MARS": "difficulties in relationships",
-        "VENUS = JUPITER": "supremely lucky",
-        "VENUS + JUPITER": "lives a life of abundant pleasure, opulence, and good fortune",
-        "VENUS - JUPITER": "too indulgent in comforts and luxuries",
-        "VENUS = SATURN": "overly cautious in love matters",
-        "VENUS + SATURN": "excellent marriage partner, brings form and structure to aesthetic principles",
-        "VENUS - SATURN": "suffers in love life due to past life abusive and harmful actions",
-        "VENUS = URANUS": "excited about love",
-        "VENUS + URANUS": "thrilled with life, excited about love", 
-        "VENUS - URANUS": "fickle, divorce prone",
-        "VENUS = NEPTUNE": "idealizes love",
-        "VENUS + NEPTUNE": "the consummate love partner",
-        "VENUS - NEPTUNE": "romanticizes love",
-        "VENUS = PLUTO": "the greatest desire is to love intensely and completely",
-        "VENUS + PLUTO": "the healthiest love partner",
-        "VENUS - PLUTO": "at the mercy of uncontrollable passions",
-        
-        # Mars aspects
-        "MARS = JUPITER": "ambitious and motivated",
-        "MARS + JUPITER": "enthusiastic, spirited, buoyant",
-        "MARS - JUPITER": "extremist",
-        "MARS = SATURN": "lives a life of restrained impulses",
-        "MARS + SATURN": "feels a sense of purpose and direction, consistently actualizes dreams",
-        "MARS - SATURN": "desires and impulses are subject to immediate restriction and censorship",
-        "MARS = URANUS": "lives a life of untamed energy and audacious activity",
-        "MARS + URANUS": "inspired ambitions, successful",
-        "MARS - URANUS": "overly independent, individualistic, unconstrained",
-        "MARS = NEPTUNE": "psychically animated",
-        "MARS + NEPTUNE": "wants to help",
-        "MARS - NEPTUNE": "little ability to put desires above those of others",
-        "MARS = PLUTO": "a reservoir of unlimited energy",
-        "MARS + PLUTO": "great potential, combined with the most potent energy", 
-        "MARS - PLUTO": "driven by compulsive cravings to dominate and win",
-        
-        # Jupiter aspects
-        "JUPITER = SATURN": "the strongest character and depth of soul",
-        "JUPITER + SATURN": "the best judgment",
-        "JUPITER - SATURN": "overly concerned with the meaning of existence",
-        "JUPITER = URANUS": "thrives on knowledge, truth, freedom",
-        "JUPITER + URANUS": "extremist",
-        "JUPITER - URANUS": "an inspired lover of truth",
-        "JUPITER = NEPTUNE": "devotional, pious, pure hearted",
-        "JUPITER + NEPTUNE": "saintly",
-        "JUPITER - NEPTUNE": "confused in your judgment",
-        "JUPITER = PLUTO": "compelled to find the truth, and have their life make a major impact",
-        "JUPITER + PLUTO": "honorable, of the best morals",
-        "JUPITER - PLUTO": "extreme in judgment, compulsive about philosophical and religious beliefs",
-        
-        # Saturn aspects
-        "SATURN = URANUS": "an agent for change",
-        "SATURN + URANUS": "good at implementing progressive plans and actions",
-        "SATURN - URANUS": "struggles to be both authoritarian and revolutionary",
-        "SATURN = NEPTUNE": "a practical idealist",
-        "SATURN + NEPTUNE": "outstanding example of responsibility", 
-        "SATURN - NEPTUNE": "dissatisfied and uncertain of yourself",
-        "SATURN = PLUTO": "compulsive about responsibility",
-        "SATURN + PLUTO": "a mature human being",
-        "SATURN - PLUTO": "life theme is karmic repayment of past life debts, an inordinate amount of difficulty, hardship, and suffering",
-        
-        # Uranus aspects
-        "URANUS = NEPTUNE": "intense confusion regarding your independence, self reliance, and individuality (once every 190 years; last in 1993)",
-        "URANUS = PLUTO": "highly clairvoyant, metaphysical, extremely devotional, evolved"
-    }
+    elif interpretation_type == "Natal Aspects":
+        # Display ALL aspect interpretations
+        aspects = calculate_aspects(chart_data)
+        if aspects:
+            st.write(f"**Found {len(aspects)} significant aspects**")
+            
+            for aspect in aspects:
+                planet1 = aspect['planet1']
+                planet2 = aspect['planet2']
+                aspect_name = aspect['aspect_name']
+                
+                # Convert Nod and Chi to full names for lookup
+                planet1_key = "NOD" if planet1 == "Nod" else "CHIRON" if planet1 == "Chi" else planet1.upper()
+                planet2_key = "NOD" if planet2 == "Nod" else "CHIRON" if planet2 == "Chi" else planet2.upper()
+                
+                # Create aspect key for lookup
+                aspect_key = f"{planet1_key} = {planet2_key}"
+                
+                st.write(f"**{planet1} {aspect_name} {planet2}**")
+                st.write(f"*Orb: {aspect['orb']:.2f}° | Strength: {aspect['strength']}*")
+                
+                if aspect_key in aspect_interpretations:
+                    st.write(f"{aspect_interpretations[aspect_key]}")
+                else:
+                    # Try alternative aspect keys
+                    alt_key1 = f"{planet1_key} + {planet2_key}"
+                    alt_key2 = f"{planet1_key} - {planet2_key}"
+                    
+                    if alt_key1 in aspect_interpretations:
+                        st.write(f"{aspect_interpretations[alt_key1]}")
+                    elif alt_key2 in aspect_interpretations:
+                        st.write(f"{aspect_interpretations[alt_key2]}")
+                    else:
+                        # Generic interpretation based on aspect type
+                        generic_interpretations = {
+                            "Conjunction": "Planets work together, blending their energies",
+                            "Opposition": "Tension and balance between opposing forces",
+                            "Trine": "Harmonious flow of energy and natural talent",
+                            "Square": "Challenges and growth through conflict",
+                            "Sextile": "Opportunities and positive connections"
+                        }
+                        generic = generic_interpretations.get(aspect_name, "Significant planetary interaction")
+                        st.write(f"{generic}")
+                st.markdown("---")
+        else:
+            st.info("No significant aspects found within allowed orb.")
 
     # COMPLETE Sexual Interpretations - TOATE PLANETELE ȘI CASELE CU SEMNE COMPLETE
     sexual_interpretations = {
