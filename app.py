@@ -707,12 +707,28 @@ def data_input_form():
     with col2:
         st.subheader("Birth Place Coordinates")
         
-        # Selector pentru capitale
-        world_capitals = {
+        # Selector pentru orașe și capitale
+        world_cities = {
+            # România
             "București, România": {"lat": 44.4268, "lon": 26.1025},
+            "Tecuci, România": {"lat": 45.8497, "lon": 27.4344},
+            "Ploiești, România": {"lat": 44.9416, "lon": 26.0227},
+            "Cluj-Napoca, România": {"lat": 46.7712, "lon": 23.6236},
+            "Timișoara, România": {"lat": 45.7489, "lon": 21.2087},
+            "Iași, România": {"lat": 47.1585, "lon": 27.6014},
+            "Constanța, România": {"lat": 44.1598, "lon": 28.6348},
+            "Craiova, România": {"lat": 44.3302, "lon": 23.7949},
+            "Brașov, România": {"lat": 45.6576, "lon": 25.6012},
+            "Galați, România": {"lat": 45.4353, "lon": 28.0070},
+            
+            # Țări învecinate
             "Budapesta, Ungaria": {"lat": 47.4979, "lon": 19.0402},
             "Belgrad, Serbia": {"lat": 44.7866, "lon": 20.4489},
             "Sofia, Bulgaria": {"lat": 42.6977, "lon": 23.3219},
+            "Chișinău, Moldova": {"lat": 47.0105, "lon": 28.8638},
+            "Kiev, Ucraina": {"lat": 50.4501, "lon": 30.5234},
+            
+            # Alte capitale europene
             "Praga, Cehia": {"lat": 50.0755, "lon": 14.4378},
             "Varșovia, Polonia": {"lat": 52.2297, "lon": 21.0122},
             "Berlin, Germania": {"lat": 52.5200, "lon": 13.4050},
@@ -730,8 +746,9 @@ def data_input_form():
             "Oslo, Norvegia": {"lat": 59.9139, "lon": 10.7522},
             "Helsinki, Finlanda": {"lat": 60.1699, "lon": 24.9384},
             "Moscova, Rusia": {"lat": 55.7558, "lon": 37.6173},
-            "Kiev, Ucraina": {"lat": 50.4501, "lon": 30.5234},
             "Ankara, Turcia": {"lat": 39.9334, "lon": 32.8597},
+            
+            # Restul lumii
             "Beijing, China": {"lat": 39.9042, "lon": 116.4074},
             "Tokyo, Japonia": {"lat": 35.6762, "lon": 139.6503},
             "New Delhi, India": {"lat": 28.6139, "lon": 77.2090},
@@ -760,25 +777,25 @@ def data_input_form():
             "Singapore, Singapore": {"lat": 1.3521, "lon": 103.8198},
         }
         
-        selected_capital = st.selectbox(
-            "Select World Capital (optional)",
-            [""] + list(world_capitals.keys()),
-            help="Select a world capital to automatically fill coordinates"
+        selected_city = st.selectbox(
+            "Select City (optional)",
+            [""] + list(world_cities.keys()),
+            help="Select a city to automatically fill coordinates"
         )
         
         # Folosim session state pentru a memora valorile auto-completate
         if 'auto_coords' not in st.session_state:
             st.session_state.auto_coords = None
         
-        if selected_capital:
-            capital_data = world_capitals[selected_capital]
+        if selected_city:
+            city_data = world_cities[selected_city]
             st.session_state.auto_coords = {
-                "lat": capital_data["lat"],
-                "lon": capital_data["lon"]
+                "lat": city_data["lat"],
+                "lon": city_data["lon"]
             }
-            st.info(f"📍 {selected_capital}: {abs(capital_data['lat']):.4f}°{'N' if capital_data['lat'] >= 0 else 'S'}, {abs(capital_data['lon']):.4f}°{'E' if capital_data['lon'] >= 0 else 'W'}")
-        elif st.session_state.auto_coords and selected_capital == "":
-            # Reset auto coordinates when no capital is selected
+            st.info(f"📍 {selected_city}: {abs(city_data['lat']):.4f}°{'N' if city_data['lat'] >= 0 else 'S'}, {abs(city_data['lon']):.4f}°{'E' if city_data['lon'] >= 0 else 'W'}")
+        elif st.session_state.auto_coords and selected_city == "":
+            # Reset auto coordinates when no city is selected
             st.session_state.auto_coords = None
         
         col2a, col2b = st.columns(2)
@@ -792,7 +809,7 @@ def data_input_form():
                     default_lon_deg = int(abs(st.session_state.auto_coords["lon"]))
                     default_lon_dir = "East" if st.session_state.auto_coords["lon"] >= 0 else "West"
                 else:
-                    default_lon_deg = 16
+                    default_lon_deg = 26
                     default_lon_dir = "East"
                 
                 longitude_deg = st.number_input("Longitude (°)", min_value=0, max_value=180, 
@@ -802,7 +819,7 @@ def data_input_form():
                 if st.session_state.auto_coords:
                     default_lon_min = round((abs(st.session_state.auto_coords["lon"]) - default_lon_deg) * 60)
                 else:
-                    default_lon_min = 0
+                    default_lon_min = 6  # București are 26°06'
                 
                 longitude_min = st.number_input("Longitude (')", min_value=0, max_value=59, 
                                               value=default_lon_min, 
@@ -821,7 +838,7 @@ def data_input_form():
                     default_lat_deg = int(abs(st.session_state.auto_coords["lat"]))
                     default_lat_dir = "North" if st.session_state.auto_coords["lat"] >= 0 else "South"
                 else:
-                    default_lat_deg = 45
+                    default_lat_deg = 44
                     default_lat_dir = "North"
                 
                 latitude_deg = st.number_input("Latitude (°)", min_value=0, max_value=90, 
@@ -831,7 +848,7 @@ def data_input_form():
                 if st.session_state.auto_coords:
                     default_lat_min = round((abs(st.session_state.auto_coords["lat"]) - default_lat_deg) * 60)
                 else:
-                    default_lat_min = 51
+                    default_lat_min = 26  # București are 44°26'
                 
                 latitude_min = st.number_input("Latitude (')", min_value=0, max_value=59, 
                                              value=default_lat_min, 
@@ -861,8 +878,8 @@ def data_input_form():
                 'time_zone': time_zone,
                 'lat_deg': lat,
                 'lon_deg': lon,
-                'lat_display': f"{latitude_deg}°{latitude_min:.0f}'{latitude_dir}",
-                'lon_display': f"{longitude_deg}°{longitude_min:.0f}'{longitude_dir}"
+                'lat_display': f"{latitude_deg}°{latitude_min}'{latitude_dir}",
+                'lon_display': f"{longitude_deg}°{longitude_min}'{longitude_dir}"
             }
             
             chart_data = calculate_chart_cached(birth_data)
