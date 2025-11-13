@@ -1434,8 +1434,9 @@ def display_complete_interpretations(chart_data, interpretation_type):
         }
     }
 
-    # COMPLETE Aspect Interpretations 
+    # COMPLETE Aspect Interpretations - ALL COMBINATIONS
     aspect_interpretations = {
+        # Sun aspects
         "SUN = MOO": "a feeling or moody nature",
         "SUN + MOO": "emotionally well-balanced", 
         "SUN - MOO": "feels a split between emotions and will",
@@ -1459,6 +1460,8 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "SUN = PLU": "experiences life in an emotionally concentrated way",
         "SUN + PLU": "has the greatest ability to improve, raise their consciousness, and transform any psychological complex they may have",
         "SUN - PLU": "tries to control all of life",
+        
+        # Moon aspects
         "MOO = MER": "emotionally expressive",
         "MOO + MER": "articulate, optimistic, great mental clarity",
         "MOO - MER": "struggles to find balance between feelings and intellect",
@@ -1483,6 +1486,8 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "MOO = PLU": "emotionally compulsive",
         "MOO + PLU": "blessed in the art of living",
         "MOO - PLU": "lives a cathartic emotional life",
+        
+        # Mercury aspects
         "MER = VEN": "lives a life of refinement and culture",
         "MER + VEN": "artistic potential",
         "MER = MAR": "mentally aggressive",
@@ -1503,6 +1508,8 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "MER = PLU": "lives a life of probing and observing",
         "MER + PLU": "balanced and whole in your thinking",
         "MER - PLU": "too intense and subjective in their thinking",
+        
+        # Venus aspects
         "VEN = MAR": "thrives on passion",
         "VEN + MAR": "romantically healthy",
         "VEN - MAR": "difficulties in relationships",
@@ -1521,6 +1528,8 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "VEN = PLU": "the greatest desire is to love intensely and completely",
         "VEN + PLU": "the healthiest love partner",
         "VEN - PLU": "at the mercy of uncontrollable passions",
+        
+        # Mars aspects
         "MAR = JUP": "ambitious and motivated",
         "MAR + JUP": "enthusiastic, spirited, buoyant",
         "MAR - JUP": "extremist",
@@ -1536,6 +1545,8 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "MAR = PLU": "a reservoir of unlimited energy",
         "MAR + PLU": "great potential, combined with the most potent energy", 
         "MAR - PLU": "driven by compulsive cravings to dominate and win",
+        
+        # Jupiter aspects
         "JUP = SAT": "the strongest character and depth of soul",
         "JUP + SAT": "the best judgment",
         "JUP - SAT": "overly concerned with the meaning of existence",
@@ -1548,6 +1559,8 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "JUP = PLU": "compelled to find the truth, and have their life make a major impact",
         "JUP + PLU": "honorable, of the best morals",
         "JUP - PLU": "extreme in judgment, compulsive about philosophical and religious beliefs",
+        
+        # Saturn aspects
         "SAT = URA": "an agent for change",
         "SAT + URA": "good at implementing progressive plans and actions",
         "SAT - URA": "struggles to be both authoritarian and revolutionary",
@@ -1557,11 +1570,13 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "SAT = PLU": "compulsive about responsibility",
         "SAT + PLU": "a mature human being",
         "SAT - PLU": "life theme is karmic repayment of past life debts, an inordinate amount of difficulty, hardship, and suffering",
+        
+        # Uranus aspects
         "URA = NEP": "intense confusion regarding your independence, self reliance, and individuality (once every 190 years; last in 1993)",
         "URA = PLU": "highly clairvoyant, metaphysical, extremely devotional, evolved"
     }
 
-    # COMPLETE Sexual Interpretations
+    # COMPLETE Sexual Interpretations - ALL PLANETS AND HOUSES
     sexual_interpretations = {
         # Ascendant interpretations
         "ASCARI": "Quick, aggressive, makes the first move. Immediately noticed in a room. Gets to the point fast, sometimes too fast intense, physical, heats up in in a hurry, cools quickly after sex, but can charge up again soon afterwards for more. Dispenses with foreplay in favor of the nitty-gritty. Comes in a flash, with super-high peak. Needs to study patience & sensitivity to avoid putting off slower, easy-going partners. Should lay back, come on less strong to get long-range love.",
@@ -1603,7 +1618,49 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "MooSAG": "Roly-poly, fun lover with a ready laugh, can play sex for passionate romance or for just an evening's good-time play. Sees brighter side of things, but may be too cheery & optimistic. Hard to pin down to specific promises. Likes plenty of space & may dissemble somewhat artlessly to get it. A voluble fantasy life, paints outrageous scenarios but forgets to fill in the details--half the fun is in the creation, not the enactment. A friendly, mellow lover, who grows richer with age.",
         "MooCAP": "Careful, consistent, determined in response. Unflagging lover when committed -not the frivolous type. Strong on performance, less so on variety or imagination. Needs to be led by the hand to try out new things. Likes commitment, security, not a freeswinger. A lover who starts slow but will go all the way with love and coaxing. Needs reassurance that everything's o.k., then will leap into the middle with a will. Not an easy, overnight bedpal; but a life long lover & friend.",
         "MooAQU": "Even-tempered but a bit cold, views sex with an analytic eye and experiments for interest more than pleasure. Prefers tactile to oral stimulation but will give what's necessary to keep the ball rolling. Will play many roles, but finds real closeness hard to get. Wants lover with many techniques who keeps moving. Likes to see what is happening--sex with the lights on. Takes a long time to develop intimacy. The main sex organ is the mind, to which the body plays second fiddle.",
-        "MooPIS": "Supple, adaptable lover. Sparks with insight, intuition. Lets a lover handle details, goes to the heart of the emotion. Can get lost in fantasy of moment, adapt to any lover's personal scene, though may interpret it completely differently from partner. Very emotional, needs sensitive, gentle treatment to bring out full love potential. Can spot lies but may not tell; honesty is essential. Fantasies may go beyond the practical -fulfillable only in mind. Needs partner to adapt fantasies."
+        "MooPIS": "Supple, adaptable lover. Sparks with insight, intuition. Lets a lover handle details, goes to the heart of the emotion. Can get lost in fantasy of moment, adapt to any lover's personal scene, though may interpret it completely differently from partner. Very emotional, needs sensitive, gentle treatment to bring out full love potential. Can spot lies but may not tell; honesty is essential. Fantasies may go beyond the practical -fulfillable only in mind. Needs partner to adapt fantasies.",
+        
+        # Mercury sign interpretations
+        "MerARI": "Thinks fast, comes up with spur of the moment moves that mean spontaneous fun. Spells out needs crisp and clear, but does not elaborate makes point, then moves on, never lingers.",
+        "MerTAU": "Down-to-earth about sex needs, but not elaborate or overdemanding, just positive and firm. With mind made up, sticks to guns, hangs onto sex preferences & favorite techniques.",
+        "MerGEM": "Very verbal about sex needs & desires. Willing to let it all hang out in detail, but doesn't dwell much on any one thing. Talk during sex guides & clarifies what goes on, avoids time wasted on acts that turn off. Mouth & mind are sex organs.",
+        "MerCAN": "Shares sexual secrets and inner desires only with very special friends. Makes gift of unwrapping and exposing inner needs like a striptease act. Likes emotional privacy, quiet.",
+        "MerLEO": "Open, devil-may-care attitude about sex. Lets details take care of themselves, or be taken care of by partner. May like noisy, vocal sex, lets emotions out through direct cries. Straight-on, open, no hang-ups.",
+        "MerVIR": "Elaborate fantasy life and very specific details. Either very inhibited or very kinky, not a lot in between. Must articulate sex needs, outline night's game plan before making love. Likes fetishes and sex toys, special clothing, underwear, tattoos.",
+        "MerLIB": "Quick and active imagination. Loves to talk about changeable affairs. Tends to compare lovers & techniques to gain improvement, but may lose touch with the moment doing so. Very talkative. Can be a real tease while leading lover to the top.",
+        "MerSCO": "Sex is a deep, compelling mystery that demands exploration and revelation. A secretive explorer, lets it all out only when it's all nailed down. Enjoys covert sex games, sex that endangers through risk of exposure undercover artist.",
+        "MerSAG": "Mixes laughter with sex, won't take it over-seriously. Prefers a laughing fun time to deep enthralling passion, or at least claims so. Open and accepting of new ideas, directions, but not a technical inventor. Loves frolicking for it's own sake.",
+        "MerCAP": "Likes security, direction in sex scenes. Not too spontaneous, but once the game plan is clear, performs like a trooper. Needs direction to know just what to do, then does it in spades. A thoughtful lover, if at first reticent.",
+        "MerAQU": "A sexual scientist who analyzes every technique. Likes to be sure of everything, tends to organize before making a move. Visually oriented, makes a good voyeur, likes far-out ideas but may prefer to explore them only from the sidelines first.",
+        "MerPIS": "Sensitive to subtle clues and hints. Understands body language of love but may find it hard to but into words. Will cooperate verbally, but may not give inner self until just the right situation arrives then seizes it with instant ardor.",
+        
+        # Venus sign interpretations
+        "VenARI": "Likes immediate, fast gratification eats up a lover in no time. Intense desire that may go to extremes to be satisfied but doesn't last long in and out & over with as soon as the need is gone. One-nighters can be quite satisfying, intense.",
+        "VenTAU": "Slow, burning desire that takes lovers with stamina to satisfy. A quickie is not enough, wants long, skilled attention like playing a big game fish.",
+        "VenGEM": "Wants a delicate, varied touch from sensitive lover. Tickling, stroking beats hard and heavy. Appreciates artful loving for its own sake more than getting swept away in flash orgasm. Likes a verbal partner, lots of talk during sex.",
+        "VenCAN": "Aching desire, not quickly or easily satified, wants to dissolve in passion but needs just the right scene to accomplish it. Looks for total devotion, commitment, enveloping love that fills every crevice.",
+        "VenLEO": "Open, outgoing desire, a hearty sexual appetite, honest about physical needs and pleasure. Likes playful, roly-poly sex that heightens to hot passion. Any surroundings will do, if in the mood, pleasure is its own reward.",
+        "VenVIR": "Potentially an ideal fetishist, revels in every detail of sex, the more elaborate the scene, the greater the satisfaction. Needs it all just right to get off, though, and one false move can spoil it.",
+        "VenLIB": "Likes an affair that is moving, never gets into a rut. Likes things just so, but never the same twice, can enjoy multiple lovers if one can't keep the pace. May thrive on conflict, fight way to orgasm.",
+        "VenSCO": "Raw sex desire, focused in the belly, may be buried until it suddenly explodes with need. Wants overwhelming sex that washes away consciousness, dissolves personality in desire.",
+        "VenSAG": "Craves adventure, sex that elevates and enhances knowledge, personality. Enthusiasm! Likes a happy time. Sex must be fun and laughter. Motivation, not technique, a must, communication & feeling are everything.",
+        "VenCAP": "Must have certainty in sex, not freewheeling experimentation or swinging unless very well defined. Wants well-honed technique, pursued relentlessly to orgasm. Goal-oriented desire, sex must get results to satisfy.",
+        "VenAQU": "Likes sexual experiments, but treats them like a science, desire comes from the mind more than the body. Can try out the ultimately kinky without ever really being kinky. Excellent material for a swinger!",
+        "VenPIS": "Wants inner communication, unspoken link with partner. Sex should be uplifting, a medium for inner revelation. Treasures selfless sex, a giving partner, returns in kind.",
+        
+        # Mars sign interpretations
+        "MarARI": "Good at quick, decisive action, intense energy output burns hot & quick, but may fade fast as well. Easily aroused & easily satisfied. Needs tempering to give partner full measure of lingering satisfaction.",
+        "MarTAU": "Even, strong energy flow, but takes a while to warm up. Needs steady sexual outlet or gets jammed up. Details less important than basic thrust, inner drive toward release. Once in motion, must find satisfaction.",
+        "MarGEM": "Light, skillful touch, can achieve high technique. Restless energy, wants and can provide constant exercise and change. May lose sight of goal in the process, too much fore or after play.",
+        "MarCAN": "A careful, cautious touch but very intense once let go. Puts everything into it, perhaps too much; disappointed if partner can't do same. Particular about satisfying lover perfectly, but may be too oversolicitous.",
+        "MarLEO": "Full of gusto, once begun it's carte blanche all the way, a spread in every way fit for royalty. Bountiful energy may overwhelm the timid, but generous to a fault when involved.",
+        "MarVIR": "Highly specific lover, refines technique to the hilt, but may get hung up on only one or two. Skillful at using surroundings to fit in with sex. Best in known territory, however complex less of an improvisor.",
+        "MarLIB": "A mover and a shaker, can't let things be but must change them & keep things in flux. An activator. Hard to keep up with and good at hit-and-run love.",
+        "MarSCO": "Strong, smouldering energies lie beneath surface, come out explosively if repressed too long. Likes extremes, but may fear them. Challenge of sex is to lose each other in a fiery flame.",
+        "MarSAG": "Broad, open energy that piles into bed with a laugh, splashes sex around with a will, but may miss some details in process. Can be athletic, enthusiastic, but needs channelling for best effect.",
+        "MarCAP": "Careful and determined in expression, tops where skill is known, needs educating though to expand variety. A diamond in the rough, tops if experienced but needs molding early on.",
+        "MarAQU": "Seeks many different opportunities for sexual expression. Likes multiple partners & will need many different methods to have sex. Explores partner's fantasies to make sex perfect.",
+        "MarPIS": "Adaptive & subtle, needs drawing out to realize extent of abilities. Capable of extremes, particularly in giving. Best at using sexual energies to relay higher communication ulterior love or devotion."
     }
 
     # Display based on interpretation type
@@ -1662,7 +1719,7 @@ def display_complete_interpretations(chart_data, interpretation_type):
             st.info("No significant aspects found within allowed orb.")
 
     elif interpretation_type == "Sexual":
-        # Display COMPLETE sexual interpretations
+        # Display COMPLETE sexual interpretations for ALL relevant placements
         st.write("**Sexual Energy & Expression**")
         
         # 1. Ascendant interpretation
@@ -1676,27 +1733,19 @@ def display_complete_interpretations(chart_data, interpretation_type):
                 st.write(f"{sexual_interpretations[asc_key]}")
                 st.markdown("---")
         
-        # 2. Sun sign interpretation
-        if 'Sun' in chart_data['planets']:
-            sun_data = chart_data['planets']['Sun']
-            sun_sign = sun_data['sign']
-            sun_key = f"Sun{sun_sign[:3].upper()}"
-            
-            if sun_key in sexual_interpretations:
-                st.write(f"**Sun in {sun_sign}**")
-                st.write(f"{sexual_interpretations[sun_key]}")
-                st.markdown("---")
+        # 2. All planet interpretations
+        sexual_planets = ["Sun", "Moon", "Mercury", "Venus", "Mars"]
         
-        # 3. Moon sign interpretation  
-        if 'Moon' in chart_data['planets']:
-            moon_data = chart_data['planets']['Moon']
-            moon_sign = moon_data['sign']
-            moon_key = f"Moo{moon_sign[:3].upper()}"
-            
-            if moon_key in sexual_interpretations:
-                st.write(f"**Moon in {moon_sign}**")
-                st.write(f"{sexual_interpretations[moon_key]}")
-                st.markdown("---")
+        for planet_name in sexual_planets:
+            if planet_name in chart_data['planets']:
+                planet_data = chart_data['planets'][planet_name]
+                planet_sign = planet_data['sign']
+                planet_key = f"{planet_name[:3]}{planet_sign[:3].upper()}"
+                
+                if planet_key in sexual_interpretations:
+                    st.write(f"**{planet_name} in {planet_sign}**")
+                    st.write(f"{sexual_interpretations[planet_key]}")
+                    st.markdown("---")
 
 def get_house_sexual_theme(house_num):
     """Get sexual theme for each house"""
