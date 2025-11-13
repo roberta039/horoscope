@@ -315,13 +315,30 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
             
             ax.plot([x_inner, x_outer], [y_inner, y_outer], color=house_color, linewidth=1, alpha=0.5)
             
-            # Numerele caselor
+            # Numerele caselor - CORECTAT: Transformarea exactă cum ai specificat
+            # 1->11, 2->12, 3->1, 4->2, 5->3, 6->4, 7->5, 8->6, 9->7, 10->8, 11->9, 12->10
+            house_mapping = {
+                0: 11,   # Poziția 0 (unde era 11) devine Casa 1
+                1: 12,   # Poziția 1 (unde era 12) devine Casa 2
+                2: 1,    # Poziția 2 (unde era 1) devine Casa 3
+                3: 2,    # Poziția 3 (unde era 2) devine Casa 4
+                4: 3,    # Poziția 4 (unde era 3) devine Casa 5
+                5: 4,    # Poziția 5 (unde era 4) devine Casa 6
+                6: 5,    # Poziția 6 (unde era 5) devine Casa 7
+                7: 6,    # Poziția 7 (unde era 6) devine Casa 8
+                8: 7,    # Poziția 8 (unde era 7) devine Casa 9
+                9: 8,    # Poziția 9 (unde era 8) devine Casa 10
+                10: 9,   # Poziția 10 (unde era 9) devine Casa 11
+                11: 10   # Poziția 11 (unde era 10) devine Casa 12
+            }
+            
+            house_number = house_mapping[i]
             house_text_angle = angle + 15  # Centrul casei
             house_rad_angle = np.radians(house_text_angle)
             x_house = center_x + house_radius * np.cos(house_rad_angle)
             y_house = center_y + house_radius * np.sin(house_rad_angle)
             
-            ax.text(x_house, y_house, str(i+1), ha='center', va='center', 
+            ax.text(x_house, y_house, str(house_number), ha='center', va='center', 
                    color=house_color, fontsize=10, fontweight='bold')
             
             # Semnele zodiacale
