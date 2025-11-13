@@ -1287,10 +1287,10 @@ def display_interpretation():
     display_complete_interpretations(chart_data, interpretation_type)
 
 def display_complete_interpretations(chart_data, interpretation_type):
-    """Display professional interpretations from astrological database"""
+    """Display interpretations based on selected type: Natal, Natal Aspects, or Sexual"""
     
-    # PROFESSIONAL INTERPRETATIONS DATABASE
-    planet_sign_interpretations = {
+    # Natal Interpretations (Planets in Signs)
+    natal_interpretations = {
         "Sun": {
             "ARI": "Open, energetic, strong, enthusiastic, forward looking, positive, determined, inventive, bright, filled with a zest for life.",
             "TAU": "Reliable, able, with powers of concentration, tenacity. Steadfast, a loving & affectionate 'family' person. Honest, forthright. Learns readily from mistakes.",
@@ -1363,26 +1363,10 @@ def display_complete_interpretations(chart_data, interpretation_type):
         }
     }
 
-    # House interpretations
-    house_interpretations = {
-        "01": "Usually warmhearted & lovable but also vain, hedonistic & flirtatious.",
-        "02": "Often very level-headed & talented, but also rather materialistic.",
-        "03": "Communicative, usually a good speaker & a lucid writer.",
-        "04": "Home is the one of the most important things in life for this person.",
-        "05": "As a child energetic, noisy, overactive, fond of taking risks.",
-        "06": "Willing to organize & work hard. Adaptable.",
-        "07": "Friendly, sociable, interested in a bettering own quality of life.",
-        "08": "Serious by nature. Though interested in material things, fascinated by philosophies of life & death.",
-        "09": "Has very wide-ranging interests.",
-        "10": "Appreciative of the importance of success in life.",
-        "11": "Often has a clear object or goal in view. A good organizer.",
-        "12": "Dreamy, delicate, vulnerable, shy, reserved, introspective. Forgetful."
-    }
-
-    # Aspect interpretations
+    # Natal Aspects Interpretations
     aspect_interpretations = {
         "SUN = MOO": "a feeling or moody nature",
-        "SUN + MOO": "emotionally well-balanced",
+        "SUN + MOO": "emotionally well-balanced", 
         "SUN - MOO": "feels a split between emotions and will",
         "SUN = MER": "mentally active",
         "SUN = VEN": "kind, gentle, warmhearted",
@@ -1395,95 +1379,200 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "SUN = SAT": "conservative, hard working, cautious",
         "SUN + SAT": "disciplined, mature, practical",
         "SUN - SAT": "experiences restrictiveness of spirit, inferiority complex",
+        "SUN = URA": "lives a life of excitement, insatiable zest",
+        "SUN + URA": "inspired, spirited, ahead of the times", 
+        "SUN - URA": "independent, rebellious, self-willed",
+        "SUN = NEP": "a mystic in the truest sense",
+        "SUN + NEP": "lives from the heart",
+        "SUN - NEP": "weak or diffused self-image",
+        "SUN = PLU": "experiences life in an emotionally concentrated way",
+        "SUN + PLU": "has the greatest ability to improve, raise their consciousness, and transform any psychological complex they may have",
+        "SUN - PLU": "tries to control all of life",
         "MOO = MER": "emotionally expressive",
         "MOO + MER": "articulate, optimistic, great mental clarity",
         "MOO - MER": "struggles to find balance between feelings and intellect",
         "MOO = VEN": "sensual",
-        "MOO + VEN": "sweet, charming",
+        "MOO + VEN": "sweet, charming", 
         "MOO - VEN": "pursues the needs of the heart, a sensualist",
-        "VEN = MAR": "thrives on passion",
-        "VEN + MAR": "romantically healthy",
-        "VEN - MAR": "difficulties in relationships",
+        "MOO = MAR": "brave, bold, energetic",
+        "MOO + MAR": "thrives on activity",
+        "MOO - MAR": "selfish",
+        "MOO = JUP": "emotionally buoyant",
+        "MOO + JUP": "emotionally blessed",
+        "MOO - JUP": "emotionally excessive",
+        "MOO = SAT": "emotionally inhibited", 
+        "MOO + SAT": "emotionally mature",
+        "MOO - SAT": "an emotionally karmic lifetime",
+        "MOO = URA": "emotionally high-strung",
+        "MOO + URA": "emotionally free",
+        "MOO - URA": "an individualist",
+        "MOO = NEP": "lives in their feelings",
+        "MOO + NEP": "suffers from emotional deception, disillusionment", 
+        "MOO - NEP": "kind hearted, emotionally inspired",
+        "MOO = PLU": "emotionally compulsive",
+        "MOO + PLU": "blessed in the art of living",
+        "MOO - PLU": "lives a cathartic emotional life",
+        "MER = VEN": "lives a life of refinement and culture",
+        "MER + VEN": "artistic potential", 
         "MER = MAR": "mentally aggressive",
         "MER + MAR": "intelligent, incisive, the best attitude",
-        "MER - MAR": "a professional critic"
+        "MER - MAR": "a professional critic",
+        "MER = JUP": "mentally exuberant",
+        "MER + JUP": "the best learner",
+        "MER - JUP": "no sense of mental proportion",
+        "MER = SAT": "lives a life of concentrated thought", 
+        "MER + SAT": "the most conscientious",
+        "MER - SAT": "nervous system under constant pressure, confidence adversely affected",
+        "MER = URA": "lives a life of independent thinking",
+        "MER + URA": "inspired, experimental thinker",
+        "MER - URA": "a revolutionary thinker",
+        "MER = NEP": "the most imaginative", 
+        "MER + NEP": "acutely sensitive, delicate mind",
+        "MER - NEP": "mentally unfocused",
+        "MER = PLU": "lives a life of probing and observing",
+        "MER + PLU": "balanced and whole in your thinking",
+        "MER - PLU": "too intense and subjective in their thinking",
+        "VEN = MAR": "thrives on passion", 
+        "VEN + MAR": "romantically healthy",
+        "VEN - MAR": "difficulties in relationships",
+        "VEN = JUP": "supremely lucky",
+        "VEN + JUP": "lives a life of abundant pleasure, opulence, and good fortune",
+        "VEN - JUP": "too indulgent in comforts and luxuries",
+        "VEN = SAT": "overly cautious in love matters", 
+        "VEN + SAT": "excellent marriage partner, brings form and structure to aesthetic principles",
+        "VEN - SAT": "suffers in love life due to past life abusive and harmful actions",
+        "VEN = URA": "excited about love",
+        "VEN + URA": "thrilled with life, excited about love",
+        "VEN - URA": "fickle, divorce prone", 
+        "VEN = NEP": "idealizes love",
+        "VEN + NEP": "the consummate love partner",
+        "VEN - NEP": "romanticizes love",
+        "VEN = PLU": "the greatest desire is to love intensely and completely",
+        "VEN + PLU": "the healthiest love partner",
+        "VEN - PLU": "at the mercy of uncontrollable passions", 
+        "MAR = JUP": "ambitious and motivated",
+        "MAR + JUP": "enthusiastic, spirited, buoyant",
+        "MAR - JUP": "extremist",
+        "MAR = SAT": "lives a life of restrained impulses",
+        "MAR + SAT": "feels a sense of purpose and direction, consistently actualizes dreams",
+        "MAR - SAT": "desires and impulses are subject to immediate restriction and censorship", 
+        "MAR = URA": "lives a life of untamed energy and audacious activity",
+        "MAR + URA": "inspired ambitions, successful",
+        "MAR - URA": "overly independent, individualistic, unconstrained",
+        "MAR = NEP": "psychically animated",
+        "MAR + NEP": "wants to help",
+        "MAR - NEP": "little ability to put desires above those of others", 
+        "MAR = PLU": "a reservoir of unlimited energy",
+        "MAR + PLU": "great potential, combined with the most potent energy",
+        "MAR - PLU": "driven by compulsive cravings to dominate and win",
+        "JUP = SAT": "the strongest character and depth of soul",
+        "JUP + SAT": "the best judgment", 
+        "JUP - SAT": "overly concerned with the meaning of existence",
+        "JUP = URA": "thrives on knowledge, truth, freedom",
+        "JUP + URA": "extremist",
+        "JUP - URA": "an inspired lover of truth",
+        "JUP = NEP": "devotional, pious, pure hearted",
+        "JUP + NEP": "saintly", 
+        "JUP - NEP": "confused in your judgment",
+        "JUP = PLU": "compelled to find the truth, and have their life make a major impact",
+        "JUP + PLU": "honorable, of the best morals",
+        "JUP - PLU": "extreme in judgment, compulsive about philosophical and religious beliefs",
+        "SAT = URA": "an agent for change", 
+        "SAT + URA": "good at implementing progressive plans and actions",
+        "SAT - URA": "struggles to be both authoritarian and revolutionary",
+        "SAT = NEP": "a practical idealist",
+        "SAT + NEP": "outstanding example of responsibility",
+        "SAT - NEP": "dissatisfied and uncertain of yourself",
+        "SAT = PLU": "compulsive about responsibility", 
+        "SAT + PLU": "a mature human being",
+        "SAT - PLU": "life theme is karmic repayment of past life debts, an inordinate amount of difficulty, hardship, and suffering",
+        "URA = NEP": "intense confusion regarding your independence, self reliance, and individuality (once every 190 years; last in 1993)",
+        "URA = PLU": "highly clairvoyant, metaphysical, extremely devotional, evolved"
     }
 
-    # Display planetary interpretations
-    st.subheader("🌍 Planetary Positions Interpretation")
-    
-    planets_to_display = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", 
-                         "Saturn", "Uranus", "Neptune", "Pluto"]
-    
-    for planet_name in planets_to_display:
-        if planet_name in chart_data['planets']:
-            planet_data = chart_data['planets'][planet_name]
-            planet_sign = planet_data['sign']
-            planet_house = planet_data.get('house', 'N/A')
-            
-            with st.expander(f"{planet_name} in {planet_sign} (House {planet_house})", expanded=False):
-                # Sign interpretation
-                if (planet_name in planet_sign_interpretations and 
-                    planet_sign in planet_sign_interpretations[planet_name]):
-                    st.write(f"**Sign Influence**: {planet_sign_interpretations[planet_name][planet_sign]}")
-                
-                # House interpretation
-                if str(planet_house) in house_interpretations:
-                    st.write(f"**House Influence**: {house_interpretations[str(planet_house)]}")
-                
-                # Position details
-                st.write(f"**Position**: {planet_data['position_str']}")
+    # Sexual Interpretations (using house interpretations for sexual energy)
+    sexual_interpretations = {
+        "01": "Usually warmhearted & lovable but also vain, hedonistic & flirtatious.",
+        "02": "Often very level-headed & talented, but also rather materialistic.",
+        "03": "Communicative, usually a good speaker & a lucid writer.", 
+        "04": "Home is the one of the most important things in life for this person.",
+        "05": "As a child energetic, noisy, overactive, fond of taking risks.",
+        "06": "Willing to organize & work hard. Adaptable.",
+        "07": "Friendly, sociable, interested in a bettering own quality of life.",
+        "08": "Serious by nature. Though interested in material things, fascinated by philosophies of life & death.",
+        "09": "Has very wide-ranging interests.",
+        "10": "Appreciative of the importance of success in life.",
+        "11": "Often has a clear object or goal in view. A good organizer.",
+        "12": "Dreamy, delicate, vulnerable, shy, reserved, introspective. Forgetful."
+    }
 
-    # Display aspect interpretations
-    st.subheader("🔄 Astrological Aspects Interpretation")
+    # Display based on interpretation type
+    st.subheader(f"📖 {interpretation_type} Interpretation")
     
-    aspects = calculate_aspects(chart_data)
-    if aspects:
-        for aspect in aspects:
-            planet1 = aspect['planet1']
-            planet2 = aspect['planet2']
-            aspect_name = aspect['aspect_name']
-            strength = aspect['strength']
-            
-            # Create aspect key for lookup
-            aspect_key = f"{planet1.upper()} = {planet2.upper()}"
-            
-            with st.expander(f"{planet1} {aspect_name} {planet2} ({strength})", expanded=False):
-                st.write(f"**Aspect**: {aspect_name}")
-                st.write(f"**Orb**: {aspect['orb']:.2f}°")
-                st.write(f"**Strength**: {strength}")
+    if interpretation_type == "Natal":
+        # Display planetary interpretations
+        planets_to_display = ["Sun", "Moon", "Mercury", "Venus", "Mars"]
+        
+        for planet_name in planets_to_display:
+            if planet_name in chart_data['planets']:
+                planet_data = chart_data['planets'][planet_name]
+                planet_sign = planet_data['sign']
                 
-                # Look up aspect interpretation
-                if aspect_key in aspect_interpretations:
-                    st.write(f"**Interpretation**: {aspect_interpretations[aspect_key]}")
-                else:
-                    # Fallback interpretation based on aspect type
-                    aspect_general = {
-                        'Conjunction': "Planets work together, blending their energies",
-                        'Opposition': "Tension and polarity between planetary energies", 
-                        'Trine': "Harmonious flow of energy between planets",
-                        'Square': "Challenge and friction between planetary energies",
-                        'Sextile': "Opportunity and positive interaction between planets"
-                    }
-                    st.write(f"**Interpretation**: {aspect_general.get(aspect_name, 'Significant planetary interaction')}")
-    else:
-        st.info("No significant aspects found within allowed orb.")
+                if (planet_name in natal_interpretations and 
+                    planet_sign in natal_interpretations[planet_name]):
+                    
+                    with st.expander(f"{planet_name} in {planet_sign}", expanded=True):
+                        st.write(natal_interpretations[planet_name][planet_sign])
+                        st.write(f"**Position**: {planet_data['position_str']}")
 
-    # Display house interpretations
-    st.subheader("🏠 House Interpretations")
-    
-    for house_num in range(1, 13):
-        if house_num in chart_data['houses']:
-            house_data = chart_data['houses'][house_num]
-            
-            with st.expander(f"House {house_num} in {house_data['sign']}", expanded=False):
-                if str(house_num) in house_interpretations:
-                    st.write(house_interpretations[str(house_num)])
-                st.write(f"**Cusp Position**: {house_data['position_str']}")
+    elif interpretation_type == "Natal Aspects":
+        # Display aspect interpretations
+        aspects = calculate_aspects(chart_data)
+        if aspects:
+            for aspect in aspects:
+                planet1 = aspect['planet1']
+                planet2 = aspect['planet2']
+                aspect_name = aspect['aspect_name']
+                
+                # Create aspect key for lookup
+                aspect_key = f"{planet1.upper()} = {planet2.upper()}"
+                
+                with st.expander(f"{planet1} {aspect_name} {planet2}", expanded=False):
+                    st.write(f"**Aspect**: {aspect_name}")
+                    st.write(f"**Orb**: {aspect['orb']:.2f}°")
+                    st.write(f"**Strength**: {aspect['strength']}")
+                    
+                    if aspect_key in aspect_interpretations:
+                        st.write(f"**Interpretation**: {aspect_interpretations[aspect_key]}")
+                    else:
+                        st.write("**Interpretation**: Significant planetary interaction")
+        else:
+            st.info("No significant aspects found within allowed orb.")
 
-    # Footer
-    st.markdown("---")
-    st.caption("✨ Professional astrological interpretations from established astrological database")
+    elif interpretation_type == "Sexual":
+        # Display sexual interpretations based on houses
+        st.write("**Sexual Energy & Expression**")
+        
+        # Focus on key houses for sexual energy
+        sexual_houses = [5, 8, 12]  # Houses 5 (pleasure), 8 (intimacy), 12 (subconscious)
+        
+        for house_num in sexual_houses:
+            if house_num in chart_data['houses']:
+                house_data = chart_data['houses'][house_num]
+                
+                with st.expander(f"House {house_num} - {get_house_sexual_theme(house_num)}", expanded=True):
+                    if str(house_num) in sexual_interpretations:
+                        st.write(sexual_interpretations[str(house_num)])
+                    st.write(f"**Position**: {house_data['position_str']}")
+
+def get_house_sexual_theme(house_num):
+    """Get sexual theme for each house"""
+    themes = {
+        5: "Pleasure & Romance",
+        8: "Intimacy & Transformation", 
+        12: "Subconscious & Fantasy"
+    }
+    return themes.get(house_num, "Personal Energy")
 
 def display_about():
     st.header("ℹ️ About Horoscope")
