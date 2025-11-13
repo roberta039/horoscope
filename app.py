@@ -707,26 +707,121 @@ def data_input_form():
     with col2:
         st.subheader("Birth Place Coordinates")
         
+        # Selector pentru capitale
+        world_capitals = {
+            "București, România": {"lat": 44.4268, "lon": 26.1025},
+            "Budapesta, Ungaria": {"lat": 47.4979, "lon": 19.0402},
+            "Belgrad, Serbia": {"lat": 44.7866, "lon": 20.4489},
+            "Sofia, Bulgaria": {"lat": 42.6977, "lon": 23.3219},
+            "Praga, Cehia": {"lat": 50.0755, "lon": 14.4378},
+            "Varșovia, Polonia": {"lat": 52.2297, "lon": 21.0122},
+            "Berlin, Germania": {"lat": 52.5200, "lon": 13.4050},
+            "Paris, Franța": {"lat": 48.8566, "lon": 2.3522},
+            "Londra, Marea Britanie": {"lat": 51.5074, "lon": -0.1278},
+            "Madrid, Spania": {"lat": 40.4168, "lon": -3.7038},
+            "Roma, Italia": {"lat": 41.9028, "lon": 12.4964},
+            "Viena, Austria": {"lat": 48.2082, "lon": 16.3738},
+            "Atena, Grecia": {"lat": 37.9838, "lon": 23.7275},
+            "Lisabona, Portugalia": {"lat": 38.7223, "lon": -9.1393},
+            "Amsterdam, Olanda": {"lat": 52.3676, "lon": 4.9041},
+            "Bruxelles, Belgia": {"lat": 50.8503, "lon": 4.3517},
+            "Copenhaga, Danemarca": {"lat": 55.6761, "lon": 12.5683},
+            "Stockholm, Suedia": {"lat": 59.3293, "lon": 18.0686},
+            "Oslo, Norvegia": {"lat": 59.9139, "lon": 10.7522},
+            "Helsinki, Finlanda": {"lat": 60.1699, "lon": 24.9384},
+            "Moscova, Rusia": {"lat": 55.7558, "lon": 37.6173},
+            "Kiev, Ucraina": {"lat": 50.4501, "lon": 30.5234},
+            "Ankara, Turcia": {"lat": 39.9334, "lon": 32.8597},
+            "Beijing, China": {"lat": 39.9042, "lon": 116.4074},
+            "Tokyo, Japonia": {"lat": 35.6762, "lon": 139.6503},
+            "New Delhi, India": {"lat": 28.6139, "lon": 77.2090},
+            "Washington D.C., SUA": {"lat": 38.9072, "lon": -77.0369},
+            "Ottawa, Canada": {"lat": 45.4215, "lon": -75.6972},
+            "Canberra, Australia": {"lat": -35.2809, "lon": 149.1300},
+            "Wellington, Noua Zeelandă": {"lat": -41.2865, "lon": 174.7762},
+            "Brasília, Brazilia": {"lat": -15.7975, "lon": -47.8919},
+            "Buenos Aires, Argentina": {"lat": -34.6037, "lon": -58.3816},
+            "Santiago, Chile": {"lat": -33.4489, "lon": -70.6693},
+            "Lima, Peru": {"lat": -12.0464, "lon": -77.0428},
+            "Bogotá, Columbia": {"lat": 4.7110, "lon": -74.0721},
+            "Mexico City, Mexic": {"lat": 19.4326, "lon": -99.1332},
+            "Cairo, Egipt": {"lat": 30.0444, "lon": 31.2357},
+            "Johannesburg, Africa de Sud": {"lat": -26.2041, "lon": 28.0473},
+            "Nairobi, Kenya": {"lat": -1.2921, "lon": 36.8219},
+            "Riyadh, Arabia Saudită": {"lat": 24.7136, "lon": 46.6753},
+            "Tel Aviv, Israel": {"lat": 32.0853, "lon": 34.7818},
+            "Dubai, UAE": {"lat": 25.2048, "lon": 55.2708},
+            "Seoul, Coreea de Sud": {"lat": 37.5665, "lon": 126.9780},
+            "Bangkok, Thailanda": {"lat": 13.7563, "lon": 100.5018},
+            "Hanoi, Vietnam": {"lat": 21.0278, "lon": 105.8342},
+            "Jakarta, Indonezia": {"lat": -6.2088, "lon": 106.8456},
+            "Manila, Filipine": {"lat": 14.5995, "lon": 120.9842},
+            "Kuala Lumpur, Malaysia": {"lat": 3.1390, "lon": 101.6869},
+            "Singapore, Singapore": {"lat": 1.3521, "lon": 103.8198},
+            # Adaugă mai multe capitale după necesitate...
+        }
+        
+        selected_capital = st.selectbox(
+            "Select World Capital (optional)",
+            [""] + list(world_capitals.keys()),
+            help="Select a world capital to automatically fill coordinates"
+        )
+        
+        if selected_capital:
+            capital_data = world_capitals[selected_capital]
+            # Auto-complete coordinates based on selected capital
+            auto_lat = capital_data["lat"]
+            auto_lon = capital_data["lon"]
+            
+            # Determine direction for display
+            lat_dir = "North" if auto_lat >= 0 else "South"
+            lon_dir = "East" if auto_lon >= 0 else "West"
+            
+            # Convert to degrees and minutes
+            lat_deg = abs(int(auto_lat))
+            lat_min = (abs(auto_lat) - lat_deg) * 60
+            
+            lon_deg = abs(int(auto_lon))
+            lon_min = (abs(auto_lon) - lon_deg) * 60
+            
+            st.info(f"📍 {selected_capital}: {abs(auto_lat):.4f}°{lat_dir}, {abs(auto_lon):.4f}°{lon_dir}")
+        else:
+            # Manual coordinates input
+            auto_lat = None
+            auto_lon = None
+        
         col2a, col2b = st.columns(2)
         with col2a:
             # Longitude cu grade și minute
             st.write("**Longitude**")
             col_lon_deg, col_lon_min = st.columns(2)
             with col_lon_deg:
-                longitude_deg = st.number_input("Longitude (°)", min_value=0.0, max_value=180.0, value=16.0, step=1.0, key="lon_deg")
+                longitude_deg = st.number_input("Longitude (°)", min_value=0.0, max_value=180.0, 
+                                              value=16.0 if not auto_lon else lon_deg, 
+                                              step=1.0, key="lon_deg")
             with col_lon_min:
-                longitude_min = st.number_input("Longitude (')", min_value=0.0, max_value=59.9, value=0.0, step=1.0, key="lon_min")
-            longitude_dir = st.selectbox("Longitude Direction", ["East", "West"], index=0, key="lon_dir")
+                longitude_min = st.number_input("Longitude (')", min_value=0.0, max_value=59.9, 
+                                              value=0.0 if not auto_lon else lon_min, 
+                                              step=1.0, key="lon_min")
+            longitude_dir = st.selectbox("Longitude Direction", ["East", "West"], 
+                                       index=0 if not auto_lon else (0 if lon_dir == "East" else 1), 
+                                       key="lon_dir")
             
         with col2b:
             # Latitude cu grade și minute
             st.write("**Latitude**")
             col_lat_deg, col_lat_min = st.columns(2)
             with col_lat_deg:
-                latitude_deg = st.number_input("Latitude (°)", min_value=0.0, max_value=90.0, value=45.0, step=1.0, key="lat_deg")
+                latitude_deg = st.number_input("Latitude (°)", min_value=0.0, max_value=90.0, 
+                                             value=45.0 if not auto_lat else lat_deg, 
+                                             step=1.0, key="lat_deg")
             with col_lat_min:
-                latitude_min = st.number_input("Latitude (')", min_value=0.0, max_value=59.9, value=51.0, step=1.0, key="lat_min")
-            latitude_dir = st.selectbox("Latitude Direction", ["North", "South"], index=0, key="lat_dir")
+                latitude_min = st.number_input("Latitude (')", min_value=0.0, max_value=59.9, 
+                                             value=51.0 if not auto_lat else lat_min, 
+                                             step=1.0, key="lat_min")
+            latitude_dir = st.selectbox("Latitude Direction", ["North", "South"], 
+                                      index=0 if not auto_lat else (0 if lat_dir == "North" else 1), 
+                                      key="lat_dir")
         
         # Calcul coordonate finale
         lon = longitude_deg + (longitude_min / 60.0)
