@@ -1733,8 +1733,9 @@ def display_complete_interpretations(chart_data, interpretation_type):
                 st.write(f"{sexual_interpretations[asc_key]}")
                 st.markdown("---")
         
-        # 2. All planet interpretations
-        sexual_planets = ["Sun", "Moon", "Mercury", "Venus", "Mars"]
+        # 2. ALL planet interpretations - TOATE PLANETELE, nu doar primele 5
+        sexual_planets = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", 
+                         "Saturn", "Uranus", "Neptune", "Pluto", "Nod", "Chi"]
         
         for planet_name in sexual_planets:
             if planet_name in chart_data['planets']:
@@ -1745,6 +1746,11 @@ def display_complete_interpretations(chart_data, interpretation_type):
                 if planet_key in sexual_interpretations:
                     st.write(f"**{planet_name} in {planet_sign}**")
                     st.write(f"{sexual_interpretations[planet_key]}")
+                    st.markdown("---")
+                else:
+                    # Dacă nu găsește interpretare, afișează un mesaj generic
+                    st.write(f"**{planet_name} in {planet_sign}**")
+                    st.write(f"*No specific sexual interpretation available for {planet_name} in {planet_sign}*")
                     st.markdown("---")
 
 def display_about():
