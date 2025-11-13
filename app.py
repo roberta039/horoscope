@@ -758,7 +758,6 @@ def data_input_form():
             "Manila, Filipine": {"lat": 14.5995, "lon": 120.9842},
             "Kuala Lumpur, Malaysia": {"lat": 3.1390, "lon": 101.6869},
             "Singapore, Singapore": {"lat": 1.3521, "lon": 103.8198},
-            # Adaugă mai multe capitale după necesitate...
         }
         
         selected_capital = st.selectbox(
@@ -767,28 +766,20 @@ def data_input_form():
             help="Select a world capital to automatically fill coordinates"
         )
         
+        # Folosim session state pentru a memora valorile auto-completate
+        if 'auto_coords' not in st.session_state:
+            st.session_state.auto_coords = None
+        
         if selected_capital:
             capital_data = world_capitals[selected_capital]
-            # Auto-complete coordinates based on selected capital
-            auto_lat = capital_data["lat"]
-            auto_lon = capital_data["lon"]
-            
-            # Determine direction for display
-            lat_dir = "North" if auto_lat >= 0 else "South"
-            lon_dir = "East" if auto_lon >= 0 else "West"
-            
-            # Convert to degrees and minutes
-            lat_deg = abs(int(auto_lat))
-            lat_min = (abs(auto_lat) - lat_deg) * 60
-            
-            lon_deg = abs(int(auto_lon))
-            lon_min = (abs(auto_lon) - lon_deg) * 60
-            
-            st.info(f"📍 {selected_capital}: {abs(auto_lat):.4f}°{lat_dir}, {abs(auto_lon):.4f}°{lon_dir}")
-        else:
-            # Manual coordinates input
-            auto_lat = None
-            auto_lon = None
+            st.session_state.auto_coords = {
+                "lat": capital_data["lat"],
+                "lon": capital_data["lon"]
+            }
+            st.info(f"📍 {selected_capital}: {abs(capital_data['lat']):.4f}°{'N' if capital_data['lat'] >= 0 else 'S'}, {abs(capital_data['lon']):.4f}°{'E' if capital_data['lon'] >= 0 else 'W'}")
+        elif st.session_state.auto_coords and selected_capital == "":
+            # Reset auto coordinates when no capital is selected
+            st.session_state.auto_coords = None
         
         col2a, col2b = st.columns(2)
         with col2a:
@@ -796,15 +787,28 @@ def data_input_form():
             st.write("**Longitude**")
             col_lon_deg, col_lon_min = st.columns(2)
             with col_lon_deg:
-                longitude_deg = st.number_input("Longitude (°)", min_value=0.0, max_value=180.0, 
-                                              value=16.0 if not auto_lon else lon_deg, 
-                                              step=1.0, key="lon_deg")
+                # Set default values based on auto-coordinates or manual input
+                if st.session_state.auto_coords:
+                    default_lon_deg = int(abs(st.session_state.auto_coords["lon"]))
+                    default_lon_dir = "East" if st.session_state.auto_coords["lon"] >= 0 else "West"
+                else:
+                    default_lon_deg = 16
+                    default_lon_dir = "East"
+                
+                longitude_deg = st.number_input("Longitude (°)", min_value=0, max_value=180, 
+                                              value=default_lon_deg, 
+                                              step=1, key="lon_deg")
             with col_lon_min:
-                longitude_min = st.number_input("Longitude (')", min_value=0.0, max_value=59.9, 
-                                              value=0.0 if not auto_lon else lon_min, 
-                                              step=1.0, key="lon_min")
+                if st.session_state.auto_coords:
+                    default_lon_min = round((abs(st.session_state.auto_coords["lon"]) - default_lon_deg) * 60)
+                else:
+                    default_lon_min = 0
+                
+                longitude_min = st.number_input("Longitude (')", min_value=0, max_value=59, 
+                                              value=default_lon_min, 
+                                              step=1, key="lon_min")
             longitude_dir = st.selectbox("Longitude Direction", ["East", "West"], 
-                                       index=0 if not auto_lon else (0 if lon_dir == "East" else 1), 
+                                       index=0 if default_lon_dir == "East" else 1, 
                                        key="lon_dir")
             
         with col2b:
@@ -812,15 +816,28 @@ def data_input_form():
             st.write("**Latitude**")
             col_lat_deg, col_lat_min = st.columns(2)
             with col_lat_deg:
-                latitude_deg = st.number_input("Latitude (°)", min_value=0.0, max_value=90.0, 
-                                             value=45.0 if not auto_lat else lat_deg, 
-                                             step=1.0, key="lat_deg")
+                # Set default values based on auto-coordinates or manual input
+                if st.session_state.auto_coords:
+                    default_lat_deg = int(abs(st.session_state.auto_coords["lat"]))
+                    default_lat_dir = "North" if st.session_state.auto_coords["lat"] >= 0 else "South"
+                else:
+                    default_lat_deg = 45
+                    default_lat_dir = "North"
+                
+                latitude_deg = st.number_input("Latitude (°)", min_value=0, max_value=90, 
+                                             value=default_lat_deg, 
+                                             step=1, key="lat_deg")
             with col_lat_min:
-                latitude_min = st.number_input("Latitude (')", min_value=0.0, max_value=59.9, 
-                                             value=51.0 if not auto_lat else lat_min, 
-                                             step=1.0, key="lat_min")
+                if st.session_state.auto_coords:
+                    default_lat_min = round((abs(st.session_state.auto_coords["lat"]) - default_lat_deg) * 60)
+                else:
+                    default_lat_min = 51
+                
+                latitude_min = st.number_input("Latitude (')", min_value=0, max_value=59, 
+                                             value=default_lat_min, 
+                                             step=1, key="lat_min")
             latitude_dir = st.selectbox("Latitude Direction", ["North", "South"], 
-                                      index=0 if not auto_lat else (0 if lat_dir == "North" else 1), 
+                                      index=0 if default_lat_dir == "North" else 1, 
                                       key="lat_dir")
         
         # Calcul coordonate finale
