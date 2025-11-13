@@ -315,13 +315,26 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
             
             ax.plot([x_inner, x_outer], [y_inner, y_outer], color=house_color, linewidth=1, alpha=0.5)
             
-            # Numerele caselor
+            # Numerele caselor - Transformare directă
+            if i == 0: house_number = 1    # unde era 11
+            elif i == 1: house_number = 2  # unde era 12
+            elif i == 2: house_number = 3  # unde era 1
+            elif i == 3: house_number = 4  # unde era 2
+            elif i == 4: house_number = 5  # unde era 3
+            elif i == 5: house_number = 6  # unde era 4
+            elif i == 6: house_number = 7  # unde era 5
+            elif i == 7: house_number = 8  # unde era 6
+            elif i == 8: house_number = 9  # unde era 7
+            elif i == 9: house_number = 10 # unde era 8
+            elif i == 10: house_number = 11 # unde era 9
+            elif i == 11: house_number = 12 # unde era 10
+                
             house_text_angle = angle + 15  # Centrul casei
             house_rad_angle = np.radians(house_text_angle)
             x_house = center_x + house_radius * np.cos(house_rad_angle)
             y_house = center_y + house_radius * np.sin(house_rad_angle)
             
-            ax.text(x_house, y_house, str(i+1), ha='center', va='center', 
+            ax.text(x_house, y_house, str(house_number), ha='center', va='center', 
                    color=house_color, fontsize=10, fontweight='bold')
             
             # Semnele zodiacale
