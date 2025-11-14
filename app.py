@@ -264,7 +264,7 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
         inner_radius = 3.8
         house_radius = 3.5
         planet_radius = 3.0
-        aspect_radius = 2.5
+        aspect_radius = 2.5  # Raza pentru liniile de aspect
         
         # Culori
         background_color = 'white'
@@ -274,14 +274,18 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
         
         # Culori pentru aspecte
         aspect_colors = {
-            'Conjunction': '#FF6B6B', 'Opposition': '#4ECDC4', 'Trine': '#45B7D1',
-            'Square': '#FFA500', 'Sextile': '#96CEB4'
+            'Conjunction': '#FF6B6B',    # Roșu
+            'Opposition': '#4ECDC4',     # Turcoaz
+            'Trine': '#45B7D1',          # Albastru deschis
+            'Square': '#FFA500',         # Portocaliu
+            'Sextile': '#96CEB4'         # Verde deschis
         }
         
         planet_colors = {
-            'Sun': '#FFD700', 'Moon': '#C0C0C0', 'Mercury': '#A9A9A9', 'Venus': '#FFB6C1',
-            'Mars': '#FF4500', 'Jupiter': '#FFA500', 'Saturn': '#DAA520', 'Uranus': '#40E0D0',
-            'Neptune': '#1E90FF', 'Pluto': '#8B008B', 'Nod': '#FF69B4', 'Chi': '#32CD32'
+            'Sun': '#FFD700', 'Moon': '#C0C0C0', 'Mercury': '#A9A9A9',
+            'Venus': '#FFB6C1', 'Mars': '#FF4500', 'Jupiter': '#FFA500',
+            'Saturn': '#DAA520', 'Uranus': '#40E0D0', 'Neptune': '#1E90FF',
+            'Pluto': '#8B008B', 'Nod': '#FF69B4', 'Chi': '#32CD32'
         }
         
         # Setează fundalul
@@ -298,13 +302,9 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
         signs = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
         sign_names = ['ARI', 'TAU', 'GEM', 'CAN', 'LEO', 'VIR', 'LIB', 'SCO', 'SAG', 'CAP', 'AQU', 'PIS']
         
-        # ROTIRE COMPLETĂ: Totul este rotit cu 90° în sens orar
-        # Astfel casa 1 (Ascendent) va fi în stânga
-        rotation = 90  # Rotire de 90° în sens orar
-        
+        # Desenează casele și semnele
         for i in range(12):
-            # Unghiul rotit - casa 1 începe la -90° (stânga)
-            angle = i * 30 - rotation
+            angle = i * 30 - 90  # Începe de la 9 o'clock (Aries)
             rad_angle = np.radians(angle)
             
             # Linii pentru case
@@ -316,7 +316,7 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
             ax.plot([x_inner, x_outer], [y_inner, y_outer], color=house_color, linewidth=1, alpha=0.5)
             
             # Numerele caselor
-            house_text_angle = angle + 15
+            house_text_angle = angle + 15  # Centrul casei
             house_rad_angle = np.radians(house_text_angle)
             x_house = center_x + house_radius * np.cos(house_rad_angle)
             y_house = center_y + house_radius * np.sin(house_rad_angle)
@@ -324,8 +324,8 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
             ax.text(x_house, y_house, str(i+1), ha='center', va='center', 
                    color=house_color, fontsize=10, fontweight='bold')
             
-            # Semnele zodiacale - ROTITE la fel
-            sign_angle = i * 30 - rotation - 15
+            # Semnele zodiacale
+            sign_angle = i * 30 - 75  # Poziționare pentru semne
             sign_rad_angle = np.radians(sign_angle)
             x_sign = center_x + (outer_radius + 0.3) * np.cos(sign_rad_angle)
             y_sign = center_y + (outer_radius + 0.3) * np.sin(sign_rad_angle)
@@ -333,14 +333,12 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
             ax.text(x_sign, y_sign, signs[i], ha='center', va='center', 
                    color=house_color, fontsize=14)
             
-            # Numele semnului - ROTIT la fel
+            # Numele semnului
             x_name = center_x + (outer_radius + 0.7) * np.cos(sign_rad_angle)
             y_name = center_y + (outer_radius + 0.7) * np.sin(sign_rad_angle)
             
-            # Rotația textului ajustată pentru orientarea corectă
-            text_rotation = sign_angle + 90
             ax.text(x_name, y_name, sign_names[i], ha='center', va='center', 
-                   color=house_color, fontsize=8, rotation=text_rotation)
+                   color=house_color, fontsize=8, rotation=angle+90)
         
         # Calculează aspectele dacă este necesar
         if show_aspects:
@@ -355,12 +353,13 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
                 if (planet1 in chart_data['planets'] and 
                     planet2 in chart_data['planets']):
                     
-                    # Coordonatele planetelor - ROTITE la fel
+                    # Coordonatele planetelor
                     long1 = chart_data['planets'][planet1]['longitude']
                     long2 = chart_data['planets'][planet2]['longitude']
                     
-                    angle1 = long1 - rotation
-                    angle2 = long2 - rotation
+                    # Calculează unghiurile pentru planete
+                    angle1 = long1 - 90
+                    angle2 = long2 - 90
                     
                     rad_angle1 = np.radians(angle1)
                     rad_angle2 = np.radians(angle2)
@@ -373,6 +372,8 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
                     
                     # Alege culoarea pentru aspect
                     color = aspect_colors.get(aspect_name, '#888888')
+                    
+                    # Grosimea liniei în funcție de puterea aspectului
                     linewidth = 2.0 if aspect['strength'] == 'Strong' else 1.0
                     
                     # Desenează linia aspectului
@@ -382,17 +383,18 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
         # Plasează planetele în chart
         planets = chart_data['planets']
         planet_symbols = {
-            'Sun': '☉', 'Moon': '☽', 'Mercury': '☿', 'Venus': '♀', 'Mars': '♂',
-            'Jupiter': '♃', 'Saturn': '♄', 'Uranus': '♅', 'Neptune': '♆', 
-            'Pluto': '♇', 'Nod': '☊', 'Chi': '⚷'
+            'Sun': '☉', 'Moon': '☽', 'Mercury': '☿', 'Venus': '♀',
+            'Mars': '♂', 'Jupiter': '♃', 'Saturn': '♄', 'Uranus': '♅',
+            'Neptune': '♆', 'Pluto': '♇', 'Nod': '☊', 'Chi': '⚷'
         }
         
         for planet_name, planet_data in planets.items():
             longitude = planet_data['longitude']
+            house = planet_data.get('house', 1)
             is_retrograde = planet_data.get('retrograde', False)
             
-            # Poziția planetei - ROTITĂ la fel
-            planet_angle = longitude - rotation
+            # Calculează unghiul pentru planetă
+            planet_angle = longitude - 90  # Ajustare pentru a începe de la Aries
             planet_rad_angle = np.radians(planet_angle)
             
             # Poziția planetei
@@ -427,7 +429,7 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
         ax.set_title(f'{name} - {date_str}\n{title_suffix}', 
                     color=text_color, fontsize=16, pad=20)
         
-        # Legenda pentru aspecte
+        # Legenda pentru aspecte (dacă sunt afișate)
         if show_aspects and aspects:
             legend_elements = []
             for aspect_name, color in aspect_colors.items():
