@@ -298,18 +298,16 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
         signs = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
         sign_names = ['ARI', 'TAU', 'GEM', 'CAN', 'LEO', 'VIR', 'LIB', 'SCO', 'SAG', 'CAP', 'AQU', 'PIS']
         
-        # MODIFICARE CRUCIALĂ: Găsim longitudinea Ascendentului (casa 1) și rotim totul
-        asc_longitude = chart_data['houses'][1]['longitude']
-        rotation_offset = asc_longitude + 90  # Rotim astfel încât Ascendentul să fie în stânga
+        # ROTIRE COMPLETĂ: Totul este rotit cu 90° în sens orar
+        # Astfel casa 1 (Ascendent) va fi în stânga
+        rotation = 90  # Rotire de 90° în sens orar
         
         for i in range(12):
-            # Calculăm unghiul casei rotite corect
-            house_num = i + 1
-            house_longitude = chart_data['houses'][house_num]['longitude']
-            angle = house_longitude - rotation_offset
+            # Unghiul rotit - casa 1 începe la -90° (stânga)
+            angle = i * 30 - rotation
             rad_angle = np.radians(angle)
             
-            # Linii pentru case (cuspide)
+            # Linii pentru case
             x_outer = center_x + outer_radius * np.cos(rad_angle)
             y_outer = center_y + outer_radius * np.sin(rad_angle)
             x_inner = center_x + inner_radius * np.cos(rad_angle)
@@ -317,33 +315,32 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
             
             ax.plot([x_inner, x_outer], [y_inner, y_outer], color=house_color, linewidth=1, alpha=0.5)
             
-            # Numerele caselor - centrul fiecărei case
-            house_center_angle = angle + 15
-            house_rad_angle = np.radians(house_center_angle)
+            # Numerele caselor
+            house_text_angle = angle + 15
+            house_rad_angle = np.radians(house_text_angle)
             x_house = center_x + house_radius * np.cos(house_rad_angle)
             y_house = center_y + house_radius * np.sin(house_rad_angle)
             
-            ax.text(x_house, y_house, str(house_num), ha='center', va='center', 
+            ax.text(x_house, y_house, str(i+1), ha='center', va='center', 
                    color=house_color, fontsize=10, fontweight='bold')
-        
-        # Semnele zodiacale - plasate pe circumferința exterioară
-        for i in range(12):
-            sign_angle = i * 30 - rotation_offset  # Poziția semnului
-            sign_rad_angle = np.radians(sign_angle)
             
-            # Simbolul semnului
+            # Semnele zodiacale - ROTITE la fel
+            sign_angle = i * 30 - rotation - 15
+            sign_rad_angle = np.radians(sign_angle)
             x_sign = center_x + (outer_radius + 0.3) * np.cos(sign_rad_angle)
             y_sign = center_y + (outer_radius + 0.3) * np.sin(sign_rad_angle)
             
             ax.text(x_sign, y_sign, signs[i], ha='center', va='center', 
                    color=house_color, fontsize=14)
             
-            # Numele semnului
+            # Numele semnului - ROTIT la fel
             x_name = center_x + (outer_radius + 0.7) * np.cos(sign_rad_angle)
             y_name = center_y + (outer_radius + 0.7) * np.sin(sign_rad_angle)
             
+            # Rotația textului ajustată pentru orientarea corectă
+            text_rotation = sign_angle + 90
             ax.text(x_name, y_name, sign_names[i], ha='center', va='center', 
-                   color=house_color, fontsize=8, rotation=sign_angle + 90)
+                   color=house_color, fontsize=8, rotation=text_rotation)
         
         # Calculează aspectele dacă este necesar
         if show_aspects:
@@ -358,12 +355,15 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
                 if (planet1 in chart_data['planets'] and 
                     planet2 in chart_data['planets']):
                     
-                    # Coordonatele planetelor rotite corect
-                    long1 = chart_data['planets'][planet1]['longitude'] - rotation_offset
-                    long2 = chart_data['planets'][planet2]['longitude'] - rotation_offset
+                    # Coordonatele planetelor - ROTITE la fel
+                    long1 = chart_data['planets'][planet1]['longitude']
+                    long2 = chart_data['planets'][planet2]['longitude']
                     
-                    rad_angle1 = np.radians(long1)
-                    rad_angle2 = np.radians(long2)
+                    angle1 = long1 - rotation
+                    angle2 = long2 - rotation
+                    
+                    rad_angle1 = np.radians(angle1)
+                    rad_angle2 = np.radians(angle2)
                     
                     # Pozițiile planetelor pe cerc
                     x1 = center_x + aspect_radius * np.cos(rad_angle1)
@@ -391,8 +391,8 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
             longitude = planet_data['longitude']
             is_retrograde = planet_data.get('retrograde', False)
             
-            # Poziția planetei rotită corect
-            planet_angle = longitude - rotation_offset
+            # Poziția planetei - ROTITĂ la fel
+            planet_angle = longitude - rotation
             planet_rad_angle = np.radians(planet_angle)
             
             # Poziția planetei
