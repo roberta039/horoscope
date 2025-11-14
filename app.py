@@ -1660,7 +1660,105 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "MarsSAG": "Broad, open energy that piles into bed with a laugh, splashes sex around with a will, but may miss some details in process. Can be athletic, enthusiastic, but needs channelling for best effect.",
         "MarsCAP": "Careful and determined in expression, tops where skill is known, needs educating though to expand variety. A diamond in the rough, tops if experienced but needs molding early on.",
         "MarsAQU": "Seeks many different opportunities for sexual expression. Likes multiple partners & will need many different methods to have sex. Explores partner's fantasies to make sex perfect.",
-        "MarsPIS": "Adaptive & subtle, needs drawing out to realize extent of abilities. Capable of extremes, particularly in giving. Best at using sexual energies to relay higher communication ulterior love or devotion."
+        "MarsPIS": "Adaptive & subtle, needs drawing out to realize extent of abilities. Capable of extremes, particularly in giving. Best at using sexual energies to relay higher communication ulterior love or devotion.",
+        
+        # Jupiter sign interpretations
+        "JupiterARI": "Expansive, adventurous in sexual expression. Seeks growth through sexual experiences. Enjoys variety and new adventures in intimacy.",
+        "JupiterTAU": "Sensual and generous lover. Believes in abundance and pleasure. Creates a comfortable, luxurious sexual environment.",
+        "JupiterGEM": "Curious and communicative in sex. Enjoys intellectual stimulation and variety. Seeks mental connection through sexuality.",
+        "JupiterCAN": "Nurturing and protective in sexual relationships. Creates emotional security and family-like bonds through intimacy.",
+        "JupiterLEO": "Dramatic and generous lover. Enjoys romance and grand gestures. Seeks recognition and admiration in sexual expression.",
+        "JupiterVIR": "Discerning and service-oriented in sex. Values hygiene and technique. Seeks perfection and improvement in sexual experiences.",
+        "JupiterLIB": "Harmonious and aesthetic in sexual expression. Values beauty, balance and partnership in intimate relationships.",
+        "JupiterSCO": "Intense and transformative in sexuality. Seeks deep, soul-level connections. Powerful sexual energy and magnetism.",
+        "JupiterSAG": "Adventurous and philosophical in sex. Values freedom and exploration. Enjoys sexual experiences as spiritual journeys.",
+        "JupiterCAP": "Responsible and ambitious in sexual expression. Values tradition and achievement. Seeks long-term security in relationships.",
+        "JupiterAQU": "Unconventional and freedom-loving in sex. Values intellectual connection and innovation. Experimental and open-minded.",
+        "JupiterPIS": "Compassionate and spiritual in sexuality. Seeks union and transcendence through sex. Sensitive and empathetic lover.",
+        
+        # Saturn sign interpretations
+        "SaturnARI": "Disciplined and controlled in sexual expression. May have fears around initiation. Learns sexual confidence through experience.",
+        "SaturnTAU": "Patient and reliable in sexuality. Values security and commitment. Develops sensual mastery over time.",
+        "SaturnGEM": "Serious about sexual communication. May overthink intimacy. Develops verbal intimacy through maturity.",
+        "SaturnCAN": "Protective and traditional in sexual relationships. Values emotional security. Develops deep emotional bonds slowly.",
+        "SaturnLEO": "Responsible and loyal in sexual expression. Values respect and commitment. Develops creative sexual expression with age.",
+        "SaturnVIR": "Disciplined and health-conscious in sex. Values purity and service. Develops technical skill through practice.",
+        "SaturnLIB": "Committed and balanced in relationships. Values fairness and partnership. Develops harmonious sexual expression over time.",
+        "SaturnSCO": "Intense and controlled in sexuality. Powerful but restrained. Develops deep sexual wisdom through life experience.",
+        "SaturnSAG": "Philosophical and responsible in sexual expression. Values truth and integrity. Develops sexual freedom through maturity.",
+        "SaturnCAP": "Ambitious and traditional in sexuality. Values structure and achievement. Sexual expression improves with age and success.",
+        "SaturnAQU": "Disciplined yet unconventional in sex. Values freedom within structure. Develops unique sexual expression through life lessons.",
+        "SaturnPIS": "Compassionate yet boundaried in sexuality. Spiritual but practical. Develops transcendent sexual connection through maturity.",
+        
+        # Uranus sign interpretations
+        "UranusARI": "Innovative and spontaneous in sex. Enjoys experimentation and freedom. Sudden attractions and unexpected encounters.",
+        "UranusTAU": "Unconventional yet sensual in sexual expression. Combines tradition with innovation. Unique approach to physical pleasure.",
+        "UranusGEM": "Intellectually experimental in sex. Enjoys variety and mental stimulation. Unconventional communication styles in intimacy.",
+        "UranusCAN": "Innovative in emotional expression. Combines tradition with new approaches to family and security in relationships.",
+        "UranusLEO": "Dramatic and original in sexual expression. Creative and rebellious approach to romance and self-expression.",
+        "UranusVIR": "Unconventional yet practical in sex. Innovative approaches to health and service. Unique sexual techniques.",
+        "UranusLIB": "Revolutionary in relationships. Seeks equality and freedom in partnerships. Unconventional approach to beauty and harmony.",
+        "UranusSCO": "Intense and transformative in sexual innovation. Powerful breakthroughs in intimacy. Revolutionary approach to power and sexuality.",
+        "UranusSAG": "Philosophically revolutionary in sex. Seeks freedom and truth in sexual expression. Adventurous and unconventional beliefs.",
+        "UranusCAP": "Innovative within structure. Combines tradition with progress in sexual expression. Unconventional approach to authority.",
+        "UranusAQU": "Extremely unconventional and free in sexual expression. Experimental and detached. Seeks intellectual and spiritual connection.",
+        "UranusPIS": "Mystical and innovative in sexuality. Combines spirituality with experimentation. Unique approach to transcendence through sex.",
+        
+        # Neptune sign interpretations
+        "NeptuneARI": "Dreamy and idealistic in sexual expression. Romantic fantasies and spiritual connections. May confuse reality with illusion.",
+        "NeptuneTAU": "Sensual and mystical in sexuality. Idealizes physical pleasure and beauty. Spiritual approach to material pleasure.",
+        "NeptuneGEM": "Imaginative and communicative in sex. Romantic fantasies and idealistic conversations. May idealize partners.",
+        "NeptuneCAN": "Emotionally dreamy in sexuality. Idealizes home and family. Spiritual approach to emotional security.",
+        "NeptuneLEO": "Romantic and idealistic in sexual expression. Dramatic fantasies and spiritual creativity. May idealize love.",
+        "NeptuneVIR": "Idealistic about purity and service in sex. Spiritual approach to health and perfection. May have unrealistic expectations.",
+        "NeptuneLIB": "Romantic and idealistic about relationships. Seeks perfect harmony and beauty. May idealize partners and love.",
+        "NeptuneSCO": "Mystical and intense in sexuality. Seeks spiritual transformation through sex. Powerful psychic and emotional connections.",
+        "NeptuneSAG": "Philosophical and idealistic in sexual expression. Seeks spiritual truth through intimacy. May idealize sexual freedom.",
+        "NeptuneCAP": "Spiritual yet practical in sexuality. Combines tradition with idealism. Seeks meaningful structure in relationships.",
+        "NeptuneAQU": "Visionary and unconventional in sex. Seeks spiritual connection through innovation. Idealistic about freedom.",
+        "NeptunePIS": "Extremely spiritual and compassionate in sexuality. Seeks union and transcendence. May blur boundaries between reality and fantasy.",
+        
+        # Pluto sign interpretations
+        "PlutoARI": "Intense and transformative in sexual initiation. Powerful sexual energy that seeks new beginnings. Revolutionary approach to sexuality.",
+        "PlutoTAU": "Deeply sensual and transformative in physical expression. Seeks security through intense sexual experiences. Powerful material desires.",
+        "PlutoGEM": "Transformative in sexual communication. Seeks truth and depth through intellectual intimacy. Powerful mental connections.",
+        "PlutoCAN": "Intensely emotional and transformative in sexuality. Seeks emotional security through deep bonds. Powerful family dynamics.",
+        "PlutoLEO": "Dramatic and powerful in sexual expression. Seeks creative transformation through intimacy. Intense need for recognition.",
+        "PlutoVIR": "Transformative in sexual service and health. Seeks perfection through intense experiences. Powerful attention to detail.",
+        "PlutoLIB": "Intense and transformative in relationships. Seeks balance through powerful partnerships. Deep need for harmony.",
+        "PlutoSCO": "Extremely intense and powerful in sexuality. Seeks total transformation through intimacy. Life-changing sexual experiences.",
+        "PlutoSAG": "Philosophically transformative in sex. Seeks truth and expansion through intense experiences. Powerful beliefs about freedom.",
+        "PlutoCAP": "Ambitious and powerful in sexual expression. Seeks transformation through structure and achievement. Intense career and status desires.",
+        "PlutoAQU": "Revolutionary and transformative in sexuality. Seeks freedom through intense innovation. Powerful need for individuality.",
+        "PlutoPIS": "Spiritually transformative in sexuality. Seeks transcendence through intense emotional connections. Powerful psychic and mystical experiences.",
+        
+        # Nod (North Node) sign interpretations
+        "NodARI": "Learning to initiate and be independent in sexuality. Developing courage and self-assertion in intimate relationships.",
+        "NodTAU": "Learning sensual mastery and stability in sexuality. Developing physical security and reliability in relationships.",
+        "NodGEM": "Learning communication and variety in sexuality. Developing intellectual connection and adaptability in intimacy.",
+        "NodCAN": "Learning emotional security and nurturing in sexuality. Developing family bonds and emotional protection.",
+        "NodLEO": "Learning creative self-expression and confidence in sexuality. Developing romance and leadership in relationships.",
+        "NodVIR": "Learning service and perfection in sexuality. Developing health consciousness and practical skills in intimacy.",
+        "NodLIB": "Learning partnership and harmony in sexuality. Developing balance and fairness in relationships.",
+        "NodSCO": "Learning intensity and transformation in sexuality. Developing deep emotional bonds and psychological insight.",
+        "NodSAG": "Learning adventure and philosophy in sexuality. Developing freedom and truth-seeking in relationships.",
+        "NodCAP": "Learning responsibility and achievement in sexuality. Developing structure and long-term security in relationships.",
+        "NodAQU": "Learning innovation and freedom in sexuality. Developing individuality and intellectual connection in relationships.",
+        "NodPIS": "Learning compassion and spirituality in sexuality. Developing emotional unity and transcendence in relationships.",
+        
+        # Chi (Chiron) sign interpretations
+        "ChiARI": "Healing through sexual initiation and independence. Learning to balance assertiveness with sensitivity in intimacy.",
+        "ChiTAU": "Healing through sensual expression and security. Learning to balance possessiveness with generosity in relationships.",
+        "ChiGEM": "Healing through sexual communication and variety. Learning to balance restlessness with commitment in intimacy.",
+        "ChiCAN": "Healing through emotional security and nurturing. Learning to balance dependency with independence in relationships.",
+        "ChiLEO": "Healing through creative self-expression in sexuality. Learning to balance ego with humility in intimate relationships.",
+        "ChiVIR": "Healing through service and perfection in sexuality. Learning to balance criticism with acceptance in relationships.",
+        "ChiLIB": "Healing through partnership and harmony in sexuality. Learning to balance dependence with independence in relationships.",
+        "ChiSCO": "Healing through intensity and transformation in sexuality. Learning to balance power with surrender in intimate relationships.",
+        "ChiSAG": "Healing through adventure and philosophy in sexuality. Learning to balance freedom with commitment in relationships.",
+        "ChiCAP": "Healing through responsibility and achievement in sexuality. Learning to balance control with spontaneity in relationships.",
+        "ChiAQU": "Healing through innovation and freedom in sexuality. Learning to balance detachment with emotional connection in relationships.",
+        "ChiPIS": "Healing through compassion and spirituality in sexuality. Learning to balance boundaries with unity in relationships."
     }
 
     # Display based on interpretation type
@@ -1733,8 +1831,9 @@ def display_complete_interpretations(chart_data, interpretation_type):
                 st.write(f"{sexual_interpretations[asc_key]}")
                 st.markdown("---")
         
-        # 2. All planet interpretations
-        sexual_planets = ["Sun", "Moon", "Mercury", "Venus", "Mars"]
+        # 2. ALL planet interpretations - TOATE PLANETELE
+        sexual_planets = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", 
+                         "Saturn", "Uranus", "Neptune", "Pluto", "Nod", "Chi"]
         
         for planet_name in sexual_planets:
             if planet_name in chart_data['planets']:
