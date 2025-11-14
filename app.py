@@ -709,70 +709,70 @@ def data_input_form():
         
         # Selector pentru orașe și capitale
         world_cities = {
-            # Romania
-            "Bucharest, Romania": {"lat": 44.4268, "lon": 26.1025},
-            "Tecuci, Romania": {"lat": 45.8497, "lon": 27.4344},
-            "Ploiesti, Romania": {"lat": 44.9416, "lon": 26.0227},
-            "Cluj-Napoca, Romania": {"lat": 46.7712, "lon": 23.6236},
-            "Timisoara, Romania": {"lat": 45.7489, "lon": 21.2087},
-            "Iasi, Romania": {"lat": 47.1585, "lon": 27.6014},
-            "Constanta, Romania": {"lat": 44.1598, "lon": 28.6348},
-            "Craiova, Romania": {"lat": 44.3302, "lon": 23.7949},
-            "Brasov, Romania": {"lat": 45.6576, "lon": 25.6012},
-            "Galati, Romania": {"lat": 45.4353, "lon": 28.0070},
+            # România
+            "București, România": {"lat": 44.4268, "lon": 26.1025},
+            "Tecuci, România": {"lat": 45.8497, "lon": 27.4344},
+            "Ploiești, România": {"lat": 44.9416, "lon": 26.0227},
+            "Cluj-Napoca, România": {"lat": 46.7712, "lon": 23.6236},
+            "Timișoara, România": {"lat": 45.7489, "lon": 21.2087},
+            "Iași, România": {"lat": 47.1585, "lon": 27.6014},
+            "Constanța, România": {"lat": 44.1598, "lon": 28.6348},
+            "Craiova, România": {"lat": 44.3302, "lon": 23.7949},
+            "Brașov, România": {"lat": 45.6576, "lon": 25.6012},
+            "Galați, România": {"lat": 45.4353, "lon": 28.0070},
             
-            # Neighboring countries
-            "Budapest, Hungary": {"lat": 47.4979, "lon": 19.0402},
-            "Belgrade, Serbia": {"lat": 44.7866, "lon": 20.4489},
+            # Țări învecinate
+            "Budapesta, Ungaria": {"lat": 47.4979, "lon": 19.0402},
+            "Belgrad, Serbia": {"lat": 44.7866, "lon": 20.4489},
             "Sofia, Bulgaria": {"lat": 42.6977, "lon": 23.3219},
-            "Chisinau, Moldova": {"lat": 47.0105, "lon": 28.8638},
-            "Kyiv, Ukraine": {"lat": 50.4501, "lon": 30.5234},
+            "Chișinău, Moldova": {"lat": 47.0105, "lon": 28.8638},
+            "Kiev, Ucraina": {"lat": 50.4501, "lon": 30.5234},
             
-            # Other European capitals
-            "Prague, Czech Republic": {"lat": 50.0755, "lon": 14.4378},
-            "Warsaw, Poland": {"lat": 52.2297, "lon": 21.0122},
-            "Berlin, Germany": {"lat": 52.5200, "lon": 13.4050},
-            "Paris, France": {"lat": 48.8566, "lon": 2.3522},
-            "London, UK": {"lat": 51.5074, "lon": -0.1278},
-            "Madrid, Spain": {"lat": 40.4168, "lon": -3.7038},
-            "Rome, Italy": {"lat": 41.9028, "lon": 12.4964},
-            "Vienna, Austria": {"lat": 48.2082, "lon": 16.3738},
-            "Athens, Greece": {"lat": 37.9838, "lon": 23.7275},
-            "Lisbon, Portugal": {"lat": 38.7223, "lon": -9.1393},
-            "Amsterdam, Netherlands": {"lat": 52.3676, "lon": 4.9041},
-            "Brussels, Belgium": {"lat": 50.8503, "lon": 4.3517},
-            "Copenhagen, Denmark": {"lat": 55.6761, "lon": 12.5683},
-            "Stockholm, Sweden": {"lat": 59.3293, "lon": 18.0686},
-            "Oslo, Norway": {"lat": 59.9139, "lon": 10.7522},
-            "Helsinki, Finland": {"lat": 60.1699, "lon": 24.9384},
-            "Moscow, Russia": {"lat": 55.7558, "lon": 37.6173},
-            "Ankara, Turkey": {"lat": 39.9334, "lon": 32.8597},
+            # Alte capitale europene
+            "Praga, Cehia": {"lat": 50.0755, "lon": 14.4378},
+            "Varșovia, Polonia": {"lat": 52.2297, "lon": 21.0122},
+            "Berlin, Germania": {"lat": 52.5200, "lon": 13.4050},
+            "Paris, Franța": {"lat": 48.8566, "lon": 2.3522},
+            "Londra, Marea Britanie": {"lat": 51.5074, "lon": -0.1278},
+            "Madrid, Spania": {"lat": 40.4168, "lon": -3.7038},
+            "Roma, Italia": {"lat": 41.9028, "lon": 12.4964},
+            "Viena, Austria": {"lat": 48.2082, "lon": 16.3738},
+            "Atena, Grecia": {"lat": 37.9838, "lon": 23.7275},
+            "Lisabona, Portugalia": {"lat": 38.7223, "lon": -9.1393},
+            "Amsterdam, Olanda": {"lat": 52.3676, "lon": 4.9041},
+            "Bruxelles, Belgia": {"lat": 50.8503, "lon": 4.3517},
+            "Copenhaga, Danemarca": {"lat": 55.6761, "lon": 12.5683},
+            "Stockholm, Suedia": {"lat": 59.3293, "lon": 18.0686},
+            "Oslo, Norvegia": {"lat": 59.9139, "lon": 10.7522},
+            "Helsinki, Finlanda": {"lat": 60.1699, "lon": 24.9384},
+            "Moscova, Rusia": {"lat": 55.7558, "lon": 37.6173},
+            "Ankara, Turcia": {"lat": 39.9334, "lon": 32.8597},
             
-            # Rest of the world
+            # Restul lumii
             "Beijing, China": {"lat": 39.9042, "lon": 116.4074},
-            "Tokyo, Japan": {"lat": 35.6762, "lon": 139.6503},
+            "Tokyo, Japonia": {"lat": 35.6762, "lon": 139.6503},
             "New Delhi, India": {"lat": 28.6139, "lon": 77.2090},
-            "Washington D.C., USA": {"lat": 38.9072, "lon": -77.0369},
+            "Washington D.C., SUA": {"lat": 38.9072, "lon": -77.0369},
             "Ottawa, Canada": {"lat": 45.4215, "lon": -75.6972},
             "Canberra, Australia": {"lat": -35.2809, "lon": 149.1300},
-            "Wellington, New Zealand": {"lat": -41.2865, "lon": 174.7762},
-            "Brasilia, Brazil": {"lat": -15.7975, "lon": -47.8919},
+            "Wellington, Noua Zeelandă": {"lat": -41.2865, "lon": 174.7762},
+            "Brasília, Brazilia": {"lat": -15.7975, "lon": -47.8919},
             "Buenos Aires, Argentina": {"lat": -34.6037, "lon": -58.3816},
             "Santiago, Chile": {"lat": -33.4489, "lon": -70.6693},
             "Lima, Peru": {"lat": -12.0464, "lon": -77.0428},
-            "Bogota, Colombia": {"lat": 4.7110, "lon": -74.0721},
-            "Mexico City, Mexico": {"lat": 19.4326, "lon": -99.1332},
-            "Cairo, Egypt": {"lat": 30.0444, "lon": 31.2357},
-            "Johannesburg, South Africa": {"lat": -26.2041, "lon": 28.0473},
+            "Bogotá, Columbia": {"lat": 4.7110, "lon": -74.0721},
+            "Mexico City, Mexic": {"lat": 19.4326, "lon": -99.1332},
+            "Cairo, Egipt": {"lat": 30.0444, "lon": 31.2357},
+            "Johannesburg, Africa de Sud": {"lat": -26.2041, "lon": 28.0473},
             "Nairobi, Kenya": {"lat": -1.2921, "lon": 36.8219},
-            "Riyadh, Saudi Arabia": {"lat": 24.7136, "lon": 46.6753},
+            "Riyadh, Arabia Saudită": {"lat": 24.7136, "lon": 46.6753},
             "Tel Aviv, Israel": {"lat": 32.0853, "lon": 34.7818},
             "Dubai, UAE": {"lat": 25.2048, "lon": 55.2708},
-            "Seoul, South Korea": {"lat": 37.5665, "lon": 126.9780},
-            "Bangkok, Thailand": {"lat": 13.7563, "lon": 100.5018},
+            "Seoul, Coreea de Sud": {"lat": 37.5665, "lon": 126.9780},
+            "Bangkok, Thailanda": {"lat": 13.7563, "lon": 100.5018},
             "Hanoi, Vietnam": {"lat": 21.0278, "lon": 105.8342},
-            "Jakarta, Indonesia": {"lat": -6.2088, "lon": 106.8456},
-            "Manila, Philippines": {"lat": 14.5995, "lon": 120.9842},
+            "Jakarta, Indonezia": {"lat": -6.2088, "lon": 106.8456},
+            "Manila, Filipine": {"lat": 14.5995, "lon": 120.9842},
             "Kuala Lumpur, Malaysia": {"lat": 3.1390, "lon": 101.6869},
             "Singapore, Singapore": {"lat": 1.3521, "lon": 103.8198},
         }
@@ -979,17 +979,13 @@ def display_positions():
         if planet_name in chart_data['planets']:
             planet_data = chart_data['planets'][planet_name]
             positions_data.append({
-                'House': planet_data.get('house', 'N/A'),  # House prima coloană
                 'Planet': planet_name,
                 'Position': planet_data['position_str'],
-                'Longitude': f"{int(planet_data['longitude'])}°{int((planet_data['longitude'] % 1) * 60)}'"
+                'Longitude': f"{int(planet_data['longitude'])}°{int((planet_data['longitude'] % 1) * 60)}'",
+                'House': planet_data.get('house', 'N/A')
             })
     
     df = pd.DataFrame(positions_data)
-    
-    # Reordonează coloanele pentru a avea House prima
-    df = df[['House', 'Planet', 'Position', 'Longitude']]
-    
     st.dataframe(df, use_container_width=True, hide_index=True)
 
 def display_aspects():
@@ -1294,164 +1290,151 @@ def display_interpretation():
 def display_complete_interpretations(chart_data, interpretation_type):
     """Display interpretations for Natal, Natal Aspects, and Sexual only"""
     
-    # Dicționar pentru maparea abreviere -> nume complete
-    sign_full_names = {
-        "ARI": "Aries", "TAU": "Taurus", "GEM": "Gemini", "CAN": "Cancer",
-        "LEO": "Leo", "VIR": "Virgo", "LIB": "Libra", "SCO": "Scorpio",
-        "SAG": "Sagittarius", "CAP": "Capricorn", "AQU": "Aquarius", "PIS": "Pisces"
-    }
-    
-    planet_full_names = {
-        "Sun": "Sun", "Moon": "Moon", "Mercury": "Mercury", "Venus": "Venus",
-        "Mars": "Mars", "Jupiter": "Jupiter", "Saturn": "Saturn", "Uranus": "Uranus",
-        "Neptune": "Neptune", "Pluto": "Pluto", "Nod": "North Node", "Chi": "Chiron"
-    }
-
-    # COMPLETE Natal Interpretations (Planets in Signs) - TOATE PLANETELE CU NUME COMPLETE
+    # COMPLETE Natal Interpretations (Planets in Signs) - TOATE PLANETELE CU SEMNE COMPLETE
     natal_interpretations = {
         "Sun": {
-            "Aries": "Open, energetic, strong, enthusiastic, forward looking, positive, determined, inventive, bright, filled with a zest for life.",
-            "Taurus": "Reliable, able, with powers of concentration, tenacity. Steadfast, a loving & affectionate 'family' person. Honest, forthright. Learns readily from mistakes.",
-            "Gemini": "Clever, bright, quickwitted, communicative, able to do many different things at once, eager to learn new subjects. Openminded, adaptable, curious, restless, confident, seldom settling down.",
-            "Cancer": "Emotional,complex,loving, sympathetic, understanding, humanitarian, kind, tender, respectful of the rights of others.",
-            "Leo": "Self reliant, popular, good at leading others & at administration. Lots of directed energy & drive - good at achieving that which is desired. Very confident.",
-            "Virgo": "Cool, critical, idealistic but practical, hardworking & a good planner. Sees things through to the finish. Trustworthy, dependable, never shirks responsibilities. Perfectionist for the sake of perfection.",
-            "Libra": "Friendly, cordial, artistic, kind, considerate, loyal, alert, sociable, moderate, balanced in views, open-minded.",
-            "Scorpio": "Determined, direct, confident, sincere, brave, courageous, strongwilled, unafraid of setbacks or hard work. Principled & unswerving once a path has been decided on - has very clear goals.",
-            "Sagittarius": "Forthright, freedom loving, honest, tolerant, broadminded, open, frank, fair, dependable, trusting (seldom suspicious), optimistic, generous, intelligent, respected, earnest, funloving & trustworthy.",
-            "Capricorn": "Orderly, patient, serious, stable, persevering, careful, prudent, just, ( justice usually being more important to this person than mercy ). Will always repay favours - self-reliant.",
-            "Aquarius": "Independent, tolerant, honest, forthright, considerate, helpful, sincere, generous, unprejudiced, broadminded, reliable, refined & humanitarian. An intense kinship with nature. Not much practical common sense.",
-            "Pisces": "Sensitive, sympathetic, understanding, kind, sentimental, dedicated, broadminded, uncritical of the shortcomings of others. Quite earnest & trustworthy. Generous."
+            "ARI": "Open, energetic, strong, enthusiastic, forward looking, positive, determined, inventive, bright, filled with a zest for life.",
+            "TAU": "Reliable, able, with powers of concentration, tenacity. Steadfast, a loving & affectionate 'family' person. Honest, forthright. Learns readily from mistakes.",
+            "GEM": "Clever, bright, quickwitted, communicative, able to do many different things at once, eager to learn new subjects. Openminded, adaptable, curious, restless, confident, seldom settling down.",
+            "CAN": "Emotional,complex,loving, sympathetic, understanding, humanitarian, kind, tender, respectful of the rights of others.",
+            "LEO": "Self reliant, popular, good at leading others & at administration. Lots of directed energy & drive - good at achieving that which is desired. Very confident.",
+            "VIR": "Cool, critical, idealistic but practical, hardworking & a good planner. Sees things through to the finish. Trustworthy, dependable, never shirks responsibilities. Perfectionist for the sake of perfection.",
+            "LIB": "Friendly, cordial, artistic, kind, considerate, loyal, alert, sociable, moderate, balanced in views, open-minded.",
+            "SCO": "Determined, direct, confident, sincere, brave, courageous, strongwilled, unafraid of setbacks or hard work. Principled & unswerving once a path has been decided on - has very clear goals.",
+            "SAG": "Forthright, freedom loving, honest, tolerant, broadminded, open, frank, fair, dependable, trusting (seldom suspicious), optimistic, generous, intelligent, respected, earnest, funloving & trustworthy.",
+            "CAP": "Orderly, patient, serious, stable, persevering, careful, prudent, just, ( justice usually being more important to this person than mercy ). Will always repay favours - self-reliant.",
+            "AQU": "Independent, tolerant, honest, forthright, considerate, helpful, sincere, generous, unprejudiced, broadminded, reliable, refined & humanitarian. An intense kinship with nature. Not much practical common sense.",
+            "PIS": "Sensitive, sympathetic, understanding, kind, sentimental, dedicated, broadminded, uncritical of the shortcomings of others. Quite earnest & trustworthy. Generous."
         },
         "Moon": {
-            "Aries": "Energetic, ambitious, strongwilled, self-centred, impulsive, dominant & obstinate.",
-            "Taurus": "Gregarious, sociable, sensuous, sometimes strongly possessive.",
-            "Gemini": "Quickwitted. Hungry for new experiences - a traveller. Impressionable.",
-            "Cancer": "Sensitive, friendly, but reserved; tradition loving; lives in fantasy.",
-            "Leo": "A cheerful nature, with strong ego, which could lead to vanity, pride & conceit.",
-            "Virgo": "Often speaks too much & too hastily. Closed book to others.",
-            "Libra": "Polite, diplomatic, good social manners. Eloquent.",
-            "Scorpio": "Tenacious will, much energy & working power, passionate, often sensual. Honest.",
-            "Sagittarius": "Active or restless (a roving spirit), easily inspired, but not at all persevering.",
-            "Capricorn": "Reserved, careful, sly. Learns by experience - reacts slowly to new things. Common sense.",
-            "Aquarius": "Openminded, loves freedom, original even eccentric. Individualistic.",
-            "Pisces": "Rich fantasy, deep feeling, impressionable. Easy to discourage. Receptive."
+            "ARI": "Energetic, ambitious, strongwilled, self-centred, impulsive, dominant & obstinate.",
+            "TAU": "Gregarious, sociable, sensuous, sometimes strongly possessive.",
+            "GEM": "Quickwitted. Hungry for new experiences - a traveller. Impressionable.",
+            "CAN": "Sensitive, friendly, but reserved; tradition loving; lives in fantasy.",
+            "LEO": "A cheerful nature, with strong ego, which could lead to vanity, pride & conceit.",
+            "VIR": "Often speaks too much & too hastily. Closed book to others.",
+            "LIB": "Polite, diplomatic, good social manners. Eloquent.",
+            "SCO": "Tenacious will, much energy & working power, passionate, often sensual. Honest.",
+            "SAG": "Active or restless (a roving spirit), easily inspired, but not at all persevering.",
+            "CAP": "Reserved, careful, sly. Learns by experience - reacts slowly to new things. Common sense.",
+            "AQU": "Openminded, loves freedom, original even eccentric. Individualistic.",
+            "PIS": "Rich fantasy, deep feeling, impressionable. Easy to discourage. Receptive."
         },
         "Mercury": {
-            "Aries": "Open & self-reliant, speaks fluently & too much. Ready to fight, full of new ideas.",
-            "Taurus": "Thorough, persevering. Good at working with the hands. Inflexible,steady, obstinate, self-opinionated, conventional, limited in interests.",
-            "Gemini": "Combative. Many-sided, interested in many subjects, well read, mentally swift.",
-            "Cancer": "Dreamy, fantasises & lives in the past. Tactful, diplomatic.",
-            "Leo": "Sociable, optimistic, enjoys life. Self-confident (too much?).",
-            "Virgo": "Quickwitted. Thinks realistically. Has an eye for detail. Can be fussy.",
-            "Libra": "Rational, appreciative, ready to compromise. Observant. Lacking in thoroughness.",
-            "Scorpio": "A shrewd & thorough thinker, taciturn, acute, penetrating, with a deep & silent personality.",
-            "Sagittarius": "Frank, sincere, humanitarian, justice loving, rich in ideas.",
-            "Capricorn": "Logical, systematic, critical, shrewd, often a slow thinker/mover.",
-            "Aquarius": "Original, full of ideas, intuitive, usually good memory.",
-            "Pisces": "Emotional, impressionable. Always fantasising, dreaming."
+            "ARI": "Open & self-reliant, speaks fluently & too much. Ready to fight, full of new ideas.",
+            "TAU": "Thorough, persevering. Good at working with the hands. Inflexible,steady, obstinate, self-opinionated, conventional, limited in interests.",
+            "GEM": "Combative. Many-sided, interested in many subjects, well read, mentally swift.",
+            "CAN": "Dreamy, fantasises & lives in the past. Tactful, diplomatic.",
+            "LEO": "Sociable, optimistic, enjoys life. Self-confident (too much?).",
+            "VIR": "Quickwitted. Thinks realistically. Has an eye for detail. Can be fussy.",
+            "LIB": "Rational, appreciative, ready to compromise. Observant. Lacking in thoroughness.",
+            "SCO": "A shrewd & thorough thinker, taciturn, acute, penetrating, with a deep & silent personality.",
+            "SAG": "Frank, sincere, humanitarian, justice loving, rich in ideas.",
+            "CAP": "Logical, systematic, critical, shrewd, often a slow thinker/mover.",
+            "AQU": "Original, full of ideas, intuitive, usually good memory.",
+            "PIS": "Emotional, impressionable. Always fantasising, dreaming."
         },
         "Venus": {
-            "Aries": "Impulsive, passionate, self reliant, extroverted. Sometimes sociable.",
-            "Taurus": "Often tender, sensual. Overpossessive & sometimes jealous. A good mixer.",
-            "Gemini": "Flirtatious. Makes friends very easily. Has multifaceted relationships.",
-            "Cancer": "Homeloving. Wary of others- generally cautious. A good host.",
-            "Leo": "Magnanimous, self-centred, often creative. An exhibitionist - loves acting.",
-            "Virgo": "Appears cool & closed: really passionate. Shy, restrained, scheming.",
-            "Libra": "Very sociable, many friendships but few deep or enduring ones.",
-            "Scorpio": "Passionate, intense, sensual, exacting, highly sensitive to any slight or neglect.",
-            "Sagittarius": "Freedom-loving: hence unstable, changeful in friendships & marriage.",
-            "Capricorn": "Faithful & usually reliable, but capricious at times.",
-            "Aquarius": "Impersonal but friendly, makes contacts easily.",
-            "Pisces": "Tolerant, compassionate, always ready to help. Self-sacrificing."
+            "ARI": "Impulsive, passionate, self reliant, extroverted. Sometimes sociable.",
+            "TAU": "Often tender, sensual. Overpossessive & sometimes jealous. A good mixer.",
+            "GEM": "Flirtatious. Makes friends very easily. Has multifaceted relationships.",
+            "CAN": "Homeloving. Wary of others- generally cautious. A good host.",
+            "LEO": "Magnanimous, self-centred, often creative. An exhibitionist - loves acting.",
+            "VIR": "Appears cool & closed: really passionate. Shy, restrained, scheming.",
+            "LIB": "Very sociable, many friendships but few deep or enduring ones.",
+            "SCO": "Passionate, intense, sensual, exacting, highly sensitive to any slight or neglect.",
+            "SAG": "Freedom-loving: hence unstable, changeful in friendships & marriage.",
+            "CAP": "Faithful & usually reliable, but capricious at times.",
+            "AQU": "Impersonal but friendly, makes contacts easily.",
+            "PIS": "Tolerant, compassionate, always ready to help. Self-sacrificing."
         },
         "Mars": {
-            "Aries": "Energetic, enterprising, vital, open, fond of independence.",
-            "Taurus": "Determined, often unyielding, persevering in work, quite self reliant.",
-            "Gemini": "Interested in many things, quick, perceptive, eloquent, acute, sarcastic argumentative.",
-            "Cancer": "Domestic life is very important - in this, practical & constructive.",
-            "Leo": "Ambitious, enthusiastic, persevering. Powerful, generous, hot-tempered.",
-            "Virgo": "Considerate, appreciative, prudent, careful, meticulous, persevering, a natural worrier.",
-            "Libra": "Seldom angry or ill-natured. Temperamental, moody & vain.",
-            "Scorpio": "Dynamic. Extremely strong willed. Capable of anything when determined.",
-            "Sagittarius": "Energetic, fond of travelling & adventure. Often not very persevering. Hasty, inconsiderate.",
-            "Capricorn": "Ambitious, strongwilled, persevering. Strives for rise, power, fame.",
-            "Aquarius": "Strong reasoning powers. Often interested in science. Fond of freedom & independence.",
-            "Pisces": "Failure because of multifarious aims. Prefers compromise. Restless. No self confidence."
+            "ARI": "Energetic, enterprising, vital, open, fond of independence.",
+            "TAU": "Determined, often unyielding, persevering in work, quite self reliant.",
+            "GEM": "Interested in many things, quick, perceptive, eloquent, acute, sarcastic argumentative.",
+            "CAN": "Domestic life is very important - in this, practical & constructive.",
+            "LEO": "Ambitious, enthusiastic, persevering. Powerful, generous, hot-tempered.",
+            "VIR": "Considerate, appreciative, prudent, careful, meticulous, persevering, a natural worrier.",
+            "LIB": "Seldom angry or ill-natured. Temperamental, moody & vain.",
+            "SCO": "Dynamic. Extremely strong willed. Capable of anything when determined.",
+            "SAG": "Energetic, fond of travelling & adventure. Often not very persevering. Hasty, inconsiderate.",
+            "CAP": "Ambitious, strongwilled, persevering. Strives for rise, power, fame.",
+            "AQU": "Strong reasoning powers. Often interested in science. Fond of freedom & independence.",
+            "PIS": "Failure because of multifarious aims. Prefers compromise. Restless. No self confidence."
         },
         "Jupiter": {
-            "Aries": "Optimistic, energetic, fond of freedom & justice, stands up for ideas & ideals.High-spirited & self-willed.",
-            "Taurus": "Reliable, good-natured, in search of success through constancy, builds up future in lots of little steps. Usually good judgement.",
-            "Gemini": "Quickwitted, interested in many things, intent on expanding horizons through travel & study. Often superficial.",
-            "Cancer": "Appreciative of others. Plans life carefully. Intuitive, but lives in a fantasy world.",
-            "Leo": "Has a talent for organizing & leading. Open & ready to help anyone in need - magnanimous & affectionate.",
-            "Virgo": "Objectively critical, conscientious, overskeptical, quiet, kind, rather too matter-of-fact, reliable",
-            "Libra": "Gregarious, well-loved, fair, ethical, good. Convincing at conversation.",
-            "Scorpio": "Strongwilled, ambitious, persevering, determined & smart.",
-            "Sagittarius": "Optimistic, always interested in learning something new.",
-            "Capricorn": "Has a sense of responsibility. Ambitious. Conventional, economical,honest sometimes avaricious. Persevering & stubborn.",
-            "Aquarius": "Idealistic, sociable, interested in teaching or philosophy. Tolerant.",
-            "Pisces": "Compassionate, hospitable, ready to help others, jolly, pleasant, very easy-going."
+            "ARI": "Optimistic, energetic, fond of freedom & justice, stands up for ideas & ideals.High-spirited & self-willed.",
+            "TAU": "Reliable, good-natured, in search of success through constancy, builds up future in lots of little steps. Usually good judgement.",
+            "GEM": "Quickwitted, interested in many things, intent on expanding horizons through travel & study. Often superficial.",
+            "CAN": "Appreciative of others. Plans life carefully. Intuitive, but lives in a fantasy world.",
+            "LEO": "Has a talent for organizing & leading. Open & ready to help anyone in need - magnanimous & affectionate.",
+            "VIR": "Objectively critical, conscientious, overskeptical, quiet, kind, rather too matter-of-fact, reliable",
+            "LIB": "Gregarious, well-loved, fair, ethical, good. Convincing at conversation.",
+            "SCO": "Strongwilled, ambitious, persevering, determined & smart.",
+            "SAG": "Optimistic, always interested in learning something new.",
+            "CAP": "Has a sense of responsibility. Ambitious. Conventional, economical,honest sometimes avaricious. Persevering & stubborn.",
+            "AQU": "Idealistic, sociable, interested in teaching or philosophy. Tolerant.",
+            "PIS": "Compassionate, hospitable, ready to help others, jolly, pleasant, very easy-going."
         },
         "Saturn": {
-            "Aries": "Some talent for organizing, strives for leadership: however, lacks the necessary sense of responsibility & depth.",
-            "Taurus": "Realistic, strongwilled, persevering, careful.",
-            "Gemini": "Concentrates, a thinker. Profound, well-ordered, disciplined, logical, austere, serious.",
-            "Cancer": "Sense of responsibility for the family. Conservative, economical.",
-            "Leo": "Talent for organizing, strongwilled, self-confident. Pursues objectives obstinately, heedless of others. Jealous, possessive.",
-            "Virgo": "A methodical & logical thinker: sometimes a ponderer. Careful, practical, conscientious, sometimes pedantic, severe, overprudent.",
-            "Libra": "Sociable, reliable, patient, fond of justice, rational, tactful, usually diplomatic.",
-            "Scorpio": "Determined, persevering, pursues professional objectives tenaciously. Usually inflexible.",
-            "Sagittarius": "Upright, open, courageous, honourable, grave, dignified, very capable.",
-            "Capricorn": "Highly ambitious, serious, usually introverted. Conventional.",
-            "Aquarius": "Pragmatic, observant. Able to influence others. Overpowering desire for independence.",
-            "Pisces": "Sympathetic, adaptable, ready to sacrifice self for others, but often indecisive, cowardly, sad, moody, worrying."
+            "ARI": "Some talent for organizing, strives for leadership: however, lacks the necessary sense of responsibility & depth.",
+            "TAU": "Realistic, strongwilled, persevering, careful.",
+            "GEM": "Concentrates, a thinker. Profound, well-ordered, disciplined, logical, austere, serious.",
+            "CAN": "Sense of responsibility for the family. Conservative, economical.",
+            "LEO": "Talent for organizing, strongwilled, self-confident. Pursues objectives obstinately, heedless of others. Jealous, possessive.",
+            "VIR": "A methodical & logical thinker: sometimes a ponderer. Careful, practical, conscientious, sometimes pedantic, severe, overprudent.",
+            "LIB": "Sociable, reliable, patient, fond of justice, rational, tactful, usually diplomatic.",
+            "SCO": "Determined, persevering, pursues professional objectives tenaciously. Usually inflexible.",
+            "SAG": "Upright, open, courageous, honourable, grave, dignified, very capable.",
+            "CAP": "Highly ambitious, serious, usually introverted. Conventional.",
+            "AQU": "Pragmatic, observant. Able to influence others. Overpowering desire for independence.",
+            "PIS": "Sympathetic, adaptable, ready to sacrifice self for others, but often indecisive, cowardly, sad, moody, worrying."
         },
         "Uranus": {
-            "Aries": "Original, strongwilled, insists on personal freedom & independence. Proud, courageous, rebellious, dogmatic.",
-            "Taurus": "Determined, self-willed, industrious, self-reliant, practical, a dogged pursuer of goals.",
-            "Gemini": "Rich in ideas, inventive, versatile, gifted, able, an original thinker.",
-            "Cancer": "Rather passive, compassionate, sensitive, impressionable, intuitive.",
-            "Leo": "Eccentric, original, artistic, quite self-reliant - a loner. Sometimes arrogant, wilful.",
-            "Virgo": "Hypercritical, clever, whimsical. Peculiar views on health & nutrition. Emotionally unreliable.",
-            "Libra": "Fond of justice, fair. Original, unorthodox views on law. Restless, romantic.",
-            "Scorpio": "Strongwilled, intelligent, malicious, sly, vengeful. Intent on bodily & sensual enjoyment.",
-            "Sagittarius": "Active, sociable. Purposeful, methodical but reckless, highly-strung, rebellious, excitable, adventurous.",
-            "Capricorn": "Talent for organizing, with a strong will, a fierce warlike nature, often a very strong personality.",
-            "Aquarius": "Original, rich in ideas, independent, usually interested in science.",
-            "Pisces": "Sensitive, appreciative, adaptable, often passive. Frequently idealistic, visionary, religious, impractical."
+            "ARI": "Original, strongwilled, insists on personal freedom & independence. Proud, courageous, rebellious, dogmatic.",
+            "TAU": "Determined, self-willed, industrious, self-reliant, practical, a dogged pursuer of goals.",
+            "GEM": "Rich in ideas, inventive, versatile, gifted, able, an original thinker.",
+            "CAN": "Rather passive, compassionate, sensitive, impressionable, intuitive.",
+            "LEO": "Eccentric, original, artistic, quite self-reliant - a loner. Sometimes arrogant, wilful.",
+            "VIR": "Hypercritical, clever, whimsical. Peculiar views on health & nutrition. Emotionally unreliable.",
+            "LIB": "Fond of justice, fair. Original, unorthodox views on law. Restless, romantic.",
+            "SCO": "Strongwilled, intelligent, malicious, sly, vengeful. Intent on bodily & sensual enjoyment.",
+            "SAG": "Active, sociable. Purposeful, methodical but reckless, highly-strung, rebellious, excitable, adventurous.",
+            "CAP": "Talent for organizing, with a strong will, a fierce warlike nature, often a very strong personality.",
+            "AQU": "Original, rich in ideas, independent, usually interested in science.",
+            "PIS": "Sensitive, appreciative, adaptable, often passive. Frequently idealistic, visionary, religious, impractical."
         },
         "Neptune": {
-            "Aries": "Lives in fantasy. Perseveres in finding solutions for problems.",
-            "Taurus": "Likes spiritual things. Very secretive. Impractical, overly traditional.",
-            "Gemini": "Complex, worrying, fantasising, has many impractical ideas but sometimes flashes of brilliance too. Muddle-headed.",
-            "Cancer": "Dreamy, inclined to escape from reality. Loves luxuries & comforts that life can offer.",
-            "Leo": "Fond of freedom. Takes risks. Conceited. Often stands up for own beliefs & ideals.",
-            "Virgo": "Humble. Sometimes has prophetic foresight. Is very critical, sceptical about orthodox religion, tradition & received opinions in general.",
-            "Libra": "Idealistic, often a bit out of touch with reality. Has only a hazy view & understanding of real life & the world.",
-            "Scorpio": "Emotionally intense. Has ideals of social justice & morality. Secretive.",
-            "Sagittarius": "Shrewd, wide-awake intellect. Interested in an unattainable Utopia.",
-            "Capricorn": "Can intuitively grasp things.",
-            "Aquarius": "Often has obscure & quixotic ideas.",
-            "Pisces": "Gentle, loving, sociable, honest & reliable."
+            "ARI": "Lives in fantasy. Perseveres in finding solutions for problems.",
+            "TAU": "Likes spiritual things. Very secretive. Impractical, overly traditional.",
+            "GEM": "Complex, worrying, fantasising, has many impractical ideas but sometimes flashes of brilliance too. Muddle-headed.",
+            "CAN": "Dreamy, inclined to escape from reality. Loves luxuries & comforts that life can offer.",
+            "LEO": "Fond of freedom. Takes risks. Conceited. Often stands up for own beliefs & ideals.",
+            "VIR": "Humble. Sometimes has prophetic foresight. Is very critical, sceptical about orthodox religion, tradition & received opinions in general.",
+            "LIB": "Idealistic, often a bit out of touch with reality. Has only a hazy view & understanding of real life & the world.",
+            "SCO": "Emotionally intense. Has ideals of social justice & morality. Secretive.",
+            "SAG": "Shrewd, wide-awake intellect. Interested in an unattainable Utopia.",
+            "CAP": "Can intuitively grasp things.",
+            "AQU": "Often has obscure & quixotic ideas.",
+            "PIS": "Gentle, loving, sociable, honest & reliable."
         },
         "Pluto": {
-            "Aries": "Straightforward, sometimes a little bit egotistical. Very assertive. Pioneering leader.",
-            "Taurus": "Very interested in modern technology. Materially acquisitive.",
-            "Gemini": "Strong & self-reliant, able to appraise people & situations very quickly & correctly.",
-            "Cancer": "Rich inner life, often active dreams & fantasy.",
-            "Leo": "Strong creative desires. Uncontrollable sexual appetite. Determined to win.",
-            "Virgo": "Prone to soul-searching & self-criticism. Thinks & acts to the point.",
-            "Libra": "Often ruled by the intellect: tries to solve problems logically. Interested in justice & the law.",
-            "Scorpio": "Tenacious, exceptionally enduring. Can lead the way, however difficult. Emotionally intense, highly sexual.",
-            "Sagittarius": "Interested in the study of racial & ethnic differences & origins & of traditional beliefs.",
-            "Capricorn": "Fascinated by new things. Dictatorial, impatient, lacking in consideration, dedicated to own profession.",
-            "Aquarius": "Has many friends. Original, has many ideas. Demanding in personal relationships.",
-            "Pisces": "Profound, intellectual, introverted - does not like crowds.Investigative, patient. Creative & artistic"
+            "ARI": "Straightforward, sometimes a little bit egotistical. Very assertive. Pioneering leader.",
+            "TAU": "Very interested in modern technology. Materially acquisitive.",
+            "GEM": "Strong & self-reliant, able to appraise people & situations very quickly & correctly.",
+            "CAN": "Rich inner life, often active dreams & fantasy.",
+            "LEO": "Strong creative desires. Uncontrollable sexual appetite. Determined to win.",
+            "VIR": "Prone to soul-searching & self-criticism. Thinks & acts to the point.",
+            "LIB": "Often ruled by the intellect: tries to solve problems logically. Interested in justice & the law.",
+            "SCO": "Tenacious, exceptionally enduring. Can lead the way, however difficult. Emotionally intense, highly sexual.",
+            "SAG": "Interested in the study of racial & ethnic differences & origins & of traditional beliefs.",
+            "CAP": "Fascinated by new things. Dictatorial, impatient, lacking in consideration, dedicated to own profession.",
+            "AQU": "Has many friends. Original, has many ideas. Demanding in personal relationships.",
+            "PIS": "Profound, intellectual, introverted - does not like crowds.Investigative, patient. Creative & artistic"
         }
     }
 
-    # COMPLETE Aspect Interpretations - TOATE COMBINAȚIILE CU NOD ȘI CHIRON
+    # COMPLETE Aspect Interpretations - TOATE COMBINAȚIILE
     aspect_interpretations = {
         # Sun aspects
         "SUN = MOON": "a feeling or moody nature",
@@ -1477,12 +1460,6 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "SUN = PLUTO": "experiences life in an emotionally concentrated way",
         "SUN + PLUTO": "has the greatest ability to improve, raise their consciousness, and transform any psychological complex they may have",
         "SUN - PLUTO": "tries to control all of life",
-        "SUN = NOD": "aligned with life purpose and destiny",
-        "SUN + NOD": "strong sense of destiny and life direction",
-        "SUN - NOD": "struggles with life purpose and direction",
-        "SUN = CHIRON": "wounded healer archetype activated",
-        "SUN + CHIRON": "healing through self-expression and creativity",
-        "SUN - CHIRON": "struggles with self-worth and healing",
         
         # Moon aspects
         "MOON = MERCURY": "emotionally expressive",
@@ -1509,12 +1486,6 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "MOON = PLUTO": "emotionally compulsive",
         "MOON + PLUTO": "blessed in the art of living",
         "MOON - PLUTO": "lives a cathartic emotional life",
-        "MOON = NOD": "emotional alignment with destiny",
-        "MOON + NOD": "emotional fulfillment through life purpose",
-        "MOON - NOD": "emotional conflicts with life path",
-        "MOON = CHIRON": "emotional wounds and healing",
-        "MOON + CHIRON": "healing through emotional expression",
-        "MOON - CHIRON": "struggles with emotional wounds",
         
         # Mercury aspects
         "MERCURY = VENUS": "lives a life of refinement and culture",
@@ -1537,12 +1508,6 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "MERCURY = PLUTO": "lives a life of probing and observing",
         "MERCURY + PLUTO": "balanced and whole in your thinking",
         "MERCURY - PLUTO": "too intense and subjective in their thinking",
-        "MERCURY = NOD": "mental alignment with destiny",
-        "MERCURY + NOD": "communicating life purpose effectively",
-        "MERCURY - NOD": "mental conflicts with life direction",
-        "MERCURY = CHIRON": "healing through communication",
-        "MERCURY + CHIRON": "teaching and healing through words",
-        "MERCURY - CHIRON": "communication wounds and challenges",
         
         # Venus aspects
         "VENUS = MARS": "thrives on passion",
@@ -1563,12 +1528,6 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "VENUS = PLUTO": "the greatest desire is to love intensely and completely",
         "VENUS + PLUTO": "the healthiest love partner",
         "VENUS - PLUTO": "at the mercy of uncontrollable passions",
-        "VENUS = NOD": "relationship alignment with destiny",
-        "VENUS + NOD": "relationships support life purpose",
-        "VENUS - NOD": "relationship conflicts with life path",
-        "VENUS = CHIRON": "healing through relationships",
-        "VENUS + CHIRON": "healing love and beauty",
-        "VENUS - CHIRON": "relationship wounds and challenges",
         
         # Mars aspects
         "MARS = JUPITER": "ambitious and motivated",
@@ -1586,12 +1545,6 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "MARS = PLUTO": "a reservoir of unlimited energy",
         "MARS + PLUTO": "great potential, combined with the most potent energy", 
         "MARS - PLUTO": "driven by compulsive cravings to dominate and win",
-        "MARS = NOD": "action aligned with destiny",
-        "MARS + NOD": "taking action toward life purpose",
-        "MARS - NOD": "action conflicts with life direction",
-        "MARS = CHIRON": "healing through action",
-        "MARS + CHIRON": "courageous healing and initiative",
-        "MARS - CHIRON": "action wounds and challenges",
         
         # Jupiter aspects
         "JUPITER = SATURN": "the strongest character and depth of soul",
@@ -1606,12 +1559,6 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "JUPITER = PLUTO": "compelled to find the truth, and have their life make a major impact",
         "JUPITER + PLUTO": "honorable, of the best morals",
         "JUPITER - PLUTO": "extreme in judgment, compulsive about philosophical and religious beliefs",
-        "JUPITER = NOD": "expansion aligned with destiny",
-        "JUPITER + NOD": "growth and opportunity through life purpose",
-        "JUPITER - NOD": "expansion conflicts with life path",
-        "JUPITER = CHIRON": "healing through wisdom",
-        "JUPITER + CHIRON": "teaching and healing through wisdom",
-        "JUPITER - CHIRON": "philosophical wounds and challenges",
         
         # Saturn aspects
         "SATURN = URANUS": "an agent for change",
@@ -1623,231 +1570,97 @@ def display_complete_interpretations(chart_data, interpretation_type):
         "SATURN = PLUTO": "compulsive about responsibility",
         "SATURN + PLUTO": "a mature human being",
         "SATURN - PLUTO": "life theme is karmic repayment of past life debts, an inordinate amount of difficulty, hardship, and suffering",
-        "SATURN = NOD": "responsibility aligned with destiny",
-        "SATURN + NOD": "structured approach to life purpose",
-        "SATURN - NOD": "responsibility conflicts with life direction",
-        "SATURN = CHIRON": "healing through discipline",
-        "SATURN + CHIRON": "mastery through healing challenges",
-        "SATURN - CHIRON": "structural wounds and limitations",
         
         # Uranus aspects
         "URANUS = NEPTUNE": "intense confusion regarding your independence, self reliance, and individuality (once every 190 years; last in 1993)",
-        "URANUS = PLUTO": "highly clairvoyant, metaphysical, extremely devotional, evolved",
-        "URANUS = NOD": "innovation aligned with destiny",
-        "URANUS + NOD": "revolutionary approach to life purpose",
-        "URANUS - NOD": "rebellion against life direction",
-        "URANUS = CHIRON": "healing through innovation",
-        "URANUS + CHIRON": "breakthrough healing and awakening",
-        "URANUS - CHIRON": "unconventional wounds and healing",
-        
-        # Neptune aspects
-        "NEPTUNE = PLUTO": "spiritual transformation and evolution",
-        "NEPTUNE + PLUTO": "profound spiritual awakening",
-        "NEPTUNE - PLUTO": "spiritual confusion and disillusionment",
-        "NEPTUNE = NOD": "spiritual alignment with destiny",
-        "NEPTUNE + NOD": "spiritual fulfillment of life purpose",
-        "NEPTUNE - NOD": "spiritual confusion about life path",
-        "NEPTUNE = CHIRON": "healing through spirituality",
-        "NEPTUNE + CHIRON": "spiritual healing and compassion",
-        "NEPTUNE - CHIRON": "spiritual wounds and disillusionment",
-        
-        # Pluto aspects
-        "PLUTO = NOD": "transformation aligned with destiny",
-        "PLUTO + NOD": "powerful transformation through life purpose",
-        "PLUTO - NOD": "power struggles with life direction",
-        "PLUTO = CHIRON": "healing through transformation",
-        "PLUTO + CHIRON": "profound healing and rebirth",
-        "PLUTO - CHIRON": "transformative wounds and power issues",
-        
-        # Nod aspects
-        "NOD = CHIRON": "healing aligned with destiny",
-        "NOD + CHIRON": "healing through life purpose",
-        "NOD - CHIRON": "healing challenges on life path"
+        "URANUS = PLUTO": "highly clairvoyant, metaphysical, extremely devotional, evolved"
     }
 
-    # COMPLETE Sexual Interpretations - TOATE PLANETELE ȘI CASELE CU NUME COMPLETE
+    # COMPLETE Sexual Interpretations - TOATE PLANETELE ȘI CASELE CU SEMNE COMPLETE
     sexual_interpretations = {
         # Ascendant interpretations
-        "ASC Aries": "Quick, aggressive, makes the first move. Immediately noticed in a room. Gets to the point fast, sometimes too fast intense, physical, heats up in in a hurry, cools quickly after sex, but can charge up again soon afterwards for more. Dispenses with foreplay in favor of the nitty-gritty. Comes in a flash, with super-high peak. Needs to study patience & sensitivity to avoid putting off slower, easy-going partners. Should lay back, come on less strong to get long-range love.",
-        "ASC Taurus": "Earthy, animal magnetism that grows on you. Slow at moving, but persistent once aroused. Good at foreplay with practice but takes some time to learn technique. Leans toward physical affection. Warm, friendly loving rather than fiery passion. Smouldering intensity with banked fires that burn hotter as time goes on. Sex requires cultivation, development to reach its peak. Steady and strong, lots of staying power. Can keep it up all night with a willing & imaginative partner.",
-        "ASC Gemini": "Talented, varied in sex technique. Likes change and imagination in sex, will try anything for its own sake or just to please a partner. May get hung up in method alone & forget the pleasure motive behind it. A delicate touch. Is bored with heavy, repetitive sex, & tires out if partner uses just brawn & not brains. Likes fantasy games, basic scenes laid out in advance and filled in spontaneously as the situation presents itself. Likes the unusual, but not deeply kinky.",
-        "ASC Cancer": "A strong, determined lover who can be very demanding once involved. Tends to take things to heart, doesn't rush into lightweight scenes, likes strong commitment up front. May be a bit hesitant & suspicious sticks toe in water before plunge, then all the way. Puts great care and loving into sex, treats partner like on a pedestal, which can be hard to live up to. Can take things too seriously on first involvement or not seriously enough. Easily hurt once exposed, so careful.",
-        "ASC Leo": "Playful, outgoing, full of fun and very much in the moment, with little immediate need for commitment. Sex is play, happy amusement to please the body, emotions & commitment are separate, come later, depending. Radiant, sunny disposition may belie other needs underneath, but physical sex drive is likely strong & needs satisfaction before inner self can be examined. Open and honest. Looks more for affection than technique. The spirit of the thing is what counts, not details.",
-        "ASC Virgo": "Extreme in appearance, very neat or very messy, no in betweens. Needs just the right trappings to get into sex, fantasy lived out in detail. Good at structured scenes, set up ahead of time, no freewheeling. Technique can be extreme, very developed, but may be limiting by exclusion of techniques not favored. Good for fetishy scenes with the right props. Physically kinky though might not think so. May miss the forest for the trees, lose inner emotions amid details of sex.",
-        "ASC Libra": "Always in motion, hard to keep up with as one scene moves to another. Can be overcritical, a high sexual achiever who demands the same of a partner. Never languishes in the backwaters, always into the latest in what makes a relationship tick. Wants the best and can get it, but needs a little patience to develop and enjoy the best out of a partner. A forceful lover, even when not taking the initiative. Needs more than the physical, goes for the mind and the heart to possess them.",
-        "ASC Scorpio": "Cautious, scopes out all the possibilities before moving or taking a chance. Likes to be in control, know what the next move is, be one step ahead of a partner. Once the decision to let go is made, commitments are 'all the way'. Can be an extremist, pushes sex to the brink, likes certain dangerous thrills to be involved. Sex is more than amusement, it's life itself, and death, too, an explosive miniature of the ecstasy of human existence, in which the individual vanishes.",
-        "ASC Sagittarius": "Sex is a sport, to be played for the game's own sake, not to win or gain conquest. Generous & active, not fixed on details but upon the spirit of the thing, the sheer joy of mating. Energy abounds, may wear out partner before reaching climax, so banking fires is advisable. Carefree, but may be careless as well. Should watch out for unexpected needs from partner, tend to them. Free with friendship as well as sex, makes a loyal companion even after affair is done -no grudges.",
-        "ASC Capricorn": "Seeks a serious affair, no lightweight playing around. Can be too serious about partners. Tends to hang onto an affair after it is already over. Won't take no for an answer or won't say yes, not much in between. May get stuck in same groove so should look to partner to suggest sexual variety. Once has the hang of it, simply won't quit, hangs in there. Good for no-nonsense, don't-stop sex sessions, but will use sex as a weapon when pressed so don't get involved lightly.",
-        "ASC Aquarius": "A cool, calm, and collected lover. Knows what to do & does it, but can become emotionally quite distant while physically deep in the fray. Takes careful stock and wants to taste & test everything before settling down to one form of expression -then may become quite conservative. Very even-handed with a lover, can't understand jealousy, turnabout is fair play. Analytic surface may belie a warm heart & a sensuous touch. A deeply satisfying emotional tie will form if patient.",
-        "ASC Pisces": "Sensitive, feels lover's needs & desires. Supple and able to please and adjust to any situation. May play passive or dominant role -an easy switcher if partner is too. Seeks to make sex a channel of higher communication to transform the personality to spiritual realms through totally shared emotion. Can participate in technique but doesn't value them except as a come-on to more personal intimacy that goes beyond sex. A good role-player, but may get lost in role, lose contact.",
+        "ASCARI": "Quick, aggressive, makes the first move. Immediately noticed in a room. Gets to the point fast, sometimes too fast intense, physical, heats up in in a hurry, cools quickly after sex, but can charge up again soon afterwards for more. Dispenses with foreplay in favor of the nitty-gritty. Comes in a flash, with super-high peak. Needs to study patience & sensitivity to avoid putting off slower, easy-going partners. Should lay back, come on less strong to get long-range love.",
+        "ASCTAU": "Earthy, animal magnetism that grows on you. Slow at moving, but persistent once aroused. Good at foreplay with practice but takes some time to learn technique. Leans toward physical affection. Warm, friendly loving rather than fiery passion. Smouldering intensity with banked fires that burn hotter as time goes on. Sex requires cultivation, development to reach its peak. Steady and strong, lots of staying power. Can keep it up all night with a willing & imaginative partner.",
+        "ASCGEM": "Talented, varied in sex technique. Likes change and imagination in sex, will try anything for its own sake or just to please a partner. May get hung up in method alone & forget the pleasure motive behind it. A delicate touch. Is bored with heavy, repetitive sex, & tires out if partner uses just brawn & not brains. Likes fantasy games, basic scenes laid out in advance and filled in spontaneously as the situation presents itself. Likes the unusual, but not deeply kinky.",
+        "ASCCAN": "A strong, determined lover who can be very demanding once involved. Tends to take things to heart, doesn't rush into lightweight scenes, likes strong commitment up front. May be a bit hesitant & suspicious sticks toe in water before plunge, then all the way. Puts great care and loving into sex, treats partner like on a pedestal, which can be hard to live up to. Can take things too seriously on first involvement or not seriously enough. Easily hurt once exposed, so careful.",
+        "ASCLEO": "Playful, outgoing, full of fun and very much in the moment, with little immediate need for commitment. Sex is play, happy amusement to please the body, emotions & commitment are separate, come later, depending. Radiant, sunny disposition may belie other needs underneath, but physical sex drive is likely strong & needs satisfaction before inner self can be examined. Open and honest. Looks more for affection than technique. The spirit of the thing is what counts, not details.",
+        "ASCVIR": "Extreme in appearance, very neat or very messy, no in betweens. Needs just the right trappings to get into sex, fantasy lived out in detail. Good at structured scenes, set up ahead of time, no freewheeling. Technique can be extreme, very developed, but may be limiting by exclusion of techniques not favored. Good for fetishy scenes with the right props. Physically kinky though might not think so. May miss the forest for the trees, lose inner emotions amid details of sex.",
+        "ASCLIB": "Always in motion, hard to keep up with as one scene moves to another. Can be overcritical, a high sexual achiever who demands the same of a partner. Never languishes in the backwaters, always into the latest in what makes a relationship tick. Wants the best and can get it, but needs a little patience to develop and enjoy the best out of a partner. A forceful lover, even when not taking the initiative. Needs more than the physical, goes for the mind and the heart to possess them.",
+        "ASCSCO": "Cautious, scopes out all the possibilities before moving or taking a chance. Likes to be in control, know what the next move is, be one step ahead of a partner. Once the decision to let go is made, commitments are 'all the way'. Can be an extremist, pushes sex to the brink, likes certain dangerous thrills to be involved. Sex is more than amusement, it's life itself, and death, too, an explosive miniature of the ecstasy of human existence, in which the individual vanishes.",
+        "ASCSAG": "Sex is a sport, to be played for the game's own sake, not to win or gain conquest. Generous & active, not fixed on details but upon the spirit of the thing, the sheer joy of mating. Energy abounds, may wear out partner before reaching climax, so banking fires is advisable. Carefree, but may be careless as well. Should watch out for unexpected needs from partner, tend to them. Free with friendship as well as sex, makes a loyal companion even after affair is done -no grudges.",
+        "ASCCAP": "Seeks a serious affair, no lightweight playing around. Can be too serious about partners. Tends to hang onto an affair after it is already over. Won't take no for an answer or won't say yes, not much in between. May get stuck in same groove so should look to partner to suggest sexual variety. Once has the hang of it, simply won't quit, hangs in there. Good for no-nonsense, don't-stop sex sessions, but will use sex as a weapon when pressed so don't get involved lightly.",
+        "ASCAQU": "A cool, calm, and collected lover. Knows what to do & does it, but can become emotionally quite distant while physically deep in the fray. Takes careful stock and wants to taste & test everything before settling down to one form of expression -then may become quite conservative. Very even-handed with a lover, can't understand jealousy, turnabout is fair play. Analytic surface may belie a warm heart & a sensuous touch. A deeply satisfying emotional tie will form if patient.",
+        "ASCPIS": "Sensitive, feels lover's needs & desires. Supple and able to please and adjust to any situation. May play passive or dominant role -an easy switcher if partner is too. Seeks to make sex a channel of higher communication to transform the personality to spiritual realms through totally shared emotion. Can participate in technique but doesn't value them except as a come-on to more personal intimacy that goes beyond sex. A good role-player, but may get lost in role, lose contact.",
         
         # Sun sign interpretations
-        "Sun Aries": "Fiery, intense, aggressive in all aspects of sex. Makes first move naturally, or would like to. Finishes off too quickly. Partner is left exhausted, wanting more time, care in loving.",
-        "Sun Taurus": "Thoughtful, reliable lover. A hearty appetite for sex. Sees sex as a loving, not just craving, appetite. Hard to get into kinky sex or purely recreational sex. Determined. Good staying power.",
-        "Sun Gemini": "Active, likes variety. Can try out any new technique, but gets bored easily. Sex is more fun & communication than hot passion. Sex is more mental than physical. Good at fantasy games, manual and oral techniques. Can be a good swinger.",
-        "Sun Cancer": "Intense, private, hard to reach at first. Sex is a back-to-the-womb, nurturing experience. Can be clinging, devoted, possessive. Not the freewheeling type, but pays off triple in sheer passion once aroused.",
-        "Sun Leo": "Generous, warm-hearted, sunny, but can get too boisterous or overbearing. Love and sex are natural events. Very loyal once attached, but sex and devotion do not necessarily go together.",
-        "Sun Virgo": "Highly adept lover. Very demanding in technique. Can be fetishy or kinky, attaching sex to objects and ritual, releasing orgasm at right moment. Likes sex trappings: costumes, erotic toys.",
-        "Sun Libra": "Seeks change in sex, not for variety but for its own sake. Will rarely beat around the bush; insists partner deliver the goods. Can play all sides of a menage-a-trois well.",
-        "Sun Scorpio": "The classic sexy sign, often lives up to its reputation. A deep, physical need for sex is prevalent, but may be repressed & channeled elsewhere. When attracted to someone, it's never say die until consummation.",
-        "Sun Sagittarius": "Enthusiastic, ardent, romantic. Likes classic scenarios that frame sex like a picture. Love on the ground, in the woods, under the sky, on the open sea. Wild turn-ons, if not always practical.",
-        "Sun Capricorn": "Conservative about sex but will go along with most anything to please a partner, if committed to one. Lots of staying power and can keep it up all night, though sex can get repetitive, hung up on one style or technique.",
-        "Sun Aquarius": "Even-handed lover, careful and often skilled at technique. Will try anything, taste and savor partner or sex skill. Makes a good swinger, knows all the rules, but exposes inner passions rarely.",
-        "Sun Pisces": "Psychic. Anticipates needs and aims to please. Very fantasy-oriented, more emotional than physical. Needs a partner communicative but firm and practical to guide through reality. Due to high empathy, voyeurism is natural.",
+        "SunARI": "Fiery, intense, aggressive in all aspects of sex. Makes first move naturally, or would like to. Finishes off too quickly. Partner is left exhausted, wanting more time, care in loving.",
+        "SunTAU": "Thoughtful, reliable lover. A hearty appetite for sex. Sees sex as a loving, not just craving, appetite. Hard to get into kinky sex or purely recreational sex. Determined. Good staying power.",
+        "SunGEM": "Active, likes variety. Can try out any new technique, but gets bored easily. Sex is more fun & communication than hot passion. Sex is more mental than physical. Good at fantasy games, manual and oral techniques. Can be a good swinger.",
+        "SunCAN": "Intense, private, hard to reach at first. Sex is a back-to-the-womb, nurturing experience. Can be clinging, devoted, possessive. Not the freewheeling type, but pays off triple in sheer passion once aroused.",
+        "SunLEO": "Generous, warm-hearted, sunny, but can get too boisterous or overbearing. Love and sex are natural events. Very loyal once attached, but sex and devotion do not necessarily go together.",
+        "SunVIR": "Highly adept lover. Very demanding in technique. Can be fetishy or kinky, attaching sex to objects and ritual, releasing orgasm at right moment. Likes sex trappings: costumes, erotic toys.",
+        "SunLIB": "Seeks change in sex, not for variety but for its own sake. Will rarely beat around the bush; insists partner deliver the goods. Can play all sides of a menage-a-trois well.",
+        "SunSCO": "The classic sexy sign, often lives up to its reputation. A deep, physical need for sex is prevalent, but may be repressed & channeled elsewhere. When attracted to someone, it's never say die until consummation.",
+        "SunSAG": "Enthusiastic, ardent, romantic. Likes classic scenarios that frame sex like a picture. Love on the ground, in the woods, under the sky, on the open sea. Wild turn-ons, if not always practical.",
+        "SunCAP": "Conservative about sex but will go along with most anything to please a partner, if committed to one. Lots of staying power and can keep it up all night, though sex can get repetitive, hung up on one style or technique.",
+        "SunAQU": "Even-handed lover, careful and often skilled at technique. Will try anything, taste and savor partner or sex skill. Makes a good swinger, knows all the rules, but exposes inner passions rarely.",
+        "SunPIS": "Psychic. Anticipates needs and aims to please. Very fantasy-oriented, more emotional than physical. Needs a partner communicative but firm and practical to guide through reality. Due to high empathy, voyeurism is natural.",
         
         # Moon sign interpretations
-        "Moon Aries": "Quick response, instant turn-on or turn-off. Won't pull punch. Can reach peaks quickly. Capable of multiple orgasms, but impatient with long foreplay. Once aroused, wants to get down to business. Super intense, but burns out quickly. May come too fast for partner. Needs slowing down to fully enjoy experience. Ready for anything, can get in over head if not careful. May burn out relationships when partner can't keep up pace. Needs constant new stimulation to keep sex stimulating, alive.",
-        "Moon Taurus": "Slow and steady to respond, but once aroused stays that way. A reliable partner, good to lean on, but can't be rushed. Requires honesty: no flirting or coy game-playing. No frills, decorations, wants down-to-earth stuff. Stays friends even after affairs are over, treasures people for themselves, not just as sex turn-on. Should not be deceived--as good and longlasting an enemy as friend. Not a swinger at heart, likes longrange affairs that mean friendship & deep inner commitment.",
-        "Moon Gemini": "Flexible, experiments. Reaction is likely to be 'why not?' can make a good swinger, but may not take sex very seriously or associate it with deep involvement. Free & easy lover, likes new or interesting sex for its own sake. Thrives on variety; not intensity or depth. A very good sense of humor. Skillful at fantasy role-playing as long as it stays light. Shuns heavyweight scenes like real s/m, emotional melodrama, and the like. A sex friend and playmate who doesn't need to push it.",
-        "Moon Cancer": "Oversensitive at times, but doesn't show it. May seem hard or cynical at first, but wants tender, family-style loving underneath. Very sympathetic to others' troubles. A good shoulder to cry on, but takes a while to open up. Sex must be emotional, not too mechanical. Technicalities hinder. A oneperson lover, retreats if other appears on scene. Wants to envelop lover totally, dissolve into emotions of love. Gives & needs lots of attention. Total involvement once committed.",
-        "Moon Leo": "Mellow, good-time partner who exudes enthusiasm, particularly in company. Once aroused, has big sex appetite, can handle more than one partner. Jealousy a no-no, has room for everyone who wants to play while still truly loyal to own partner in long run. Sees good in life even when on hard times. Can rebound -ready for more. An all-night lovemaker, may be too much for some. Can miss technical details in spirited hearty sex play. A friend always, a child at heart, full of fun.",
-        "Moon Virgo": "A stickler for details: the right time, place, atmosphere, surroundings. Good for fetishes & fantasies, but demanding. Insists on real McCoy. Good role player, if roles are carefully defined. May respond to intricate, kinky scenes and play them to the hilt, while missing inner emotional message. For emotional closeness, simplicity is needed: cut away details and go heart-to-heart. Should set the scene for sex, get comfortable before any real involvement can begin on the inside.",
-        "Moon Libra": "Changeable, always makes unexpected moves. Likes things in constant motion. Hard to pin down emotionally, always sees what's missing & heads for it. Creates sexual growth by not sitting still; no moss grows on this rolling stone. Insists on involvement and commitment, but only if it keeps things moving, never static. A truth-seeker who will try anything but will just as easily reject it as accept it. Turned on easily but hard to keep that way. Needs perseverant partner to keep up.",
-        "Moon Scorpio": "A slow, smoldering fire which is hotter than it looks, and once it takes hold, consumes. Can sustain sex if partner can hold up. Sees sex as an all-enveloping fire to get lost in. A heavyweight: a night's fun is not the goal--plays for keeps. Not to be slighted, has an elephant's memory & finds revenge sweet. Very jealous, best in single partner, long-range relationships that can develop to peaks of mutual sexual selfimmolation. Ultimately sees sex as ecstatic, transcendant.",
-        "Moon Sagittarius": "Roly-poly, fun lover with a ready laugh, can play sex for passionate romance or for just an evening's good-time play. Sees brighter side of things, but may be too cheery & optimistic. Hard to pin down to specific promises. Likes plenty of space & may dissemble somewhat artlessly to get it. A voluble fantasy life, paints outrageous scenarios but forgets to fill in the details--half the fun is in the creation, not the enactment. A friendly, mellow lover, who grows richer with age.",
-        "Moon Capricorn": "Careful, consistent, determined in response. Unflagging lover when committed -not the frivolous type. Strong on performance, less so on variety or imagination. Needs to be led by the hand to try out new things. Likes commitment, security, not a freeswinger. A lover who starts slow but will go all the way with love and coaxing. Needs reassurance that everything's o.k., then will leap into the middle with a will. Not an easy, overnight bedpal; but a life long lover & friend.",
-        "Moon Aquarius": "Even-tempered but a bit cold, views sex with an analytic eye and experiments for interest more than pleasure. Prefers tactile to oral stimulation but will give what's necessary to keep the ball rolling. Will play many roles, but finds real closeness hard to get. Wants lover with many techniques who keeps moving. Likes to see what is happening--sex with the lights on. Takes a long time to develop intimacy. The main sex organ is the mind, to which the body plays second fiddle.",
-        "Moon Pisces": "Supple, adaptable lover. Sparks with insight, intuition. Lets a lover handle details, goes to the heart of the emotion. Can get lost in fantasy of moment, adapt to any lover's personal scene, though may interpret it completely differently from partner. Very emotional, needs sensitive, gentle treatment to bring out full love potential. Can spot lies but may not tell; honesty is essential. Fantasies may go beyond the practical -fulfillable only in mind. Needs partner to adapt fantasies.",
+        "MoonARI": "Quick response, instant turn-on or turn-off. Won't pull punch. Can reach peaks quickly. Capable of multiple orgasms, but impatient with long foreplay. Once aroused, wants to get down to business. Super intense, but burns out quickly. May come too fast for partner. Needs slowing down to fully enjoy experience. Ready for anything, can get in over head if not careful. May burn out relationships when partner can't keep up pace. Needs constant new stimulation to keep sex stimulating, alive.",
+        "MoonTAU": "Slow and steady to respond, but once aroused stays that way. A reliable partner, good to lean on, but can't be rushed. Requires honesty: no flirting or coy game-playing. No frills, decorations, wants down-to-earth stuff. Stays friends even after affairs are over, treasures people for themselves, not just as sex turn-on. Should not be deceived--as good and longlasting an enemy as friend. Not a swinger at heart, likes longrange affairs that mean friendship & deep inner commitment.",
+        "MoonGEM": "Flexible, experiments. Reaction is likely to be 'why not?' can make a good swinger, but may not take sex very seriously or associate it with deep involvement. Free & easy lover, likes new or interesting sex for its own sake. Thrives on variety; not intensity or depth. A very good sense of humor. Skillful at fantasy role-playing as long as it stays light. Shuns heavyweight scenes like real s/m, emotional melodrama, and the like. A sex friend and playmate who doesn't need to push it.",
+        "MoonCAN": "Oversensitive at times, but doesn't show it. May seem hard or cynical at first, but wants tender, family-style loving underneath. Very sympathetic to others' troubles. A good shoulder to cry on, but takes a while to open up. Sex must be emotional, not too mechanical. Technicalities hinder. A oneperson lover, retreats if other appears on scene. Wants to envelop lover totally, dissolve into emotions of love. Gives & needs lots of attention. Total involvement once committed.",
+        "MoonLEO": "Mellow, good-time partner who exudes enthusiasm, particularly in company. Once aroused, has big sex appetite, can handle more than one partner. Jealousy a no-no, has room for everyone who wants to play while still truly loyal to own partner in long run. Sees good in life even when on hard times. Can rebound -ready for more. An all-night lovemaker, may be too much for some. Can miss technical details in spirited hearty sex play. A friend always, a child at heart, full of fun.",
+        "MoonVIR": "A stickler for details: the right time, place, atmosphere, surroundings. Good for fetishes & fantasies, but demanding. Insists on real McCoy. Good role player, if roles are carefully defined. May respond to intricate, kinky scenes and play them to the hilt, while missing inner emotional message. For emotional closeness, simplicity is needed: cut away details and go heart-to-heart. Should set the scene for sex, get comfortable before any real involvement can begin on the inside.",
+        "MoonLIB": "Changeable, always makes unexpected moves. Likes things in constant motion. Hard to pin down emotionally, always sees what's missing & heads for it. Creates sexual growth by not sitting still; no moss grows on this rolling stone. Insists on involvement and commitment, but only if it keeps things moving, never static. A truth-seeker who will try anything but will just as easily reject it as accept it. Turned on easily but hard to keep that way. Needs perseverant partner to keep up.",
+        "MoonSCO": "A slow, smoldering fire which is hotter than it looks, and once it takes hold, consumes. Can sustain sex if partner can hold up. Sees sex as an all-enveloping fire to get lost in. A heavyweight: a night's fun is not the goal--plays for keeps. Not to be slighted, has an elephant's memory & finds revenge sweet. Very jealous, best in single partner, long-range relationships that can develop to peaks of mutual sexual selfimmolation. Ultimately sees sex as ecstatic, transcendant.",
+        "MoonSAG": "Roly-poly, fun lover with a ready laugh, can play sex for passionate romance or for just an evening's good-time play. Sees brighter side of things, but may be too cheery & optimistic. Hard to pin down to specific promises. Likes plenty of space & may dissemble somewhat artlessly to get it. A voluble fantasy life, paints outrageous scenarios but forgets to fill in the details--half the fun is in the creation, not the enactment. A friendly, mellow lover, who grows richer with age.",
+        "MoonCAP": "Careful, consistent, determined in response. Unflagging lover when committed -not the frivolous type. Strong on performance, less so on variety or imagination. Needs to be led by the hand to try out new things. Likes commitment, security, not a freeswinger. A lover who starts slow but will go all the way with love and coaxing. Needs reassurance that everything's o.k., then will leap into the middle with a will. Not an easy, overnight bedpal; but a life long lover & friend.",
+        "MoonAQU": "Even-tempered but a bit cold, views sex with an analytic eye and experiments for interest more than pleasure. Prefers tactile to oral stimulation but will give what's necessary to keep the ball rolling. Will play many roles, but finds real closeness hard to get. Wants lover with many techniques who keeps moving. Likes to see what is happening--sex with the lights on. Takes a long time to develop intimacy. The main sex organ is the mind, to which the body plays second fiddle.",
+        "MoonPIS": "Supple, adaptable lover. Sparks with insight, intuition. Lets a lover handle details, goes to the heart of the emotion. Can get lost in fantasy of moment, adapt to any lover's personal scene, though may interpret it completely differently from partner. Very emotional, needs sensitive, gentle treatment to bring out full love potential. Can spot lies but may not tell; honesty is essential. Fantasies may go beyond the practical -fulfillable only in mind. Needs partner to adapt fantasies.",
         
         # Mercury sign interpretations
-        "Mercury Aries": "Thinks fast, comes up with spur of the moment moves that mean spontaneous fun. Spells out needs crisp and clear, but does not elaborate makes point, then moves on, never lingers.",
-        "Mercury Taurus": "Down-to-earth about sex needs, but not elaborate or overdemanding, just positive and firm. With mind made up, sticks to guns, hangs onto sex preferences & favorite techniques.",
-        "Mercury Gemini": "Very verbal about sex needs & desires. Willing to let it all hang out in detail, but doesn't dwell much on any one thing. Talk during sex guides & clarifies what goes on, avoids time wasted on acts that turn off. Mouth & mind are sex organs.",
-        "Mercury Cancer": "Shares sexual secrets and inner desires only with very special friends. Makes gift of unwrapping and exposing inner needs like a striptease act. Likes emotional privacy, quiet.",
-        "Mercury Leo": "Open, devil-may-care attitude about sex. Lets details take care of themselves, or be taken care of by partner. May like noisy, vocal sex, lets emotions out through direct cries. Straight-on, open, no hang-ups.",
-        "Mercury Virgo": "Elaborate fantasy life and very specific details. Either very inhibited or very kinky, not a lot in between. Must articulate sex needs, outline night's game plan before making love. Likes fetishes and sex toys, special clothing, underwear, tattoos.",
-        "Mercury Libra": "Quick and active imagination. Loves to talk about changeable affairs. Tends to compare lovers & techniques to gain improvement, but may lose touch with the moment doing so. Very talkative. Can be a real tease while leading lover to the top.",
-        "Mercury Scorpio": "Sex is a deep, compelling mystery that demands exploration and revelation. A secretive explorer, lets it all out only when it's all nailed down. Enjoys covert sex games, sex that endangers through risk of exposure undercover artist.",
-        "Mercury Sagittarius": "Mixes laughter with sex, won't take it over-seriously. Prefers a laughing fun time to deep enthralling passion, or at least claims so. Open and accepting of new ideas, directions, but not a technical inventor. Loves frolicking for it's own sake.",
-        "Mercury Capricorn": "Likes security, direction in sex scenes. Not too spontaneous, but once the game plan is clear, performs like a trooper. Needs direction to know just what to do, then does it in spades. A thoughtful lover, if at first reticent.",
-        "Mercury Aquarius": "A sexual scientist who analyzes every technique. Likes to be sure of everything, tends to organize before making a move. Visually oriented, makes a good voyeur, likes far-out ideas but may prefer to explore them only from the sidelines first.",
-        "Mercury Pisces": "Sensitive to subtle clues and hints. Understands body language of love but may find it hard to but into words. Will cooperate verbally, but may not give inner self until just the right situation arrives then seizes it with instant ardor.",
+        "MercuryARI": "Thinks fast, comes up with spur of the moment moves that mean spontaneous fun. Spells out needs crisp and clear, but does not elaborate makes point, then moves on, never lingers.",
+        "MercuryTAU": "Down-to-earth about sex needs, but not elaborate or overdemanding, just positive and firm. With mind made up, sticks to guns, hangs onto sex preferences & favorite techniques.",
+        "MercuryGEM": "Very verbal about sex needs & desires. Willing to let it all hang out in detail, but doesn't dwell much on any one thing. Talk during sex guides & clarifies what goes on, avoids time wasted on acts that turn off. Mouth & mind are sex organs.",
+        "MercuryCAN": "Shares sexual secrets and inner desires only with very special friends. Makes gift of unwrapping and exposing inner needs like a striptease act. Likes emotional privacy, quiet.",
+        "MercuryLEO": "Open, devil-may-care attitude about sex. Lets details take care of themselves, or be taken care of by partner. May like noisy, vocal sex, lets emotions out through direct cries. Straight-on, open, no hang-ups.",
+        "MercuryVIR": "Elaborate fantasy life and very specific details. Either very inhibited or very kinky, not a lot in between. Must articulate sex needs, outline night's game plan before making love. Likes fetishes and sex toys, special clothing, underwear, tattoos.",
+        "MercuryLIB": "Quick and active imagination. Loves to talk about changeable affairs. Tends to compare lovers & techniques to gain improvement, but may lose touch with the moment doing so. Very talkative. Can be a real tease while leading lover to the top.",
+        "MercurySCO": "Sex is a deep, compelling mystery that demands exploration and revelation. A secretive explorer, lets it all out only when it's all nailed down. Enjoys covert sex games, sex that endangers through risk of exposure undercover artist.",
+        "MercurySAG": "Mixes laughter with sex, won't take it over-seriously. Prefers a laughing fun time to deep enthralling passion, or at least claims so. Open and accepting of new ideas, directions, but not a technical inventor. Loves frolicking for it's own sake.",
+        "MercuryCAP": "Likes security, direction in sex scenes. Not too spontaneous, but once the game plan is clear, performs like a trooper. Needs direction to know just what to do, then does it in spades. A thoughtful lover, if at first reticent.",
+        "MercuryAQU": "A sexual scientist who analyzes every technique. Likes to be sure of everything, tends to organize before making a move. Visually oriented, makes a good voyeur, likes far-out ideas but may prefer to explore them only from the sidelines first.",
+        "MercuryPIS": "Sensitive to subtle clues and hints. Understands body language of love but may find it hard to but into words. Will cooperate verbally, but may not give inner self until just the right situation arrives then seizes it with instant ardor.",
         
         # Venus sign interpretations
-        "Venus Aries": "Likes immediate, fast gratification eats up a lover in no time. Intense desire that may go to extremes to be satisfied but doesn't last long in and out & over with as soon as the need is gone. One-nighters can be quite satisfying, intense.",
-        "Venus Taurus": "Slow, burning desire that takes lovers with stamina to satisfy. A quickie is not enough, wants long, skilled attention like playing a big game fish.",
-        "Venus Gemini": "Wants a delicate, varied touch from sensitive lover. Tickling, stroking beats hard and heavy. Appreciates artful loving for its own sake more than getting swept away in flash orgasm. Likes a verbal partner, lots of talk during sex.",
-        "Venus Cancer": "Aching desire, not quickly or easily satified, wants to dissolve in passion but needs just the right scene to accomplish it. Looks for total devotion, commitment, enveloping love that fills every crevice.",
-        "Venus Leo": "Open, outgoing desire, a hearty sexual appetite, honest about physical needs and pleasure. Likes playful, roly-poly sex that heightens to hot passion. Any surroundings will do, if in the mood, pleasure is its own reward.",
-        "Venus Virgo": "Potentially an ideal fetishist, revels in every detail of sex, the more elaborate the scene, the greater the satisfaction. Needs it all just right to get off, though, and one false move can spoil it.",
-        "Venus Libra": "Likes an affair that is moving, never gets into a rut. Likes things just so, but never the same twice, can enjoy multiple lovers if one can't keep the pace. May thrive on conflict, fight way to orgasm.",
-        "Venus Scorpio": "Raw sex desire, focused in the belly, may be buried until it suddenly explodes with need. Wants overwhelming sex that washes away consciousness, dissolves personality in desire.",
-        "Venus Sagittarius": "Craves adventure, sex that elevates and enhances knowledge, personality. Enthusiasm! Likes a happy time. Sex must be fun and laughter. Motivation, not technique, a must, communication & feeling are everything.",
-        "Venus Capricorn": "Must have certainty in sex, not freewheeling experimentation or swinging unless very well defined. Wants well-honed technique, pursued relentlessly to orgasm. Goal-oriented desire, sex must get results to satisfy.",
-        "Venus Aquarius": "Likes sexual experiments, but treats them like a science, desire comes from the mind more than the body. Can try out the ultimately kinky without ever really being kinky. Excellent material for a swinger!",
-        "Venus Pisces": "Wants inner communication, unspoken link with partner. Sex should be uplifting, a medium for inner revelation. Treasures selfless sex, a giving partner, returns in kind.",
+        "VenusARI": "Likes immediate, fast gratification eats up a lover in no time. Intense desire that may go to extremes to be satisfied but doesn't last long in and out & over with as soon as the need is gone. One-nighters can be quite satisfying, intense.",
+        "VenusTAU": "Slow, burning desire that takes lovers with stamina to satisfy. A quickie is not enough, wants long, skilled attention like playing a big game fish.",
+        "VenusGEM": "Wants a delicate, varied touch from sensitive lover. Tickling, stroking beats hard and heavy. Appreciates artful loving for its own sake more than getting swept away in flash orgasm. Likes a verbal partner, lots of talk during sex.",
+        "VenusCAN": "Aching desire, not quickly or easily satified, wants to dissolve in passion but needs just the right scene to accomplish it. Looks for total devotion, commitment, enveloping love that fills every crevice.",
+        "VenusLEO": "Open, outgoing desire, a hearty sexual appetite, honest about physical needs and pleasure. Likes playful, roly-poly sex that heightens to hot passion. Any surroundings will do, if in the mood, pleasure is its own reward.",
+        "VenusVIR": "Potentially an ideal fetishist, revels in every detail of sex, the more elaborate the scene, the greater the satisfaction. Needs it all just right to get off, though, and one false move can spoil it.",
+        "VenusLIB": "Likes an affair that is moving, never gets into a rut. Likes things just so, but never the same twice, can enjoy multiple lovers if one can't keep the pace. May thrive on conflict, fight way to orgasm.",
+        "VenusSCO": "Raw sex desire, focused in the belly, may be buried until it suddenly explodes with need. Wants overwhelming sex that washes away consciousness, dissolves personality in desire.",
+        "VenusSAG": "Craves adventure, sex that elevates and enhances knowledge, personality. Enthusiasm! Likes a happy time. Sex must be fun and laughter. Motivation, not technique, a must, communication & feeling are everything.",
+        "VenusCAP": "Must have certainty in sex, not freewheeling experimentation or swinging unless very well defined. Wants well-honed technique, pursued relentlessly to orgasm. Goal-oriented desire, sex must get results to satisfy.",
+        "VenusAQU": "Likes sexual experiments, but treats them like a science, desire comes from the mind more than the body. Can try out the ultimately kinky without ever really being kinky. Excellent material for a swinger!",
+        "VenusPIS": "Wants inner communication, unspoken link with partner. Sex should be uplifting, a medium for inner revelation. Treasures selfless sex, a giving partner, returns in kind.",
         
         # Mars sign interpretations
-        "Mars Aries": "Good at quick, decisive action, intense energy output burns hot & quick, but may fade fast as well. Easily aroused & easily satisfied. Needs tempering to give partner full measure of lingering satisfaction.",
-        "Mars Taurus": "Even, strong energy flow, but takes a while to warm up. Needs steady sexual outlet or gets jammed up. Details less important than basic thrust, inner drive toward release. Once in motion, must find satisfaction.",
-        "Mars Gemini": "Light, skillful touch, can achieve high technique. Restless energy, wants and can provide constant exercise and change. May lose sight of goal in the process, too much fore or after play.",
-        "Mars Cancer": "A careful, cautious touch but very intense once let go. Puts everything into it, perhaps too much; disappointed if partner can't do same. Particular about satisfying lover perfectly, but may be too oversolicitous.",
-        "Mars Leo": "Full of gusto, once begun it's carte blanche all the way, a spread in every way fit for royalty. Bountiful energy may overwhelm the timid, but generous to a fault when involved.",
-        "Mars Virgo": "Highly specific lover, refines technique to the hilt, but may get hung up on only one or two. Skillful at using surroundings to fit in with sex. Best in known territory, however complex less of an improvisor.",
-        "Mars Libra": "A mover and a shaker, can't let things be but must change them & keep things in flux. An activator. Hard to keep up with and good at hit-and-run love.",
-        "Mars Scorpio": "Strong, smouldering energies lie beneath surface, come out explosively if repressed too long. Likes extremes, but may fear them. Challenge of sex is to lose each other in a fiery flame.",
-        "Mars Sagittarius": "Broad, open energy that piles into bed with a laugh, splashes sex around with a will, but may miss some details in process. Can be athletic, enthusiastic, but needs channelling for best effect.",
-        "Mars Capricorn": "Careful and determined in expression, tops where skill is known, needs educating though to expand variety. A diamond in the rough, tops if experienced but needs molding early on.",
-        "Mars Aquarius": "Seeks many different opportunities for sexual expression. Likes multiple partners & will need many different methods to have sex. Explores partner's fantasies to make sex perfect.",
-        "Mars Pisces": "Adaptive & subtle, needs drawing out to realize extent of abilities. Capable of extremes, particularly in giving. Best at using sexual energies to relay higher communication ulterior love or devotion.",
-        
-        # Jupiter sign interpretations
-        "Jupiter Aries": "Expansive, adventurous in sexual expression. Seeks growth through sexual experiences. Enjoys variety and new adventures in intimacy.",
-        "Jupiter Taurus": "Sensual and generous lover. Believes in abundance and pleasure. Creates a comfortable, luxurious sexual environment.",
-        "Jupiter Gemini": "Curious and communicative in sex. Enjoys intellectual stimulation and variety. Seeks mental connection through sexuality.",
-        "Jupiter Cancer": "Nurturing and protective in sexual relationships. Creates emotional security and family-like bonds through intimacy.",
-        "Jupiter Leo": "Dramatic and generous lover. Enjoys romance and grand gestures. Seeks recognition and admiration in sexual expression.",
-        "Jupiter Virgo": "Discerning and service-oriented in sex. Values hygiene and technique. Seeks perfection and improvement in sexual experiences.",
-        "Jupiter Libra": "Harmonious and aesthetic in sexual expression. Values beauty, balance and partnership in intimate relationships.",
-        "Jupiter Scorpio": "Intense and transformative in sexuality. Seeks deep, soul-level connections. Powerful sexual energy and magnetism.",
-        "Jupiter Sagittarius": "Adventurous and philosophical in sex. Values freedom and exploration. Enjoys sexual experiences as spiritual journeys.",
-        "Jupiter Capricorn": "Responsible and ambitious in sexual expression. Values tradition and achievement. Seeks long-term security in relationships.",
-        "Jupiter Aquarius": "Unconventional and freedom-loving in sex. Values intellectual connection and innovation. Experimental and open-minded.",
-        "Jupiter Pisces": "Compassionate and spiritual in sexuality. Seeks union and transcendence through sex. Sensitive and empathetic lover.",
-        
-        # Saturn sign interpretations
-        "Saturn Aries": "Disciplined and controlled in sexual expression. May have fears around initiation. Learns sexual confidence through experience.",
-        "Saturn Taurus": "Patient and reliable in sexuality. Values security and commitment. Develops sensual mastery over time.",
-        "Saturn Gemini": "Serious about sexual communication. May overthink intimacy. Develops verbal intimacy through maturity.",
-        "Saturn Cancer": "Protective and traditional in sexual relationships. Values emotional security. Develops deep emotional bonds slowly.",
-        "Saturn Leo": "Responsible and loyal in sexual expression. Values respect and commitment. Develops creative sexual expression with age.",
-        "Saturn Virgo": "Disciplined and health-conscious in sex. Values purity and service. Develops technical skill through practice.",
-        "Saturn Libra": "Committed and balanced in relationships. Values fairness and partnership. Develops harmonious sexual expression over time.",
-        "Saturn Scorpio": "Intense and controlled in sexuality. Powerful but restrained. Develops deep sexual wisdom through life experience.",
-        "Saturn Sagittarius": "Philosophical and responsible in sexual expression. Values truth and integrity. Develops sexual freedom through maturity.",
-        "Saturn Capricorn": "Ambitious and traditional in sexuality. Values structure and achievement. Sexual expression improves with age and success.",
-        "Saturn Aquarius": "Disciplined yet unconventional in sex. Values freedom within structure. Develops unique sexual expression through life lessons.",
-        "Saturn Pisces": "Compassionate yet boundaried in sexuality. Spiritual but practical. Develops transcendent sexual connection through maturity.",
-        
-        # Uranus sign interpretations
-        "Uranus Aries": "Innovative and spontaneous in sex. Enjoys experimentation and freedom. Sudden attractions and unexpected encounters.",
-        "Uranus Taurus": "Unconventional yet sensual in sexual expression. Combines tradition with innovation. Unique approach to physical pleasure.",
-        "Uranus Gemini": "Intellectually experimental in sex. Enjoys variety and mental stimulation. Unconventional communication styles in intimacy.",
-        "Uranus Cancer": "Innovative in emotional expression. Combines tradition with new approaches to family and security in relationships.",
-        "Uranus Leo": "Dramatic and original in sexual expression. Creative and rebellious approach to romance and self-expression.",
-        "Uranus Virgo": "Unconventional yet practical in sex. Innovative approaches to health and service. Unique sexual techniques.",
-        "Uranus Libra": "Revolutionary in relationships. Seeks equality and freedom in partnerships. Unconventional approach to beauty and harmony.",
-        "Uranus Scorpio": "Intense and transformative in sexual innovation. Powerful breakthroughs in intimacy. Revolutionary approach to power and sexuality.",
-        "Uranus Sagittarius": "Philosophically revolutionary in sex. Seeks freedom and truth in sexual expression. Adventurous and unconventional beliefs.",
-        "Uranus Capricorn": "Innovative within structure. Combines tradition with progress in sexual expression. Unconventional approach to authority.",
-        "Uranus Aquarius": "Extremely unconventional and free in sexual expression. Experimental and detached. Seeks intellectual and spiritual connection.",
-        "Uranus Pisces": "Mystical and innovative in sexuality. Combines spirituality with experimentation. Unique approach to transcendence through sex.",
-        
-        # Neptune sign interpretations
-        "Neptune Aries": "Dreamy and idealistic in sexual expression. Romantic fantasies and spiritual connections. May confuse reality with illusion.",
-        "Neptune Taurus": "Sensual and mystical in sexuality. Idealizes physical pleasure and beauty. Spiritual approach to material pleasure.",
-        "Neptune Gemini": "Imaginative and communicative in sex. Romantic fantasies and idealistic conversations. May idealize partners.",
-        "Neptune Cancer": "Emotionally dreamy in sexuality. Idealizes home and family. Spiritual approach to emotional security.",
-        "Neptune Leo": "Romantic and idealistic in sexual expression. Dramatic fantasies and spiritual creativity. May idealize love.",
-        "Neptune Virgo": "Idealistic about purity and service in sex. Spiritual approach to health and perfection. May have unrealistic expectations.",
-        "Neptune Libra": "Romantic and idealistic about relationships. Seeks perfect harmony and beauty. May idealize partners and love.",
-        "Neptune Scorpio": "Mystical and intense in sexuality. Seeks spiritual transformation through sex. Powerful psychic and emotional connections.",
-        "Neptune Sagittarius": "Philosophical and idealistic in sexual expression. Seeks spiritual truth through intimacy. May idealize sexual freedom.",
-        "Neptune Capricorn": "Spiritual yet practical in sexuality. Combines tradition with idealism. Seeks meaningful structure in relationships.",
-        "Neptune Aquarius": "Visionary and unconventional in sex. Seeks spiritual connection through innovation. Idealistic about freedom.",
-        "Neptune Pisces": "Extremely spiritual and compassionate in sexuality. Seeks union and transcendence. May blur boundaries between reality and fantasy.",
-        
-        # Pluto sign interpretations
-        "Pluto Aries": "Intense and transformative in sexual initiation. Powerful sexual energy that seeks new beginnings. Revolutionary approach to sexuality.",
-        "Pluto Taurus": "Deeply sensual and transformative in physical expression. Seeks security through intense sexual experiences. Powerful material desires.",
-        "Pluto Gemini": "Transformative in sexual communication. Seeks truth and depth through intellectual intimacy. Powerful mental connections.",
-        "Pluto Cancer": "Intensely emotional and transformative in sexuality. Seeks emotional security through deep bonds. Powerful family dynamics.",
-        "Pluto Leo": "Dramatic and powerful in sexual expression. Seeks creative transformation through intimacy. Intense need for recognition.",
-        "Pluto Virgo": "Transformative in sexual service and health. Seeks perfection through intense experiences. Powerful attention to detail.",
-        "Pluto Libra": "Intense and transformative in relationships. Seeks balance through powerful partnerships. Deep need for harmony.",
-        "Pluto Scorpio": "Extremely intense and powerful in sexuality. Seeks total transformation through intimacy. Life-changing sexual experiences.",
-        "Pluto Sagittarius": "Philosophically transformative in sex. Seeks truth and expansion through intense experiences. Powerful beliefs about freedom.",
-        "Pluto Capricorn": "Ambitious and powerful in sexual expression. Seeks transformation through structure and achievement. Intense career and status desires.",
-        "Pluto Aquarius": "Revolutionary and transformative in sexuality. Seeks freedom through intense innovation. Powerful need for individuality.",
-        "Pluto Pisces": "Spiritually transformative in sexuality. Seeks transcendence through intense emotional connections. Powerful psychic and mystical experiences.",
-        
-        # North Node sign interpretations
-        "North Node Aries": "Learning to initiate and be independent in sexuality. Developing courage and self-assertion in intimate relationships.",
-        "North Node Taurus": "Learning sensual mastery and stability in sexuality. Developing physical security and reliability in relationships.",
-        "North Node Gemini": "Learning communication and variety in sexuality. Developing intellectual connection and adaptability in intimacy.",
-        "North Node Cancer": "Learning emotional security and nurturing in sexuality. Developing family bonds and emotional protection.",
-        "North Node Leo": "Learning creative self-expression and confidence in sexuality. Developing romance and leadership in relationships.",
-        "North Node Virgo": "Learning service and perfection in sexuality. Developing health consciousness and practical skills in intimacy.",
-        "North Node Libra": "Learning partnership and harmony in sexuality. Developing balance and fairness in relationships.",
-        "North Node Scorpio": "Learning intensity and transformation in sexuality. Developing deep emotional bonds and psychological insight.",
-        "North Node Sagittarius": "Learning adventure and philosophy in sexuality. Developing freedom and truth-seeking in relationships.",
-        "North Node Capricorn": "Learning responsibility and achievement in sexuality. Developing structure and long-term security in relationships.",
-        "North Node Aquarius": "Learning innovation and freedom in sexuality. Developing individuality and intellectual connection in relationships.",
-        "North Node Pisces": "Learning compassion and spirituality in sexuality. Developing emotional unity and transcendence in relationships.",
-        
-        # Chiron sign interpretations
-        "Chiron Aries": "Healing through sexual initiation and independence. Learning to balance assertiveness with sensitivity in intimacy.",
-        "Chiron Taurus": "Healing through sensual expression and security. Learning to balance possessiveness with generosity in relationships.",
-        "Chiron Gemini": "Healing through sexual communication and variety. Learning to balance restlessness with commitment in intimacy.",
-        "Chiron Cancer": "Healing through emotional security and nurturing. Learning to balance dependency with independence in relationships.",
-        "Chiron Leo": "Healing through creative self-expression in sexuality. Learning to balance ego with humility in intimate relationships.",
-        "Chiron Virgo": "Healing through service and perfection in sexuality. Learning to balance criticism with acceptance in relationships.",
-        "Chiron Libra": "Healing through partnership and harmony in sexuality. Learning to balance dependence with independence in relationships.",
-        "Chiron Scorpio": "Healing through intensity and transformation in sexuality. Learning to balance power with surrender in intimate relationships.",
-        "Chiron Sagittarius": "Healing through adventure and philosophy in sexuality. Learning to balance freedom with commitment in relationships.",
-        "Chiron Capricorn": "Healing through responsibility and achievement in sexuality. Learning to balance control with spontaneity in relationships.",
-        "Chiron Aquarius": "Healing through innovation and freedom in sexuality. Learning to balance detachment with emotional connection in relationships.",
-        "Chiron Pisces": "Healing through compassion and spirituality in sexuality. Learning to balance boundaries with unity in relationships."
+        "MarsARI": "Good at quick, decisive action, intense energy output burns hot & quick, but may fade fast as well. Easily aroused & easily satisfied. Needs tempering to give partner full measure of lingering satisfaction.",
+        "MarsTAU": "Even, strong energy flow, but takes a while to warm up. Needs steady sexual outlet or gets jammed up. Details less important than basic thrust, inner drive toward release. Once in motion, must find satisfaction.",
+        "MarsGEM": "Light, skillful touch, can achieve high technique. Restless energy, wants and can provide constant exercise and change. May lose sight of goal in the process, too much fore or after play.",
+        "MarsCAN": "A careful, cautious touch but very intense once let go. Puts everything into it, perhaps too much; disappointed if partner can't do same. Particular about satisfying lover perfectly, but may be too oversolicitous.",
+        "MarsLEO": "Full of gusto, once begun it's carte blanche all the way, a spread in every way fit for royalty. Bountiful energy may overwhelm the timid, but generous to a fault when involved.",
+        "MarsVIR": "Highly specific lover, refines technique to the hilt, but may get hung up on only one or two. Skillful at using surroundings to fit in with sex. Best in known territory, however complex less of an improvisor.",
+        "MarsLIB": "A mover and a shaker, can't let things be but must change them & keep things in flux. An activator. Hard to keep up with and good at hit-and-run love.",
+        "MarsSCO": "Strong, smouldering energies lie beneath surface, come out explosively if repressed too long. Likes extremes, but may fear them. Challenge of sex is to lose each other in a fiery flame.",
+        "MarsSAG": "Broad, open energy that piles into bed with a laugh, splashes sex around with a will, but may miss some details in process. Can be athletic, enthusiastic, but needs channelling for best effect.",
+        "MarsCAP": "Careful and determined in expression, tops where skill is known, needs educating though to expand variety. A diamond in the rough, tops if experienced but needs molding early on.",
+        "MarsAQU": "Seeks many different opportunities for sexual expression. Likes multiple partners & will need many different methods to have sex. Explores partner's fantasies to make sex perfect.",
+        "MarsPIS": "Adaptive & subtle, needs drawing out to realize extent of abilities. Capable of extremes, particularly in giving. Best at using sexual energies to relay higher communication ulterior love or devotion."
     }
 
     # Display based on interpretation type
@@ -1861,15 +1674,13 @@ def display_complete_interpretations(chart_data, interpretation_type):
         for planet_name in planets_to_display:
             if planet_name in chart_data['planets']:
                 planet_data = chart_data['planets'][planet_name]
-                planet_sign_abbr = planet_data['sign']
-                planet_sign_full = sign_full_names.get(planet_sign_abbr, planet_sign_abbr)
-                planet_full_name = planet_full_names.get(planet_name, planet_name)
+                planet_sign = planet_data['sign']
                 
                 if (planet_name in natal_interpretations and 
-                    planet_sign_full in natal_interpretations[planet_name]):
+                    planet_sign in natal_interpretations[planet_name]):
                     
-                    st.write(f"**{planet_full_name} in {planet_sign_full}**")
-                    st.write(f"{natal_interpretations[planet_name][planet_sign_full]}")
+                    st.write(f"**{planet_name} in {planet_sign}**")
+                    st.write(f"{natal_interpretations[planet_name][planet_sign]}")
                     st.write(f"*Position: {planet_data['position_str']}*")
                     st.markdown("---")
 
@@ -1884,42 +1695,25 @@ def display_complete_interpretations(chart_data, interpretation_type):
                 planet2 = aspect['planet2']
                 aspect_name = aspect['aspect_name']
                 
-                # Convert Nod and Chi to full names for lookup
-                planet1_key = "NOD" if planet1 == "Nod" else "CHIRON" if planet1 == "Chi" else planet1.upper()
-                planet2_key = "NOD" if planet2 == "Nod" else "CHIRON" if planet2 == "Chi" else planet2.upper()
-                
                 # Create aspect key for lookup
-                aspect_key = f"{planet1_key} = {planet2_key}"
+                aspect_key = f"{planet1.upper()} = {planet2.upper()}"
                 
-                # Get full names for display
-                planet1_full = planet_full_names.get(planet1, planet1)
-                planet2_full = planet_full_names.get(planet2, planet2)
-                
-                st.write(f"**{planet1_full} {aspect_name} {planet2_full}**")
+                st.write(f"**{planet1} {aspect_name} {planet2}**")
                 st.write(f"*Orb: {aspect['orb']:.2f}° | Strength: {aspect['strength']}*")
                 
                 if aspect_key in aspect_interpretations:
                     st.write(f"{aspect_interpretations[aspect_key]}")
                 else:
                     # Try alternative aspect keys
-                    alt_key1 = f"{planet1_key} + {planet2_key}"
-                    alt_key2 = f"{planet1_key} - {planet2_key}"
+                    alt_key1 = f"{planet1.upper()} + {planet2.upper()}"
+                    alt_key2 = f"{planet1.upper()} - {planet2.upper()}"
                     
                     if alt_key1 in aspect_interpretations:
                         st.write(f"{aspect_interpretations[alt_key1]}")
                     elif alt_key2 in aspect_interpretations:
                         st.write(f"{aspect_interpretations[alt_key2]}")
                     else:
-                        # Generic interpretation based on aspect type
-                        generic_interpretations = {
-                            "Conjunction": "Planets work together, blending their energies",
-                            "Opposition": "Tension and balance between opposing forces",
-                            "Trine": "Harmonious flow of energy and natural talent",
-                            "Square": "Challenges and growth through conflict",
-                            "Sextile": "Opportunities and positive connections"
-                        }
-                        generic = generic_interpretations.get(aspect_name, "Significant planetary interaction")
-                        st.write(f"{generic}")
+                        st.write("Significant planetary interaction")
                 st.markdown("---")
         else:
             st.info("No significant aspects found within allowed orb.")
@@ -1931,29 +1725,25 @@ def display_complete_interpretations(chart_data, interpretation_type):
         # 1. Ascendant interpretation
         if 1 in chart_data['houses']:
             asc_data = chart_data['houses'][1]
-            asc_sign_abbr = asc_data['sign']
-            asc_sign_full = sign_full_names.get(asc_sign_abbr, asc_sign_abbr)
-            asc_key = f"ASC {asc_sign_full}"
+            asc_sign = asc_data['sign']
+            asc_key = f"ASC{asc_sign}"
             
             if asc_key in sexual_interpretations:
-                st.write(f"**Ascendant in {asc_sign_full}**")
+                st.write(f"**Ascendant in {asc_sign}**")
                 st.write(f"{sexual_interpretations[asc_key]}")
                 st.markdown("---")
         
-        # 2. ALL planet interpretations - TOATE PLANETELE
-        sexual_planets = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", 
-                         "Saturn", "Uranus", "Neptune", "Pluto", "Nod", "Chi"]
+        # 2. All planet interpretations
+        sexual_planets = ["Sun", "Moon", "Mercury", "Venus", "Mars"]
         
         for planet_name in sexual_planets:
             if planet_name in chart_data['planets']:
                 planet_data = chart_data['planets'][planet_name]
-                planet_sign_abbr = planet_data['sign']
-                planet_sign_full = sign_full_names.get(planet_sign_abbr, planet_sign_abbr)
-                planet_full_name = planet_full_names.get(planet_name, planet_name)
-                planet_key = f"{planet_full_name} {planet_sign_full}"
+                planet_sign = planet_data['sign']
+                planet_key = f"{planet_name}{planet_sign}"
                 
                 if planet_key in sexual_interpretations:
-                    st.write(f"**{planet_full_name} in {planet_sign_full}**")
+                    st.write(f"**{planet_name} in {planet_sign}**")
                     st.write(f"{sexual_interpretations[planet_key]}")
                     st.markdown("---")
 
