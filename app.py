@@ -929,22 +929,68 @@ def display_chart():
     
     with col1:
         st.subheader("🌍 Planetary Positions")
-        display_order = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 
-                        'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Nod', 'Chi']
         
-        for planet_name in display_order:
+        # ORDINEA PROFESIONALĂ pentru planete - structura standard a charturilor
+        planets_order = [
+            'Sun', 'Moon', 'Mercury', 'Venus', 'Mars',           # Planete personale
+            'Jupiter', 'Saturn',                                 # Planete sociale
+            'Uranus', 'Neptune', 'Pluto',                        # Planete transpersonale
+            'Nod', 'Chi'                                         # Puncte sensibile
+        ]
+        
+        for planet_name in planets_order:
             if planet_name in chart_data['planets']:
                 planet_data = chart_data['planets'][planet_name]
-                st.write(f"**{planet_name}** {planet_data['position_str']}")
+                retro_symbol = " 🔄" if planet_data['retrograde'] else ""
+                st.write(f"**{planet_name}** {planet_data['position_str']}{retro_symbol}")
     
     with col2:
         st.subheader("🏠 Houses (Placidus)")
+        
+        # Casele în ordinea naturală 1-12
         for house_num in range(1, 13):
             if house_num in chart_data['houses']:
                 house_data = chart_data['houses'][house_num]
-                st.write(f"**{house_num}** {house_data['position_str']}")
+                
+                # Adăugăm simboluri speciale pentru casele importante
+                house_symbol = ""
+                if house_num == 1:
+                    house_symbol = " 🏁"  # Ascendent
+                elif house_num == 10:
+                    house_symbol = " ⬆️"  # Medium Coeli
+                    
+                st.write(f"**House {house_num}** {house_data['position_str']}{house_symbol}")
+    
+    # Adăugăm o secțiune suplimentară cu informații importante
+    st.markdown("---")
+    st.subheader("📊 Chart Information")
+    
+    info_cols = st.columns(4)
+    
+    with info_cols[0]:
+        # Ascendent
+        if 1 in chart_data['houses']:
+            asc_data = chart_data['houses'][1]
+            st.write(f"**Ascendant:** {asc_data['position_str']}")
+    
+    with info_cols[1]:
+        # Medium Coeli
+        if 10 in chart_data['houses']:
+            mc_data = chart_data['houses'][10]
+            st.write(f"**Midheaven:** {mc_data['position_str']}")
+    
+    with info_cols[2]:
+        # Planete retrograde
+        retrograde_planets = [p for p, data in chart_data['planets'].items() if data.get('retrograde', False)]
+        st.write(f"**Retrograde:** {len(retrograde_planets)} planets")
+    
+    with info_cols[3]:
+        # Elemente dominante etc. (poate fi extins)
+        st.write(f"**System:** Placidus")
     
     st.markdown("---")
+    
+    # Butoane de navigare
     col_buttons = st.columns(5)
     with col_buttons[0]:
         if st.button("📊 Chart", use_container_width=True):
