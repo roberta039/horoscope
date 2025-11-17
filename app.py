@@ -514,10 +514,857 @@ def calculate_aspects(chart_data):
         st.error(f"Eroare la calcularea aspectelor: {e}")
         return []
 
-# Restul funcțiilor rămân la fel ca în codul original...
-# (păstrează funcțiile: calculate_transits, calculate_progressions, calculate_transit_aspects,
-# data_input_form, display_chart, display_positions, display_aspects, display_transits,
-# display_progressions, display_interpretation, display_about)
+def calculate_transits(birth_jd, transit_date, birth_lat, birth_lon):
+    """Calculează transitele pentru o dată specifică"""
+    try:
+        # Converteste data de transit în Julian Day
+        transit_datetime = datetime.combine(transit_date, datetime.min.time())
+        transit_jd = swe.julday(transit_datetime.year, transit_datetime.month, 
+                               transit_datetime.day, 12.0)  # La amiază
+        
+        # Calculează pozițiile planetare pentru data de transit
+        transit_planets = calculate_planetary_positions_swiss(transit_jd)
+        
+        # Calculează casele pentru data de transit (folosind coordonatele natale)
+        transit_houses = calculate_houses_placidus_swiss(transit_jd, birth_lat, birth_lon)
+        
+        # Asociem planetele cu casele
+        for planet_name, planet_data in transit_planets.items():
+            planet_longitude = planet_data['longitude']
+            planet_data['house'] = get_house_for_longitude_swiss(planet_longitude, transit_houses)
+            
+            retro_symbol = "R" if planet_data['retrograde'] else ""
+            planet_data['position_str'] = f"{planet_data['degrees']:02d}°{planet_data['minutes']:02d}' {planet_data['sign']}({planet_data['house']}){retro_symbol}"
+        
+        return {
+            'planets': transit_planets,
+            'houses': transit_houses,
+            'jd': transit_jd,
+            'date': transit_date
+        }
+        
+    except Exception as e:
+        st.error(f"Eroare la calcularea transitelor: {e}")
+        return None
+
+def calculate_progressions(birth_data, progression_date, method='secondary'):
+    """Calculează progresiile (Secondary/ Solar Arc)"""
+    try:
+        birth_datetime = datetime.combine(birth_data['date'], birth_data['time'])
+        progression_datetime = datetime.combine(progression_date, datetime.min.time())
+        
+        # Obține JD-ul natal din session_state
+        if st.session_state.chart_data is None:
+            st.error("Natal chart not calculated yet!")
+            return None
+            
+        natal_jd = st.session_state.chart_data['jd']
+        
+        # Calcul pentru Secondary Progression (1 zi = 1 an)
+        if method == 'secondary':
+            days_diff = (progression_datetime - birth_datetime).days
+            progressed_jd = natal_jd + days_diff
+            
+        # Calcul pentru Solar Arc
+        elif method == 'solar_arc':
+            # Poziția Soarelui progresat
+            days_diff = (progression_datetime - birth_datetime).days
+            solar_arc = (days_diff / 365.25) * 0.9856  # Mișcarea medie zilnică a Soarelui
+            
+            # Calculează harta natală pentru a aplica Solar Arc
+            natal_chart = st.session_state.chart_data
+            progressed_planets = {}
+            
+            for planet_name, planet_data in natal_chart['planets'].items():
+                progressed_longitude = (planet_data['longitude'] + solar_arc) % 360
+                
+                # Convertire în semn zodiacal
+                signs = ['ARI', 'TAU', 'GEM', 'CAN', 'LEO', 'VIR', 
+                        'LIB', 'SCO', 'SAG', 'CAP', 'AQU', 'PIS']
+                sign_num = int(progressed_longitude / 30)
+                sign_pos = progressed_longitude % 30
+                degrees = int(sign_pos)
+                minutes = int((sign_pos - degrees) * 60)
+                
+                progressed_planets[planet_name] = {
+                    'longitude': progressed_longitude,
+                    'sign': signs[sign_num],
+                    'degrees': degrees,
+                    'minutes': minutes,
+                    'retrograde': planet_data['retrograde'],
+                    'position_str': f"{degrees:02d}°{minutes:02d}' {signs[sign_num]}"
+                }
+            
+            return {
+                'planets': progressed_planets,
+                'houses': natal_chart['houses'],  # Casele rămân aceleași
+                'solar_arc': solar_arc,
+                'date': progression_date,
+                'method': 'Solar Arc'
+            }
+        
+        # Pentru Secondary Progression, calculează pozițiile reale
+        progressed_planets = calculate_planetary_positions_swiss(progressed_jd)
+        if progressed_planets is None:
+            st.error("Failed to calculate progressed planetary positions")
+            return None
+            
+        progressed_houses = calculate_houses_placidus_swiss(progressed_jd, 
+                                                          birth_data['lat_deg'], 
+                                                          birth_data['lon_deg'])
+        if progressed_houses is None:
+            st.error("Failed to calculate progressed houses")
+            return None
+        
+        # Asociem planetele cu casele
+        for planet_name, planet_data in progressed_planets.items():
+            planet_longitude = planet_data['longitude']
+            planet_data['house'] = get_house_for_longitude_swiss(planet_longitude, progressed_houses)
+            
+            retro_symbol = "R" if planet_data['retrograde'] else ""
+            planet_data['position_str'] = f"{planet_data['degrees']:02d}°{planet_data['minutes']:02d}' {planet_data['sign']}({planet_data['house']}){retro_symbol}"
+        
+        return {
+            'planets': progressed_planets,
+            'houses': progressed_houses,
+            'jd': progressed_jd,
+            'date': progression_date,
+            'method': 'Secondary Progression'
+        }
+        
+    except Exception as e:
+        st.error(f"Eroare la calcularea progresiilor: {e}")
+        return None
+
+def calculate_transit_aspects(natal_chart, transit_chart):
+    """Calculează aspectele dintre planetele natale și cele în transit"""
+    try:
+        aspects = []
+        
+        major_aspects = [
+            {'name': 'Conjunction', 'angle': 0, 'orb': 3},
+            {'name': 'Opposition', 'angle': 180, 'orb': 3},
+            {'name': 'Trine', 'angle': 120, 'orb': 3},
+            {'name': 'Square', 'angle': 90, 'orb': 3},
+            {'name': 'Sextile', 'angle': 60, 'orb': 2}
+        ]
+        
+        natal_planets = natal_chart['planets']
+        transit_planets = transit_chart['planets']
+        
+        for natal_planet in natal_planets.keys():
+            for transit_planet in transit_planets.keys():
+                # Evită aspectele între aceeași planetă (sunt mereu conjunctie)
+                if natal_planet == transit_planet:
+                    continue
+                
+                natal_long = natal_planets[natal_planet]['longitude']
+                transit_long = transit_planets[transit_planet]['longitude']
+                
+                diff = abs(natal_long - transit_long)
+                if diff > 180:
+                    diff = 360 - diff
+                
+                for aspect in major_aspects:
+                    aspect_angle = aspect['angle']
+                    orb = aspect['orb']
+                    
+                    if abs(diff - aspect_angle) <= orb:
+                        exact_orb = abs(diff - aspect_angle)
+                        is_exact = exact_orb <= 0.5
+                        strength = 'Strong' if exact_orb <= 1.0 else 'Medium'
+                        
+                        aspects.append({
+                            'natal_planet': natal_planet,
+                            'transit_planet': transit_planet,
+                            'aspect_name': aspect['name'],
+                            'angle': aspect_angle,
+                            'orb': exact_orb,
+                            'exact': is_exact,
+                            'strength': strength
+                        })
+        
+        return aspects
+        
+    except Exception as e:
+        st.error(f"Eroare la calcularea aspectelor de transit: {e}")
+        return []
+
+def data_input_form():
+    st.header("📅 Birth Data Input")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("Personal Data")
+        name = st.text_input("Name", "Your Name")
+        
+        col1a, col1b = st.columns(2)
+        with col1a:
+            birth_date = st.date_input("Birth Date", 
+                                     datetime(1986, 4, 25).date(),
+                                     min_value=datetime(1800, 1, 1).date(),
+                                     max_value=datetime(2100, 12, 31).date())
+        with col1b:
+            birth_time = st.time_input("Birth Time", datetime(1986, 4, 25, 21, 0).time())
+        
+        time_zone = st.selectbox("Time Zone", [f"GMT{i:+d}" for i in range(-12, 13)], index=12)
+        
+    with col2:
+        st.subheader("Birth Place Coordinates")
+        
+        # Selector pentru orașe și capitale (în engleză)
+        world_cities = {
+            # Romania
+            "Bucharest, Romania": {"lat": 44.4268, "lon": 26.1025},
+            "Tecuci, Romania": {"lat": 45.8497, "lon": 27.4344},
+            "Ploiesti, Romania": {"lat": 44.9416, "lon": 26.0227},
+            "Cluj-Napoca, Romania": {"lat": 46.7712, "lon": 23.6236},
+            "Timisoara, Romania": {"lat": 45.7489, "lon": 21.2087},
+            "Iasi, Romania": {"lat": 47.1585, "lon": 27.6014},
+            "Constanta, Romania": {"lat": 44.1598, "lon": 28.6348},
+            "Craiova, Romania": {"lat": 44.3302, "lon": 23.7949},
+            "Brasov, Romania": {"lat": 45.6576, "lon": 25.6012},
+            "Galati, Romania": {"lat": 45.4353, "lon": 28.0070},
+            
+            # Neighboring countries
+            "Budapest, Hungary": {"lat": 47.4979, "lon": 19.0402},
+            "Belgrade, Serbia": {"lat": 44.7866, "lon": 20.4489},
+            "Sofia, Bulgaria": {"lat": 42.6977, "lon": 23.3219},
+            "Chisinau, Moldova": {"lat": 47.0105, "lon": 28.8638},
+            "Kyiv, Ukraine": {"lat": 50.4501, "lon": 30.5234},
+            
+            # Other European capitals
+            "Prague, Czech Republic": {"lat": 50.0755, "lon": 14.4378},
+            "Warsaw, Poland": {"lat": 52.2297, "lon": 21.0122},
+            "Berlin, Germany": {"lat": 52.5200, "lon": 13.4050},
+            "Paris, France": {"lat": 48.8566, "lon": 2.3522},
+            "London, UK": {"lat": 51.5074, "lon": -0.1278},
+            "Madrid, Spain": {"lat": 40.4168, "lon": -3.7038},
+            "Rome, Italy": {"lat": 41.9028, "lon": 12.4964},
+            "Vienna, Austria": {"lat": 48.2082, "lon": 16.3738},
+            "Athens, Greece": {"lat": 37.9838, "lon": 23.7275},
+            "Lisbon, Portugal": {"lat": 38.7223, "lon": -9.1393},
+            "Amsterdam, Netherlands": {"lat": 52.3676, "lon": 4.9041},
+            "Brussels, Belgium": {"lat": 50.8503, "lon": 4.3517},
+            "Copenhagen, Denmark": {"lat": 55.6761, "lon": 12.5683},
+            "Stockholm, Sweden": {"lat": 59.3293, "lon": 18.0686},
+            "Oslo, Norway": {"lat": 59.9139, "lon": 10.7522},
+            "Helsinki, Finland": {"lat": 60.1699, "lon": 24.9384},
+            "Moscow, Russia": {"lat": 55.7558, "lon": 37.6173},
+            "Ankara, Turkey": {"lat": 39.9334, "lon": 32.8597},
+            
+            # Rest of the world
+            "Beijing, China": {"lat": 39.9042, "lon": 116.4074},
+            "Tokyo, Japan": {"lat": 35.6762, "lon": 139.6503},
+            "New Delhi, India": {"lat": 28.6139, "lon": 77.2090},
+            "Washington D.C., USA": {"lat": 38.9072, "lon": -77.0369},
+            "Ottawa, Canada": {"lat": 45.4215, "lon": -75.6972},
+            "Canberra, Australia": {"lat": -35.2809, "lon": 149.1300},
+            "Wellington, New Zealand": {"lat": -41.2865, "lon": 174.7762},
+            "Brasilia, Brazil": {"lat": -15.7975, "lon": -47.8919},
+            "Buenos Aires, Argentina": {"lat": -34.6037, "lon": -58.3816},
+            "Santiago, Chile": {"lat": -33.4489, "lon": -70.6693},
+            "Lima, Peru": {"lat": -12.0464, "lon": -77.0428},
+            "Bogota, Colombia": {"lat": 4.7110, "lon": -74.0721},
+            "Mexico City, Mexico": {"lat": 19.4326, "lon": -99.1332},
+            "Cairo, Egypt": {"lat": 30.0444, "lon": 31.2357},
+            "Johannesburg, South Africa": {"lat": -26.2041, "lon": 28.0473},
+            "Nairobi, Kenya": {"lat": -1.2921, "lon": 36.8219},
+            "Riyadh, Saudi Arabia": {"lat": 24.7136, "lon": 46.6753},
+            "Tel Aviv, Israel": {"lat": 32.0853, "lon": 34.7818},
+            "Dubai, UAE": {"lat": 25.2048, "lon": 55.2708},
+            "Seoul, South Korea": {"lat": 37.5665, "lon": 126.9780},
+            "Bangkok, Thailand": {"lat": 13.7563, "lon": 100.5018},
+            "Hanoi, Vietnam": {"lat": 21.0278, "lon": 105.8342},
+            "Jakarta, Indonesia": {"lat": -6.2088, "lon": 106.8456},
+            "Manila, Philippines": {"lat": 14.5995, "lon": 120.9842},
+            "Kuala Lumpur, Malaysia": {"lat": 3.1390, "lon": 101.6869},
+            "Singapore, Singapore": {"lat": 1.3521, "lon": 103.8198},
+        }
+        
+        selected_city = st.selectbox(
+            "Select City (optional)",
+            [""] + list(world_cities.keys()),
+            help="Select a city to automatically fill coordinates"
+        )
+        
+        # Folosim session state pentru a memora valorile auto-completate
+        if 'auto_coords' not in st.session_state:
+            st.session_state.auto_coords = None
+        
+        if selected_city:
+            city_data = world_cities[selected_city]
+            st.session_state.auto_coords = {
+                "lat": city_data["lat"],
+                "lon": city_data["lon"]
+            }
+            st.info(f"📍 {selected_city}: {abs(city_data['lat']):.4f}°{'N' if city_data['lat'] >= 0 else 'S'}, {abs(city_data['lon']):.4f}°{'E' if city_data['lon'] >= 0 else 'W'}")
+        elif st.session_state.auto_coords and selected_city == "":
+            # Reset auto coordinates when no city is selected
+            st.session_state.auto_coords = None
+        
+        col2a, col2b = st.columns(2)
+        with col2a:
+            # Longitude cu grade și minute
+            st.write("**Longitude**")
+            col_lon_deg, col_lon_min = st.columns(2)
+            with col_lon_deg:
+                # Set default values based on auto-coordinates or manual input
+                if st.session_state.auto_coords:
+                    default_lon_deg = int(abs(st.session_state.auto_coords["lon"]))
+                    default_lon_dir = "East" if st.session_state.auto_coords["lon"] >= 0 else "West"
+                else:
+                    default_lon_deg = 26
+                    default_lon_dir = "East"
+                
+                longitude_deg = st.number_input("Longitude (°)", min_value=0, max_value=180, 
+                                              value=default_lon_deg, 
+                                              step=1, key="lon_deg")
+            with col_lon_min:
+                if st.session_state.auto_coords:
+                    default_lon_min = round((abs(st.session_state.auto_coords["lon"]) - default_lon_deg) * 60)
+                else:
+                    default_lon_min = 6  # București are 26°06'
+                
+                longitude_min = st.number_input("Longitude (')", min_value=0, max_value=59, 
+                                              value=default_lon_min, 
+                                              step=1, key="lon_min")
+            longitude_dir = st.selectbox("Longitude Direction", ["East", "West"], 
+                                       index=0 if default_lon_dir == "East" else 1, 
+                                       key="lon_dir")
+            
+        with col2b:
+            # Latitude cu grade și minute
+            st.write("**Latitude**")
+            col_lat_deg, col_lat_min = st.columns(2)
+            with col_lat_deg:
+                # Set default values based on auto-coordinates or manual input
+                if st.session_state.auto_coords:
+                    default_lat_deg = int(abs(st.session_state.auto_coords["lat"]))
+                    default_lat_dir = "North" if st.session_state.auto_coords["lat"] >= 0 else "South"
+                else:
+                    default_lat_deg = 44
+                    default_lat_dir = "North"
+                
+                latitude_deg = st.number_input("Latitude (°)", min_value=0, max_value=90, 
+                                             value=default_lat_deg, 
+                                             step=1, key="lat_deg")
+            with col_lat_min:
+                if st.session_state.auto_coords:
+                    default_lat_min = round((abs(st.session_state.auto_coords["lat"]) - default_lat_deg) * 60)
+                else:
+                    default_lat_min = 26  # București are 44°26'
+                
+                latitude_min = st.number_input("Latitude (')", min_value=0, max_value=59, 
+                                             value=default_lat_min, 
+                                             step=1, key="lat_min")
+            latitude_dir = st.selectbox("Latitude Direction", ["North", "South"], 
+                                      index=0 if default_lat_dir == "North" else 1, 
+                                      key="lat_dir")
+        
+        # Calcul coordonate finale
+        lon = longitude_deg + (longitude_min / 60.0)
+        lon = lon if longitude_dir == "East" else -lon
+        
+        lat = latitude_deg + (latitude_min / 60.0)
+        lat = lat if latitude_dir == "North" else -lat
+        
+        st.write(f"**Coordinates:** {abs(lat):.2f}°{latitude_dir[0]}, {abs(lon):.2f}°{longitude_dir[0]}")
+        st.write(f"**Decimal:** {lat:.6f}°N, {lon:.6f}°E")
+    
+    st.markdown("---")
+    
+    if st.button("♈ Calculate Astrological Chart", type="primary", use_container_width=True):
+        with st.spinner("Calculation starts - Please wait ..."):
+            birth_data = {
+                'name': name,
+                'date': birth_date,
+                'time': birth_time,
+                'time_zone': time_zone,
+                'lat_deg': lat,
+                'lon_deg': lon,
+                'lat_display': f"{latitude_deg}°{latitude_min}'{latitude_dir}",
+                'lon_display': f"{longitude_deg}°{longitude_min}'{longitude_dir}"
+            }
+            
+            chart_data = calculate_chart_cached(birth_data)
+            
+            if chart_data:
+                st.session_state.chart_data = chart_data
+                st.session_state.birth_data = birth_data
+                st.success("✅ Chart calculated successfully using Swiss Ephemeris!")
+            else:
+                st.error("Failed to calculate chart. Please check your input data.")
+
+def display_chart():
+    st.header("♈ Astrological Chart")
+    
+    if st.session_state.chart_data is None:
+        st.warning("Please enter birth data and calculate chart first!")
+        return
+    
+    chart_data = st.session_state.chart_data
+    birth_data = st.session_state.birth_data
+    
+    # Opțiune pentru afișarea aspectelor
+    col1, col2 = st.columns([3, 1])
+    
+    with col2:
+        show_aspect_lines = st.checkbox("Show Aspect Lines", value=True, help="Display colored lines between planets showing astrological aspects")
+    
+    # Afișează graficul circular
+    st.subheader("🎯 Chart Wheel")
+    fig = create_chart_wheel(chart_data, birth_data, "Natal Chart", show_aspect_lines)
+    if fig:
+        st.pyplot(fig)
+    else:
+        st.error("Could not generate chart wheel")
+    
+    col_info = st.columns(3)
+    with col_info[0]:
+        st.write(f"**Name:** {birth_data['name']}")
+    with col_info[1]:
+        st.write(f"**Date:** {birth_data['date']}")
+    with col_info[2]:
+        st.write(f"**Time:** {birth_data['time']}")
+    
+    st.markdown("---")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("🌍 Planetary Positions")
+        
+        # ORDINEA PROFESIONALĂ pentru planete - structura standard a charturilor
+        planets_order = [
+            'Sun', 'Moon', 'Mercury', 'Venus', 'Mars',           # Planete personale
+            'Jupiter', 'Saturn',                                 # Planete sociale
+            'Uranus', 'Neptune', 'Pluto',                        # Planete transpersonale
+            'Nod', 'Chi'                                         # Puncte sensibile
+        ]
+        
+        for planet_name in planets_order:
+            if planet_name in chart_data['planets']:
+                planet_data = chart_data['planets'][planet_name]
+                retro_symbol = " 🔄" if planet_data['retrograde'] else ""
+                st.write(f"**{planet_name}** {planet_data['position_str']}{retro_symbol}")
+    
+    with col2:
+        st.subheader("🏠 Houses (Placidus)")
+        
+        # Casele în ordinea naturală 1-12
+        for house_num in range(1, 13):
+            if house_num in chart_data['houses']:
+                house_data = chart_data['houses'][house_num]
+                
+                # Adăugăm simboluri speciale pentru casele importante
+                house_symbol = ""
+                if house_num == 1:
+                    house_symbol = " 🏁"  # Ascendent
+                elif house_num == 10:
+                    house_symbol = " ⬆️"  # Medium Coeli
+                    
+                st.write(f"**House {house_num}** {house_data['position_str']}{house_symbol}")
+    
+    # Adăugăm o secțiune suplimentară cu informații importante
+    st.markdown("---")
+    st.subheader("📊 Chart Information")
+    
+    info_cols = st.columns(4)
+    
+    with info_cols[0]:
+        # Ascendent
+        if 1 in chart_data['houses']:
+            asc_data = chart_data['houses'][1]
+            st.write(f"**Ascendant:** {asc_data['position_str']}")
+    
+    with info_cols[1]:
+        # Medium Coeli
+        if 10 in chart_data['houses']:
+            mc_data = chart_data['houses'][10]
+            st.write(f"**Midheaven:** {mc_data['position_str']}")
+    
+    with info_cols[2]:
+        # Planete retrograde
+        retrograde_planets = [p for p, data in chart_data['planets'].items() if data.get('retrograde', False)]
+        st.write(f"**Retrograde:** {len(retrograde_planets)} planets")
+    
+    with info_cols[3]:
+        # Elemente dominante etc. (poate fi extins)
+        st.write(f"**System:** Placidus")
+    
+    st.markdown("---")
+    
+    # Butoane de navigare
+    col_buttons = st.columns(5)
+    with col_buttons[0]:
+        if st.button("📊 Chart", use_container_width=True):
+            pass
+    with col_buttons[1]:
+        if st.button("🔄 Aspects", use_container_width=True):
+            pass
+    with col_buttons[2]:
+        if st.button("📍 Positions", use_container_width=True):
+            pass
+    with col_buttons[3]:
+        if st.button("📖 Interpretation", use_container_width=True):
+            pass
+    with col_buttons[4]:
+        if st.button("✏️ Data", use_container_width=True):
+            pass
+
+def display_positions():
+    st.header("📍 Planetary Positions")
+    
+    if st.session_state.chart_data is None:
+        st.warning("Please calculate chart first!")
+        return
+    
+    chart_data = st.session_state.chart_data
+    
+    positions_data = []
+    display_order = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 
+                    'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Nod', 'Chi']
+    
+    for planet_name in display_order:
+        if planet_name in chart_data['planets']:
+            planet_data = chart_data['planets'][planet_name]
+            positions_data.append({
+                'Planet': planet_name,
+                'Position': planet_data['position_str'],
+                'Longitude': f"{int(planet_data['longitude'])}°{int((planet_data['longitude'] % 1) * 60)}'",
+                'House': planet_data.get('house', 'N/A')
+            })
+    
+    df = pd.DataFrame(positions_data)
+    st.dataframe(df, use_container_width=True, hide_index=True)
+
+def display_aspects():
+    st.header("🔄 Astrological Aspects")
+    
+    if st.session_state.chart_data is None:
+        st.warning("Please calculate chart first!")
+        return
+    
+    chart_data = st.session_state.chart_data
+    
+    aspects = calculate_aspects(chart_data)
+    
+    if aspects:
+        aspect_data = []
+        for i, aspect in enumerate(aspects, 1):
+            aspect_data.append({
+                "#": f"{i:02d}",
+                "Planet 1": aspect['planet1'],
+                "Planet 2": aspect['planet2'], 
+                "Aspect": aspect['aspect_name'][:3],
+                "Orb": f"{aspect['orb']:.0f}°",
+                "Exact": "Yes" if aspect['exact'] else "No",
+                "Strength": aspect['strength']
+            })
+        
+        df = pd.DataFrame(aspect_data)
+        st.dataframe(df, use_container_width=True, hide_index=True)
+        
+    else:
+        st.info("No significant aspects found within allowed orb.")
+
+def display_transits():
+    st.header("🔄 Planetary Transits")
+    
+    if st.session_state.chart_data is None:
+        st.warning("Please calculate natal chart first!")
+        return
+    
+    natal_chart = st.session_state.chart_data
+    birth_data = st.session_state.birth_data
+    
+    # Calculează automat tranzitele pentru data nașterii la prima afișare
+    if st.session_state.transit_data is None:
+        with st.spinner("Calculating transits for birth date..."):
+            transit_data = calculate_transits(
+                natal_chart['jd'], 
+                birth_data['date'],  # Folosește automat data nașterii
+                birth_data['lat_deg'], 
+                birth_data['lon_deg']
+            )
+            st.session_state.transit_data = transit_data
+    
+    st.subheader("Transit Date Selection")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        transit_date = st.date_input("Select Transit Date", 
+                                   birth_data['date'],  # Default este data nașterii
+                                   min_value=datetime(1900, 1, 1).date(),
+                                   max_value=datetime(2100, 12, 31).date())
+    
+    with col2:
+        show_aspects = st.checkbox("Show Aspects to Natal Chart", value=True)
+        show_chart = st.checkbox("Show Transit Chart Wheel", value=True)
+        show_aspect_lines = st.checkbox("Show Aspect Lines in Chart", value=True)
+    
+    # Recalculează doar dacă data a fost schimbată sau la apăsarea butonului
+    current_transit_date = st.session_state.transit_data.get('date') if st.session_state.transit_data else None
+    
+    if st.button("Calculate Transits", type="primary") or (current_transit_date and transit_date != current_transit_date):
+        with st.spinner("Calculating transits..."):
+            transit_data = calculate_transits(
+                natal_chart['jd'], 
+                transit_date, 
+                birth_data['lat_deg'], 
+                birth_data['lon_deg']
+            )
+            
+            if transit_data:
+                st.session_state.transit_data = transit_data
+                st.success(f"✅ Transits calculated for {transit_date}")
+            else:
+                st.error("Failed to calculate transits")
+    
+    if st.session_state.transit_data:
+        transit_data = st.session_state.transit_data
+        
+        st.markdown("---")
+        st.subheader(f"Transits for {transit_data['date']}")
+        
+        # Afișează graficul transitelor
+        if show_chart:
+            fig = create_chart_wheel(transit_data, birth_data, "Transit Chart", show_aspect_lines)
+            if fig:
+                st.pyplot(fig)
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.subheader("🌍 Transit Positions")
+            display_order = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 
+                            'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Nod', 'Chi']
+            
+            for planet_name in display_order:
+                if planet_name in transit_data['planets']:
+                    planet_data = transit_data['planets'][planet_name]
+                    st.write(f"**{planet_name}** {planet_data['position_str']}")
+        
+        with col2:
+            st.subheader("🏠 Transit Houses")
+            for house_num in range(1, 13):
+                if house_num in transit_data['houses']:
+                    house_data = transit_data['houses'][house_num]
+                    st.write(f"**{house_num}** {house_data['position_str']}")
+        
+        # Afișează aspectele dintre transite și harta natală
+        if show_aspects:
+            st.markdown("---")
+            st.subheader("🔗 Transit Aspects to Natal Chart")
+            
+            transit_aspects = calculate_transit_aspects(natal_chart, transit_data)
+            
+            if transit_aspects:
+                aspect_data = []
+                for i, aspect in enumerate(transit_aspects, 1):
+                    aspect_data.append({
+                        "#": f"{i:02d}",
+                        "Natal Planet": aspect['natal_planet'],
+                        "Transit Planet": aspect['transit_planet'],
+                        "Aspect": aspect['aspect_name'],
+                        "Orb": f"{aspect['orb']:.2f}°",
+                        "Strength": aspect['strength']
+                    })
+                
+                df = pd.DataFrame(aspect_data)
+                st.dataframe(df, use_container_width=True, hide_index=True)
+            else:
+                st.info("No significant transit aspects found.")
+
+def display_progressions():
+    st.header("📈 Progressed Chart")
+    
+    if st.session_state.chart_data is None:
+        st.warning("Please calculate natal chart first!")
+        return
+    
+    natal_chart = st.session_state.chart_data
+    birth_data = st.session_state.birth_data
+    
+    # Calculează automat progresiile pentru data nașterii la prima afișare
+    if st.session_state.progressed_data is None:
+        with st.spinner("Calculating progressions for birth date..."):
+            progressed_data = calculate_progressions(
+                birth_data, 
+                birth_data['date'],  # Folosește automat data nașterii
+                'secondary'  # Metoda implicită
+            )
+            st.session_state.progressed_data = progressed_data
+    
+    st.subheader("Progression Settings")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        progression_date = st.date_input("Select Progression Date", 
+                                       birth_data['date'],  # Default este data nașterii
+                                       min_value=birth_data['date'],
+                                       max_value=datetime(2100, 12, 31).date())
+    
+    with col2:
+        progression_method = st.selectbox(
+            "Progression Method",
+            ["Secondary", "Solar Arc"],
+            help="Secondary: 1 day = 1 year | Solar Arc: Based on Sun's movement"
+        )
+        show_aspect_lines = st.checkbox("Show Aspect Lines in Chart", value=True)
+    
+    # Recalculează doar dacă data sau metoda au fost schimbate
+    current_progressed_data = st.session_state.progressed_data
+    current_progression_date = current_progressed_data.get('date') if current_progressed_data else None
+    current_method = current_progressed_data.get('method', '') if current_progressed_data else ''
+    
+    should_recalculate = (
+        st.button("Calculate Progressions", type="primary") or 
+        (current_progression_date and progression_date != current_progression_date) or
+        (current_method and progression_method not in current_method)
+    )
+    
+    if should_recalculate:
+        with st.spinner("Calculating progressions..."):
+            progressed_data = calculate_progressions(
+                birth_data, 
+                progression_date, 
+                progression_method.lower().replace(' ', '_')
+            )
+            
+            if progressed_data:
+                st.session_state.progressed_data = progressed_data
+                st.success(f"✅ Progressions calculated for {progression_date}")
+            else:
+                st.error("Failed to calculate progressions")
+    
+    if st.session_state.progressed_data:
+        progressed_data = st.session_state.progressed_data
+        
+        st.markdown("---")
+        st.subheader(f"Progressed Chart - {progressed_data['method']}")
+        
+        # Afișează graficul progresat
+        fig = create_chart_wheel(progressed_data, birth_data, f"Progressed Chart - {progressed_data['method']}", show_aspect_lines)
+        if fig:
+            st.pyplot(fig)
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.subheader("🌍 Progressed Positions")
+            display_order = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 
+                            'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Nod', 'Chi']
+            
+            for planet_name in display_order:
+                if planet_name in progressed_data['planets']:
+                    planet_data = progressed_data['planets'][planet_name]
+                    st.write(f"**{planet_name}** {planet_data['position_str']}")
+            
+            if 'solar_arc' in progressed_data:
+                st.info(f"Solar Arc: {progressed_data['solar_arc']:.2f}°")
+        
+        with col2:
+            st.subheader("🏠 Progressed Houses")
+            for house_num in range(1, 13):
+                if house_num in progressed_data['houses']:
+                    house_data = progressed_data['houses'][house_num]
+                    st.write(f"**{house_num}** {house_data['position_str']}")
+        
+        # Afișează aspectele dintre harta progresată și natală
+        st.markdown("---")
+        st.subheader("🔗 Progressed Aspects to Natal Chart")
+        
+        progressed_aspects = calculate_transit_aspects(natal_chart, progressed_data)
+        
+        if progressed_aspects:
+            aspect_data = []
+            for i, aspect in enumerate(progressed_aspects, 1):
+                aspect_data.append({
+                    "#": f"{i:02d}",
+                    "Natal Planet": aspect['natal_planet'],
+                    "Progressed Planet": aspect['transit_planet'],
+                    "Aspect": aspect['aspect_name'],
+                    "Orb": f"{aspect['orb']:.2f}°",
+                    "Strength": aspect['strength']
+                })
+            
+            df = pd.DataFrame(aspect_data)
+            st.dataframe(df, use_container_width=True, hide_index=True)
+        else:
+            st.info("No significant progressed aspects found.")
+
+def display_interpretation():
+    st.header("📖 Interpretation Center")
+    
+    if st.session_state.chart_data is None:
+        st.warning("Please calculate chart first!")
+        return
+    
+    chart_data = st.session_state.chart_data
+    birth_data = st.session_state.birth_data
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("Data")
+        st.write(f"**Name:** {birth_data['name']}")
+        st.write(f"**Date:** {birth_data['date']}")
+        st.write(f"**Time:** {birth_data['time']}")
+        st.write(f"**Position:** {birth_data.get('lon_display', 'N/A')} {birth_data.get('lat_display', 'N/A')}")
+    
+    with col2:
+        st.subheader("Planets")
+        display_order = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 
+                        'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Nod', 'Chi']
+        
+        for planet_name in display_order:
+            if planet_name in chart_data['planets']:
+                planet_data = chart_data['planets'][planet_name]
+                abbrev = planet_name[:3] if planet_name not in ['Sun', 'Moon'] else planet_name
+                st.write(f"{abbrev} {planet_data['position_str']}")
+    
+    st.markdown("---")
+    
+    # DOAR 3 opțiuni de interpretare
+    interpretation_type = st.selectbox(
+        "Type of interpretation",
+        ["Natal", "Natal Aspects", "Sexual"]  # Doar aceste 3 opțiuni
+    )
+    
+    st.markdown("---")
+    st.subheader(f"Interpretation: {interpretation_type}")
+    
+    # Placeholder pentru interpretări - poți adăuga interpretări reale aici
+    if interpretation_type == "Natal":
+        st.info("Natal interpretations will be displayed here based on planetary positions.")
+    elif interpretation_type == "Natal Aspects":
+        st.info("Natal aspects interpretations will be displayed here.")
+    elif interpretation_type == "Sexual":
+        st.info("Sexual energy interpretations will be displayed here.")
+
+def display_about():
+    st.header("ℹ️ About Horoscope")
+    st.markdown("""
+    ### Horoscope ver. 2.0 (Streamlit Edition)
+    
+    **Copyright © 2025**  
+    RAD  
+    
+    **Features**  
+    - Professional astrological calculations using Swiss Ephemeris
+    - Interactive chart wheel visualization
+    - Accurate planetary positions with professional ephemeris files
+    - Natal chart calculations with Placidus houses
+    - Complete planetary aspects calculations
+    - **Transits and Progressions** (Secondary & Solar Arc)
+    - Comprehensive interpretations for signs, degrees and houses
+    
+    **Technical:** Built with Streamlit, Swiss Ephemeris (pyswisseph), and Matplotlib
+    for professional astrological charting.
+    """)
 
 if __name__ == "__main__":
     main()
