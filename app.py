@@ -11,15 +11,10 @@ from matplotlib.patches import Circle, Wedge
 import matplotlib.patches as patches
 import sys
 
-# Configurare pentru compatibilitate Streamlit Cloud
-st.set_option('deprecation.showPyplotGlobalUse', False)
-
 # Configurare matplotlib pentru compatibilitate
+import matplotlib
+matplotlib.use('Agg')  # Important pentru Streamlit Cloud
 plt.rcParams['figure.max_open_warning'] = 0
-plt.rcParams['font.family'] = 'DejaVu Sans'
-
-# Verifică dacă suntem în mediul Streamlit Cloud
-IS_STREAMLIT_CLOUD = 'streamlit' in sys.modules
 
 def main():
     st.set_page_config(page_title="Horoscope", layout="wide", page_icon="♈")
