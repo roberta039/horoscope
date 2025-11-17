@@ -310,8 +310,8 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
         
         # Desenează casele și semnele
         for i in range(12):
-            # ROTIRE: Adaugă 90 de grade pentru a roti totul cu 3 poziții spre stânga
-            angle = i * 30 - 90 + 90  # Începe de la 6 o'clock (Cancer) în loc de 9 o'clock (Aries)
+            # ROTIRE: Scade 90 de grade pentru a roti totul cu 3 poziții spre DREAPTA
+            angle = i * 30 - 90 - 90  # Începe de la 12 o'clock (Capricorn) în loc de 9 o'clock (Aries)
             rad_angle = np.radians(angle)
             
             # Linii pentru case
@@ -332,7 +332,7 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
                    color=house_color, fontsize=10, fontweight='bold')
             
             # Semnele zodiacale
-            sign_angle = i * 30 - 75 + 90  # Poziționare pentru semne + rotire
+            sign_angle = i * 30 - 75 - 90  # Poziționare pentru semne - rotire
             sign_rad_angle = np.radians(sign_angle)
             x_sign = center_x + (outer_radius + 0.3) * np.cos(sign_rad_angle)
             y_sign = center_y + (outer_radius + 0.3) * np.sin(sign_rad_angle)
@@ -365,8 +365,8 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
                     long2 = chart_data['planets'][planet2]['longitude']
                     
                     # Calculează unghiurile pentru planete CU ROTIRE
-                    angle1 = long1 - 90 + 90  # Ajustare pentru rotire
-                    angle2 = long2 - 90 + 90
+                    angle1 = long1 - 90 - 90  # Ajustare pentru rotire spre dreapta
+                    angle2 = long2 - 90 - 90
                     
                     rad_angle1 = np.radians(angle1)
                     rad_angle2 = np.radians(angle2)
@@ -401,7 +401,7 @@ def create_chart_wheel(chart_data, birth_data, title_suffix="Natal Chart", show_
             is_retrograde = planet_data.get('retrograde', False)
             
             # Calculează unghiul pentru planetă CU ROTIRE
-            planet_angle = longitude - 90 + 90  # Ajustare pentru rotire
+            planet_angle = longitude - 90 - 90  # Ajustare pentru rotire spre dreapta
             planet_rad_angle = np.radians(planet_angle)
             
             # Poziția planetei
